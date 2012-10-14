@@ -1,13 +1,22 @@
 package reactive.ui.library;
 
-import android.app.Activity;
-import android.os.Bundle;
+import reactive.ui.library.views.*;
+import android.app.*;
+import android.os.*;
 
 public class ReactiveUIActivity extends Activity {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-    }
+	LayoutlessView layoutlessView;
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		layoutlessView = new LayoutlessView(this)//
+		//.zoom.is(Tools.zoomRiff)//
+		//.maxZoom.is(4)
+		;
+		//layoutlessView.innerWidth.is(180);
+		//layoutlessView.innerHeight.is(150);
+		setContentView(layoutlessView);
+		this.setTitle("Reactive UI Demo");
+		//layoutlessView.viewBox(new ViewBox(new SimpleString(this)));
+	}
 }
