@@ -3,9 +3,11 @@ package reactive.ui.library;
 import reactive.ui.library.views.*;
 import reactive.ui.library.views.cells.*;
 import reactive.ui.library.views.figures.*;
+import tee.binding.task.*;
 import android.app.*;
+import android.content.DialogInterface;
 import android.os.*;
-
+import java.io.*;
 public class ReactiveUIActivity extends Activity {
 	LayoutlessView layoutlessView;
 
@@ -74,6 +76,46 @@ public class ReactiveUIActivity extends Activity {
 		c3.values.value("12");
 		table.columns.value(c1).value(c2).value(c3);
 		table.requery();
+		final String[] items = new String[] { "One", "Second", "Third", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21" };
+		layoutlessView.viewBox(new ViewBox().view.is(new SimpleButton(this)//
+				.text.is("Choose text")//	
+				.tap.is(new Task() {
+
+					@Override
+					public void doTask() {
+
+						//new TextListChooser(ReactiveUIActivity.this);
+						layoutlessView.chooseDialog("Test list of string items without meaningles", items, new LayoutlessView.ItemChoose() {
+							public void choose( int which) {
+								System.out.println("tapped item " + which + ": " + items[which]);
+							}
+						});
+						//System.out.println("tap");
+					}
+				})).width.is(100)//
+				.height.is(60 * density)//
+				.left.is(20)//
+				);
+		layoutlessView.viewBox(new ViewBox().view.is(new SimpleButton(this)//
+		.text.is("Choose file")//	
+		.tap.is(new Task() {
+			@Override
+			public void doTask() {
+				layoutlessView.chooseDialog("/",new LayoutlessView.FileChoose(){
+
+					@Override
+					public void choose(File path) {
+						System.out.println("selected " + path.getAbsolutePath() );
+						
+					}});
+			}
+		}))//
+		.width.is(100)//
+		.height.is(60 * density)//
+		.left.is(20)//
+		.top.is(100)//
+		);
+
 	}
 	/*void rebuildGrid(int rows) {
 		grid.clear();
