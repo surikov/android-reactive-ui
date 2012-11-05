@@ -1,21 +1,20 @@
 package reactive.ui.library;
 
 import android.view.*;
+import android.app.AlertDialog;
 import android.content.*;
 import android.graphics.*;
 import android.util.*;
 import android.view.View;
 import android.widget.*;
-
 import java.util.*;
-
 import reactive.ui.library.views.*;
-
 import android.view.animation.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
-
+import java.io.*;
+import java.text .*;
 public class LayoutlessView extends ViewGroup {
 	private static double tapDiff = 8;
 	public final static int UNKNOWN_ID = -123456789;
@@ -43,15 +42,16 @@ public class LayoutlessView extends ViewGroup {
 	public NumericProperty<LayoutlessView> maxZoom = new NumericProperty<LayoutlessView>(this);
 	private Vector<ViewBox> children = new Vector<ViewBox>();
 	private ViewBag dragLayer;
-	//Context context;
-	public LayoutlessView(Context context) {
-		super(context);
-		//context=icontext;
+	Context context;
+	SimpleDateFormat simpleDateFormat=new SimpleDateFormat();
+	public LayoutlessView(Context icontext) {
+		super(icontext);
+		context = icontext;
 		dragLayer = new ViewBag(context);
 		this.addView(dragLayer);
 		float density = context.getResources().getDisplayMetrics().density;
 		tapDiff = 10 * density;
-		
+
 		/*
 		Button b = new Button(context);
 		this.addView(b);
@@ -183,16 +183,14 @@ public class LayoutlessView extends ViewGroup {
 			if (newShiftX < width.value() - innerWidth.property.value()) {
 				newShiftX = width.value() - innerWidth.property.value();
 			}
-		}
-		else {
+		} else {
 			newShiftX = 0;
 		}
 		if (innerHeight.property.value() > height.value()) {
 			if (newShiftY < height.value() - innerHeight.property.value()) {
 				newShiftY = height.value() - innerHeight.property.value();
 			}
-		}
-		else {
+		} else {
 			newShiftY = 0;
 		}
 		if (newShiftX > 0) {
@@ -217,8 +215,7 @@ public class LayoutlessView extends ViewGroup {
 		if (Math.abs(initialShiftX - shiftX.property.value()) < tapDiff// 
 				&& Math.abs(initialShiftY - shiftY.property.value()) < tapDiff) {
 			finishTap(x, y);
-		}
-		else {
+		} else {
 		}
 		dragMode = NONE;
 	}
@@ -244,20 +241,19 @@ public class LayoutlessView extends ViewGroup {
 
 	}
 
-	void finishZoom(){//float x0, float y0, float x1, float y1) {
-		
+	void finishZoom() {//float x0, float y0, float x1, float y1) {
+
 		//currentSpacing = spacing(x0, y0, x1, y1);
 		if (currentSpacing > initialSpacing) {
 			if (zoom.property.value() < maxZoom.property.value()) {
 				zoom.is(zoom.property.value() + 1);
 			}
-		}
-		else {
+		} else {
 			if (zoom.property.value() > 0) {
 				zoom.is(zoom.property.value() - 1);
 			}
 		}
-		
+
 		dragMode = NONE;
 	}
 
@@ -265,40 +261,156 @@ public class LayoutlessView extends ViewGroup {
 	public boolean onTouchEvent(MotionEvent event) {
 		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
 			startDrag(event.getX(), event.getY());
-		}
-		else {
+		} else {
 			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
 				if (event.getPointerCount() > 1) {
 					if (dragMode == ZOOM) {
 						proceedZoom(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
-					}
-					else {
+					} else {
 						startZoom(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
 					}
-				}
-				else {
+				} else {
 					proceedDrag(event.getX(), event.getY());
 				}
-			}
-			else {
+			} else {
 				if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
 					if (dragMode == DRAG) {
 						finishDrag(event.getX(), event.getY());
-					}
-					else {
+					} else {
 						if (dragMode == ZOOM) {
 							finishZoom();//event.getX(0), event.getY(0), event.getX(1), event.getY(1));
-						}
-						else {
+						} else {
 							//ignore event
 						}
 					}
-				}
-				else {
+				} else {
 					//ignore event
 				}
 			}
 		}
 		return true;
 	}
+	public interface ItemChoose {
+		public void choose(int item);
+	}
+	public void chooseDialog(String title, Vector<String> items, final ItemChoose itemChoose) {
+		String[] arr = new String[items.size()];
+		items.toArray(arr);
+		chooseDialog(title, arr, itemChoose);
+
+	}
+	public void chooseDialog(String title, String[] items, final ItemChoose itemChoose) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setItems(items, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				if (itemChoose != null) {
+					itemChoose.choose(arg1);
+				}
+
+			}
+		});
+		builder.setTitle(title);
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+	public interface FileChoose {
+		public void choose(File file);
+	}
+	public void chooseDialog(final String base, final FileChoose fileChoose) {
+		File b = new File(base);
+		final File up = b.getParentFile();
+		final File[] children = b.listFiles();
+		if (children != null) {
+
+			Arrays.sort(children, new Comparator() {
+
+				@Override
+				public int compare(Object arg0, Object arg1) {
+					if (arg0 == null && arg1 != null) {
+						return -1;
+					}
+					if (arg1 == null && arg0 != null) {
+						return 1;
+					}
+					if (arg0 == null && arg1 == null) {
+						return 0;
+					}
+
+					File f1 = (File) arg0;
+					File f2 = (File) arg1;
+
+					if (f1.isDirectory() && (!f2.isDirectory())) {
+						return -1;
+					}
+					if (f2.isDirectory() && (!f1.isDirectory())) {
+						return 1;
+					}
+					return f1.getName().compareToIgnoreCase(f2.getName());
+				}
+			});
+		}
+		Vector<String> items = new Vector<String>();
+		items.add("...");
+		if (children != null) {
+			for (int i = 0; i < children.length; i++) {
+				File child = children[i];
+				if (child.isDirectory()) {
+					items.add("[" + child.getName() + "]");
+					//folderCount++;
+				} else {
+					long sz = child.length();
+					String q = "b";
+					if (sz > 1000000) {
+						sz = sz / 1000000;
+						q = "Mb";
+					} else {
+						if (sz > 1000) {
+							sz = sz / 1000;
+							q = "Kb";
+						}
+					}
+					Date d=new Date(child.lastModified());
+					
+					items.add(child.getName() + " (" + sz + q + ", " +simpleDateFormat.format(d)  + ")");
+				}
+			}
+		}
+		chooseDialog(base, items, new ItemChoose() {
+
+			@Override
+			public void choose(int item) {
+				try {
+					int c = 0;
+					if (children != null) {
+						c = children.length;
+					}
+					if (item > -1 && (item < c + 1)) {
+						if (item == 0) {
+							String upPath = "/";
+							if (up != null) {
+								upPath = up.getCanonicalPath();
+							}
+							//System.out.println("up " + upPath);
+							chooseDialog(upPath, fileChoose);
+						} else {
+							File f = children[item - 1];
+							if (f.isDirectory()) {
+								//System.out.println("dir " + f.getCanonicalPath());
+								chooseDialog(f.getCanonicalPath(), fileChoose);
+							} else {
+								//System.out.println("choose " + f.getCanonicalPath());
+								fileChoose.choose(f);
+							}
+						}
+					}
+				} catch (Throwable t) {
+					t.printStackTrace();
+					chooseDialog(base, fileChoose);
+				}
+			}
+		});
+	}
+
 }
