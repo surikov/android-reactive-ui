@@ -19,7 +19,6 @@ public class ViewBox implements Unbind {
 	public ToggleProperty<ViewBox> hidden = new ToggleProperty<ViewBox>(this);
 	public View delete;
 	public Task requestLayout = new Task() {
-
 		@Override
 		public void doTask() {
 			//Tools.log("requestLayout");
@@ -31,7 +30,12 @@ public class ViewBox implements Unbind {
 						left.property.value().intValue()//
 						, top.property.value().intValue()//
 						, (int) (left.property.value() + width.property.value())//
-						, (int) (top.property.value() + height.property.value()));
+						, (int) (top.property.value() + height.property.value())//
+				);
+				/*v.setLayoutParams(new TableLayout.LayoutParams(//
+						width.property.value().intValue()//
+						, height.property.value().intValue()//
+						, 1f));*/
 				//view.property.value().measure(width.property.value().intValue(), height.property.value().intValue());
 				//view.property.value().requestLayout();
 				//view.property.value().postInvalidate();
@@ -39,7 +43,6 @@ public class ViewBox implements Unbind {
 					Tools.log("requestLayout " + v.getParent().isLayoutRequested() + "/" + v);
 				}*/
 			}
-
 		}
 	};
 
@@ -70,7 +73,6 @@ public class ViewBox implements Unbind {
 		left.property.afterChange(requestLayout);
 		top.property.afterChange(requestLayout);
 		hidden.property.afterChange(new Task() {
-
 			@Override
 			public void doTask() {
 				if (view.property.value() != null) {
@@ -82,11 +84,9 @@ public class ViewBox implements Unbind {
 						v.setVisibility(View.VISIBLE);
 					}
 				}
-
 			}
 		});
 	}
-
 	public void unbind() {
 		width.property.unbind();
 		height.property.unbind();

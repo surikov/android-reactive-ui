@@ -8,6 +8,7 @@ import android.app.*;
 import android.content.DialogInterface;
 import android.os.*;
 import java.io.*;
+
 public class ReactiveUIActivity extends Activity {
 	LayoutlessView layoutlessView;
 
@@ -26,10 +27,10 @@ public class ReactiveUIActivity extends Activity {
 		SimpleTable table = new SimpleTable(this);
 		layoutlessView.viewBox(new ViewBox()//
 				.view.is(table)//				
-				.width.is(layoutlessView.width.value())//
-				.height.is(layoutlessView.height.value())//
-				.left.is(0)//
-				.top.is(0)//
+				.width.is(700	)//
+				.height.is(400)//
+				.left.is(80)//
+				.top.is(80)//
 				);
 		//grid = new WhiteBoard(this);
 		/*layoutlessView.viewBox(new ViewBox()//
@@ -59,8 +60,8 @@ public class ReactiveUIActivity extends Activity {
 				).width.is(150).height.is(60 * density).left.is(layoutlessView.shiftX.property.plus(300)));
 		//rebuildGrid(9);
 		*/
-		SimpleTableColumn c1 = new SimpleTableColumn().title.is("First").width.is(12);
-		SimpleTableColumn c2 = new SimpleTableColumn().title.is("Second");
+		SimpleTableColumn c1 = new SimpleTableColumn().title.is("First").width.is(320);
+		SimpleTableColumn c2 = new SimpleTableColumn().title.is("Second column looong title that fit whole height of header").width.is(250);
 		SimpleTableColumn c3 = new SimpleTableColumn().title.is("Third").width.is(200);
 		c1.values.value("1");
 		c2.values.value("2");
@@ -80,13 +81,11 @@ public class ReactiveUIActivity extends Activity {
 		layoutlessView.viewBox(new ViewBox().view.is(new SimpleButton(this)//
 				.text.is("Choose text")//	
 				.tap.is(new Task() {
-
 					@Override
 					public void doTask() {
-
 						//new TextListChooser(ReactiveUIActivity.this);
 						layoutlessView.chooseDialog("Test list of string items without meaningles", items, new LayoutlessView.ItemChoose() {
-							public void choose( int which) {
+							public void choose(int which) {
 								System.out.println("tapped item " + which + ": " + items[which]);
 							}
 						});
@@ -97,25 +96,32 @@ public class ReactiveUIActivity extends Activity {
 				.left.is(20)//
 				);
 		layoutlessView.viewBox(new ViewBox().view.is(new SimpleButton(this)//
-		.text.is("Choose file")//	
-		.tap.is(new Task() {
-			@Override
-			public void doTask() {
-				layoutlessView.chooseDialog("/",new LayoutlessView.FileChoose(){
-
+				.text.is("Choose file")//	
+				.tap.is(new Task() {
 					@Override
-					public void choose(File path) {
-						System.out.println("selected " + path.getAbsolutePath() );
-						
-					}});
-			}
-		}))//
-		.width.is(100)//
-		.height.is(60 * density)//
-		.left.is(20)//
-		.top.is(100)//
-		);
-
+					public void doTask() {
+						layoutlessView.chooseDialog("/sdcard/", new LayoutlessView.FileChoose() {
+							@Override
+							public void choose(File path) {
+								System.out.println("selected " + path.getAbsolutePath());
+							}
+						});
+					}
+				}))//
+				.width.is(100)//
+				.height.is(60 * density)//
+				.left.is(20)//
+				.top.is(100)//
+				);
+		layoutlessView.viewBox(new ViewBox().view.is(new SimpleString(this)//
+				.text.is("Simple String")//	
+				.size.is(72)
+				)//
+				.width.is(300)//
+				.height.is(300 )//
+				.left.is(300)//
+				.top.is(300)
+				);
 	}
 	/*void rebuildGrid(int rows) {
 		grid.clear();
