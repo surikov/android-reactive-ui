@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="reactive.ui.library"
+    package="reactive.ui"
     android:versionCode="2"
     android:versionName="1.02" >
 
@@ -10,8 +10,8 @@
         android:icon="@drawable/rocket"
         android:label="ReactiveUI" >
         <activity
-            android:name=".ReactiveUIActivity"
-            android:label="Reactive Demo" >
+            android:name=".Demo"
+            android:label="Reactive Demo" android:theme="@android:style/Theme.Black">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

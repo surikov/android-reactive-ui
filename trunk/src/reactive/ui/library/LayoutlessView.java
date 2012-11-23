@@ -1,5 +1,17 @@
 package reactive.ui.library;
+/*
+You can use RelativeLayout. Let's say you wanted a 30x40 ImageView at position (50,60) inside your layout. Somewhere in your activity:
 
+// Some existing RelativeLayout from your layout xml
+RelativeLayout rl = (RelativeLayout) findViewById(R.id.my_relative_layout);
+
+ImageView iv = new ImageView(this);
+
+RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(30, 40);
+params.leftMargin = 50;
+params.topMargin = 60;
+rl.addView(iv, params);
+*/
 import android.view.*;
 import android.app.AlertDialog;
 import android.content.*;
@@ -324,30 +336,30 @@ public class LayoutlessView extends ViewGroup {
 		final File[] children = b.listFiles();
 		if (children != null) {
 
-			Arrays.sort(children, new Comparator() {
+			Arrays.sort(children, new Comparator<File>() {
 
 				@Override
-				public int compare(Object arg0, Object arg1) {
-					if (arg0 == null && arg1 != null) {
+				public int compare(File first, File second) {
+					if (first == null && second != null) {
 						return -1;
 					}
-					if (arg1 == null && arg0 != null) {
+					if (second == null && first != null) {
 						return 1;
 					}
-					if (arg0 == null && arg1 == null) {
+					if (first == null && second == null) {
 						return 0;
 					}
 
-					File f1 = (File) arg0;
-					File f2 = (File) arg1;
+					//File f1 = (File) arg0;
+					//File f2 = (File) arg1;
 
-					if (f1.isDirectory() && (!f2.isDirectory())) {
+					if (first.isDirectory() && (!second.isDirectory())) {
 						return -1;
 					}
-					if (f2.isDirectory() && (!f1.isDirectory())) {
+					if (second.isDirectory() && (!first.isDirectory())) {
 						return 1;
 					}
-					return f1.getName().compareToIgnoreCase(f2.getName());
+					return first.getName().compareToIgnoreCase(second.getName());
 				}
 			});
 		}
