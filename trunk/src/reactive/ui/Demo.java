@@ -31,9 +31,10 @@ public class Demo extends Activity {
 		.top.is(50)//
 		.width.is(120)//
 		.height.is(300)//
-		.gravity.is(Gravity.CENTER)//
+		//.gravity.is(Gravity.CENTER)//
 		.background.is(Color.RED)//
-		.foreground.is(Color.YELLOW)//
+		//.foreground.is(Color.YELLOW)//
+		.textAppearance.is(android.R.style.TextAppearance_DialogWindowTitle)
 		)//
 		;
 		setContentView(view);

@@ -19,12 +19,15 @@ public class ReactiveLabel extends TextView {
 	public NumericProperty<ReactiveLabel> height = new NumericProperty<ReactiveLabel>(this);
 	public NumericProperty<ReactiveLabel> left = new NumericProperty<ReactiveLabel>(this);
 	public NumericProperty<ReactiveLabel> top = new NumericProperty<ReactiveLabel>(this);
-	public NumericProperty<ReactiveLabel> gravity = new NumericProperty<ReactiveLabel>(this);
+	public NumericProperty<ReactiveLabel> gravity = new NumericProperty<ReactiveLabel>(this); //android.view.Gravity.CENTER
 	public NumericProperty<ReactiveLabel> foreground = new NumericProperty<ReactiveLabel>(this);
 	public NumericProperty<ReactiveLabel> background = new NumericProperty<ReactiveLabel>(this);
+	public NumericProperty<ReactiveLabel> textAppearance = new NumericProperty<ReactiveLabel>(this); //android.R.style.TextAppearance_Small_Inverse
+	Context context;
 
 	public ReactiveLabel(Context context) {
 		super(context);
+		this.context = context;
 		init();
 	}
 	public ReactiveLabel(Context context, AttributeSet attrs) {
@@ -34,6 +37,12 @@ public class ReactiveLabel extends TextView {
 		super(context, attrs, defStyle);
 	}
 	void init() {
+		textAppearance.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				setTextAppearance(context, textAppearance.property.value().intValue());
+			}
+		});
 		text.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
@@ -74,5 +83,6 @@ public class ReactiveLabel extends TextView {
 		height.property.afterChange(reLayout).value(100);
 		left.property.afterChange(reLayout);
 		top.property.afterChange(reLayout);
+		//this.setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
 	}
 }
