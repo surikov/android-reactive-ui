@@ -16,17 +16,17 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class ReactiveLayout extends RelativeLayout {
-	public ReactiveLayout(Context context) {
+public class Layoutless extends RelativeLayout {
+	public Layoutless(Context context) {
 		super(context);
 	}
-	public ReactiveLayout(Context context, AttributeSet attrs) {
+	public Layoutless(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
-	public ReactiveLayout(Context context, AttributeSet attrs, int defStyle) {
+	public Layoutless(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
-	public ReactiveLayout child(View v) {
+	public Layoutless child(View v) {
 		this.addView(v);
 		return this;
 	}
