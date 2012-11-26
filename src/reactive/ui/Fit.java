@@ -1,7 +1,11 @@
 package reactive.ui;
 
+import java.util.Vector;
+
 import reactive.ui.*;
 import reactive.ui.library.views.SimpleString;
+import reactive.ui.library.views.WhiteBoard;
+import reactive.ui.library.views.figures.Figure;
 import android.content.*;
 import android.graphics.*;
 import tee.binding.properties.*;
@@ -25,6 +29,14 @@ public class Fit extends TextView {
 	public NumericProperty<Fit> textAppearance = new NumericProperty<Fit>(this); //android.R.style.TextAppearance_Small_Inverse
 	public ItProperty<Fit, Typeface> labelFace = new ItProperty<Fit, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
 	public NumericProperty<Fit> labelSize = new NumericProperty<Fit>(this);
+	Vector<Sketch> figures = new Vector<Sketch>();
+	Task postInvalidate=new Task(){
+
+		@Override
+		public void doTask() {
+			postInvalidate();
+			
+		}};
 	Context context;
 
 	public Fit(Context context) {
@@ -113,5 +125,26 @@ public class Fit extends TextView {
 		left.property.afterChange(reLayout);
 		top.property.afterChange(reLayout);
 		//this.setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
+	}
+	public Fit sketch(Sketch f) {
+		this.figures.add(f);
+		this.postInvalidate();
+		return this;
+	}
+
+	public void drop(Sketch f) {
+		this.figures.remove(f);
+		this.postInvalidate();
+	}
+
+	public void clear() {
+		this.figures.removeAllElements();
+		this.postInvalidate();
+	}
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		for (int i = 0; i < figures.size(); i++) {
+			figures.get(i).draw(canvas);
+		}
 	}
 }
