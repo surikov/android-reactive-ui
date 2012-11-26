@@ -19,22 +19,37 @@ import java.io.*;
 import java.text.*;
 
 public class Demo extends Activity {
-	ReactiveLayout view;
+	Layoutless view;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		view = new ReactiveLayout(this);
-		view.child(new ReactiveLabel(this)//
-		.text.is("Very long string for testing purpose only.")//
-		.left.is(200)//
-		.top.is(50)//
-		.width.is(120)//
-		.height.is(300)//
+		view = new Layoutless(this);
+		view//
+		.child(new Fit(this)//
+		.labelText.is("Very long string for testing purpose only.")//
+		.left.is(0)//
+		.top.is(0)//
+		.width.is(240)//
+		.height.is(100)//
 		//.gravity.is(Gravity.CENTER)//
 		.background.is(Color.RED)//
 		//.foreground.is(Color.YELLOW)//
-		.textAppearance.is(android.R.style.TextAppearance_DialogWindowTitle)
+		//.textAppearance.is(android.R.style.TextAppearance_Large)//
+		//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/deftone.ttf"))//
+		)//
+		.child(new Fit(this)//
+		.labelText.is("Very long string for testing purpose only. То-сё на русском.")//
+		.left.is(0)//
+		.top.is(100)//
+		.width.is(700)//
+		.height.is(500)//
+		.gravity.is(Gravity.CENTER)//
+		.background.is(0xff003300)//
+		.labelSize.is(50)
+		//.foreground.is(Color.YELLOW)//
+		//.textAppearance.is(android.R.style.TextAppearance_Large)//
+		.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/Rurintania.ttf"))//
 		)//
 		;
 		setContentView(view);
