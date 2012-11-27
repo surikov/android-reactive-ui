@@ -24,33 +24,49 @@ public class Fit extends TextView {
 	public NumericProperty<Fit> left = new NumericProperty<Fit>(this);
 	public NumericProperty<Fit> top = new NumericProperty<Fit>(this);
 	public NumericProperty<Fit> gravity = new NumericProperty<Fit>(this); //android.view.Gravity.CENTER
-	public NumericProperty<Fit> foreground = new NumericProperty<Fit>(this);
+	public NumericProperty<Fit> labelColor = new NumericProperty<Fit>(this);
 	public NumericProperty<Fit> background = new NumericProperty<Fit>(this);
 	public NumericProperty<Fit> textAppearance = new NumericProperty<Fit>(this); //android.R.style.TextAppearance_Small_Inverse
 	public ItProperty<Fit, Typeface> labelFace = new ItProperty<Fit, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
 	public NumericProperty<Fit> labelSize = new NumericProperty<Fit>(this);
+	Context context;
 	Vector<Sketch> figures = new Vector<Sketch>();
-	Task postInvalidate=new Task(){
-
+	boolean initialized = false;
+	Task reFit = new Task() {
+		@Override
+		public void doTask() {
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
+					width.property.value().intValue()//
+					, height.property.value().intValue());
+			params.leftMargin = left.property.value().intValue();
+			params.topMargin = top.property.value().intValue();
+			Fit.this.setLayoutParams(params);
+		}
+	};
+	Task postInvalidate = new Task() {
 		@Override
 		public void doTask() {
 			postInvalidate();
-			
-		}};
-	Context context;
+		}
+	};
 
 	public Fit(Context context) {
 		super(context);
-		this.context = context;
-		init();
+		init(context);
 	}
 	public Fit(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		init(context);
 	}
 	public Fit(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		init(context);
 	}
-	void init() {
+	void init(Context c) {
+		if (initialized)
+			return;
+		initialized = true;
+		this.context = c;
 		//final float density = context.getResources().getDisplayMetrics().density;
 		textAppearance.property.afterChange(new Task() {
 			@Override
@@ -70,11 +86,12 @@ public class Fit extends TextView {
 				setGravity(gravity.property.value().intValue());
 			}
 		});
-		foreground.is(this.getCurrentTextColor());
-		foreground.property.afterChange(new Task() {
+		//gravity.is(Gravity.LEFT|Gravity.TOP);
+		labelColor.is(this.getCurrentTextColor());
+		labelColor.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				setTextColor(foreground.property.value().intValue());
+				setTextColor(labelColor.property.value().intValue());
 			}
 		});
 		background.property.afterChange(new Task() {
@@ -102,28 +119,23 @@ public class Fit extends TextView {
 				if (labelSize.property.value().floatValue() != getTextSize()) {
 					//System.out.println("set "+labelSize.property.value());
 					//setTextSize((float) (labelSize.property.value() / density));
-					setTextSize(labelSize.property.value().floatValue() );
+					setTextSize(labelSize.property.value().floatValue());
 					//System.out.println("now "+getTextSize());
 					//resetCenterShift();
-					//me.postInvalidate();
+					//postInvalidate();
+					//Fit.this.requestLayout();
+					//reFit.start();
+					//setGravity(Gravity.CENTER);
+					//setGravity(Gravity.LEFT|Gravity.TOP);
+					//Fit.this.requestLayout();
 				}
 			}
 		});
-		Task reLayout = new Task() {
-			@Override
-			public void doTask() {
-				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
-						width.property.value().intValue()//
-						, height.property.value().intValue());
-				params.leftMargin = left.property.value().intValue();
-				params.topMargin = top.property.value().intValue();
-				Fit.this.setLayoutParams(params);
-			}
-		};
-		width.property.afterChange(reLayout).value(100);
-		height.property.afterChange(reLayout).value(100);
-		left.property.afterChange(reLayout);
-		top.property.afterChange(reLayout);
+		width.property.afterChange(reFit).value(100);
+		height.property.afterChange(reFit).value(100);
+		left.property.afterChange(reFit);
+		top.property.afterChange(reFit);
+		//labelSize.property.afterChange(reLayout);
 		//this.setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
 	}
 	public Fit sketch(Sketch f) {
@@ -131,12 +143,10 @@ public class Fit extends TextView {
 		this.postInvalidate();
 		return this;
 	}
-
 	public void drop(Sketch f) {
 		this.figures.remove(f);
 		this.postInvalidate();
 	}
-
 	public void clear() {
 		this.figures.removeAllElements();
 		this.postInvalidate();
