@@ -29,6 +29,7 @@ public class Fit extends TextView {
 	public NumericProperty<Fit> textAppearance = new NumericProperty<Fit>(this); //android.R.style.TextAppearance_Small_Inverse
 	public ItProperty<Fit, Typeface> labelFace = new ItProperty<Fit, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
 	public NumericProperty<Fit> labelSize = new NumericProperty<Fit>(this);
+	//public ItProperty<Fit, Task> afterDrag = new ItProperty<Fit, Task>(this);
 	Context context;
 	Vector<Sketch> figures = new Vector<Sketch>();
 	boolean initialized = false;
@@ -77,13 +78,15 @@ public class Fit extends TextView {
 		labelText.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				setText(labelText.property.value());
+				setText(labelText.property.value(),BufferType.SPANNABLE);
+				//setText(getText(),BufferType.SPANNABLE);
 			}
 		});
 		gravity.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
 				setGravity(gravity.property.value().intValue());
+				setText(labelText.property.value(),BufferType.SPANNABLE);
 			}
 		});
 		//gravity.is(Gravity.LEFT|Gravity.TOP);
