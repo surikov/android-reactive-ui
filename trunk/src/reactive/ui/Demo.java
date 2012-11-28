@@ -63,7 +63,7 @@ public class Demo extends Activity {
 				//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/Rurintania.ttf"))//
 				)//
 				.child(new Knob(this)//
-				.labelText.is("CENTER")//
+				.labelText.is("botright")//
 				.left.is(300)//
 				.top.is(50)//
 				.height.is(50)//
@@ -72,7 +72,9 @@ public class Demo extends Activity {
 					@Override
 					public void doTask() {
 						System.out.println("test");
-						t.setGravity(Gravity.CENTER);
+						t.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
+						t.width.is(800);
+						
 					}
 				}))//
 				.child(new Knob(this)//
@@ -85,7 +87,9 @@ public class Demo extends Activity {
 					@Override
 					public void doTask() {
 						System.out.println("lt");
-						t.setGravity(Gravity.LEFT|Gravity.TOP);
+						//t.setGravity(Gravity.LEFT|Gravity.TOP);
+						t.labelText.is("qwdqfqefqewfewqf Very long string for testing purpose only. То-сё на русском.");
+						//t.width.is(700);
 					}
 				}))//
 				;
