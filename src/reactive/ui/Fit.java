@@ -26,14 +26,12 @@ public class Fit extends TextView {
 	//public NumericProperty<Fit> gravity = new NumericProperty<Fit>(this); //android.view.Gravity.CENTER
 	public NumericProperty<Fit> labelColor = new NumericProperty<Fit>(this);
 	public NumericProperty<Fit> background = new NumericProperty<Fit>(this);
-	public NumericProperty<Fit> textAppearance = new NumericProperty<Fit>(this); //android.R.style.TextAppearance_Small_Inverse
+	//public NumericProperty<Fit> textAppearance = new NumericProperty<Fit>(this); //android.R.style.TextAppearance_Small_Inverse
 	public ItProperty<Fit, Typeface> labelFace = new ItProperty<Fit, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
 	public NumericProperty<Fit> labelSize = new NumericProperty<Fit>(this);
 	//public ItProperty<Fit, Task> afterDrag = new ItProperty<Fit, Task>(this);
-	Vector<Sketch> sketches=new Vector<Sketch> ();
-	
+	Vector<Sketch> sketches = new Vector<Sketch>();
 	Context context;
-	
 	boolean initialized = false;
 	Task reFit = new Task() {
 		@Override
@@ -52,73 +50,78 @@ public class Fit extends TextView {
 			postInvalidate();
 		}
 	};
-	public Fit alignLeftTop(){
-		setGravity(android.view.Gravity.LEFT|android.view.Gravity.TOP);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
-		return this;
-	}
-	public Fit alignLeftCenter(){
-		setGravity(android.view.Gravity.LEFT|android.view.Gravity.CENTER_VERTICAL);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
-		return this;
-	}
-	public Fit alignLeftBottom(){
-		setGravity(android.view.Gravity.LEFT|android.view.Gravity.BOTTOM);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
-		return this;
-	}
-	
 
-	public Fit alignRightTop(){
-		setGravity(android.view.Gravity.RIGHT|android.view.Gravity.TOP);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
+	public Fit labelLeftTop() {
+		setGravity(android.view.Gravity.LEFT | android.view.Gravity.TOP);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit alignRightCenter(){
-		setGravity(android.view.Gravity.RIGHT|android.view.Gravity.CENTER_VERTICAL);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
+	public Fit labelLeftCenter() {
+		setGravity(android.view.Gravity.LEFT | android.view.Gravity.CENTER_VERTICAL);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit alignRightBottom(){
-		setGravity(android.view.Gravity.RIGHT|android.view.Gravity.BOTTOM);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
+	public Fit labelLeftBottom() {
+		setGravity(android.view.Gravity.LEFT | android.view.Gravity.BOTTOM);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
+		return this;
+	}
+	public Fit labelRightTop() {
+		setGravity(android.view.Gravity.RIGHT | android.view.Gravity.TOP);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
+		return this;
+	}
+	public Fit labelRightCenter() {
+		setGravity(android.view.Gravity.RIGHT | android.view.Gravity.CENTER_VERTICAL);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
+		return this;
+	}
+	public Fit labelRightBottom() {
+		setGravity(android.view.Gravity.RIGHT | android.view.Gravity.BOTTOM);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
+		return this;
+	}
+	public Fit labelCenterTop() {
+		setGravity(android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.TOP);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
+		return this;
+	}
+	public Fit labelCenterCenter() {
+		setGravity(android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.CENTER_VERTICAL);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
+		return this;
+	}
+	public Fit labelCenterBottom() {
+		setGravity(android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.BOTTOM);
+		setText(labelText.property.value(), BufferType.SPANNABLE);
+		return this;
+	}
+	public Fit labelSmallNormal() {
+		setTextAppearance(context, android.R.style.TextAppearance_Small);
+		return this;
+	}
+	public Fit labelMediumNormal() {
+		setTextAppearance(context, android.R.style.TextAppearance_Medium);
+		return this;
+	}
+	public Fit labelLargeNormal() {
+		setTextAppearance(context, android.R.style.TextAppearance_Large);
 		return this;
 	}
 	
 	
-	
-	public Fit alignCenterTop(){
-		setGravity(android.view.Gravity.CENTER_HORIZONTAL|android.view.Gravity.TOP);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
+	public Fit labelSmallInverse() {
+		setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
 		return this;
 	}
-	public Fit alignCenterCenter(){
-		setGravity(android.view.Gravity.CENTER_HORIZONTAL|android.view.Gravity.CENTER_VERTICAL);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
+	public Fit labelMediumInverse() {
+		setTextAppearance(context, android.R.style.TextAppearance_Medium_Inverse);
 		return this;
 	}
-	public Fit alignCenterBottom(){
-		setGravity(android.view.Gravity.CENTER_HORIZONTAL|android.view.Gravity.BOTTOM);
-		setText(labelText.property.value(),BufferType.SPANNABLE);
+	public Fit labelLargeInverse() {
+		setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
 		return this;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-
-	
-	
-	
-	
 	
 	
 	
@@ -134,22 +137,23 @@ public class Fit extends TextView {
 		super(context, attrs, defStyle);
 		init(context);
 	}
+	
 	void init(Context c) {
 		if (initialized)
 			return;
 		initialized = true;
 		this.context = c;
 		//final float density = context.getResources().getDisplayMetrics().density;
-		textAppearance.property.afterChange(new Task() {
+		/*textAppearance.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
 				setTextAppearance(context, textAppearance.property.value().intValue());
 			}
-		});
+		});*/
 		labelText.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				setText(labelText.property.value(),BufferType.SPANNABLE);
+				setText(labelText.property.value(), BufferType.SPANNABLE);
 				//setText(getText(),BufferType.SPANNABLE);
 			}
 		});
@@ -214,18 +218,18 @@ public class Fit extends TextView {
 	}
 	public Fit sketch(Sketch f) {
 		this.sketches.add(f);
-		f.forUpdate=this;
+		f.forUpdate = this;
 		this.postInvalidate();
 		return this;
 	}
 	public void drop(Sketch f) {
 		this.sketches.remove(f);
-		f.forUpdate=null;
+		f.forUpdate = null;
 		this.postInvalidate();
 	}
 	public void clear() {
-		for(int i=0;i<sketches.size();i++){
-			this.sketches.get(i).forUpdate=null;
+		for (int i = 0; i < sketches.size(); i++) {
+			this.sketches.get(i).forUpdate = null;
 		}
 		this.sketches.removeAllElements();
 		this.postInvalidate();

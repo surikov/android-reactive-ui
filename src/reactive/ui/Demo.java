@@ -55,10 +55,11 @@ public class Demo extends Activity {
 				.top.is(100)//
 				.width.is(700)//
 				.height.is(500)//
-				.alignRightBottom()
+				.labelCenterBottom()
 				//.gravity.is(Gravity.CENTER)//
 				.background.is(0xff003300)//
-				.labelSize.is(zoom.multiply(20).plus(20))
+				//.labelSize.is(zoom.multiply(20).plus(20))
+				//.la
 				//.foreground.is(Color.YELLOW)//
 				//.textAppearance.is(android.R.style.TextAppearance_Large)//
 				//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/Rurintania.ttf"))//
@@ -82,7 +83,7 @@ public class Demo extends Activity {
 						System.out.println("11111");
 						//t.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
 						//t.width.is(800);
-						t.alignCenterBottom();
+						t.labelLargeNormal();
 						
 					}
 				}))//
