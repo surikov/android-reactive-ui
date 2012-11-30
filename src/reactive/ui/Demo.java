@@ -55,12 +55,20 @@ public class Demo extends Activity {
 				.top.is(100)//
 				.width.is(700)//
 				.height.is(500)//
+				.alignRightBottom()
 				//.gravity.is(Gravity.CENTER)//
 				.background.is(0xff003300)//
 				.labelSize.is(zoom.multiply(20).plus(20))
 				//.foreground.is(Color.YELLOW)//
 				//.textAppearance.is(android.R.style.TextAppearance_Large)//
 				//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/Rurintania.ttf"))//
+				.sketch(new Plate()//
+				.left.is(50)
+				.top.is(10)
+				.width.is(250)
+				.height.is(120)
+				.background.is(0xff009999)
+				)
 				)//
 				.child(new Knob(this)//
 				.labelText.is("botright")//
@@ -71,14 +79,15 @@ public class Demo extends Activity {
 				.tap.is(new Task() {
 					@Override
 					public void doTask() {
-						System.out.println("test");
-						t.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
-						t.width.is(800);
+						System.out.println("11111");
+						//t.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
+						//t.width.is(800);
+						t.alignCenterBottom();
 						
 					}
 				}))//
 				.child(new Knob(this)//
-				.labelText.is("lefttop")//
+				.labelText.is("22222")//
 				.left.is(500)//
 				.top.is(50)//
 				.height.is(50)//
@@ -88,7 +97,7 @@ public class Demo extends Activity {
 					public void doTask() {
 						System.out.println("lt");
 						//t.setGravity(Gravity.LEFT|Gravity.TOP);
-						t.labelText.is("qwdqfqefqewfewqf Very long string for testing purpose only. То-сё на русском.");
+						//t.labelText.is("qwdqfqefqewfewqf Very long string for testing purpose only. То-сё на русском.");
 						//t.width.is(700);
 					}
 				}))//
