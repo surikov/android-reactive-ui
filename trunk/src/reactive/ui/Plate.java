@@ -1,8 +1,10 @@
 package reactive.ui;
 
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import tee.binding.properties.*;
 import tee.binding.task.Task;
 
@@ -22,7 +24,20 @@ public class Plate extends Sketch {
 		}
 	};
 	
+/*
+private void resetPaint() {
+		paint.setColor(color.property.value().intValue());
+		if (gradientKind.property.value() ==GRADIENT_TOPLEFT_TO_RIGHTBOTTOM) {
+			paint.setShader(new LinearGradient(0, 0, getWidth(), getHeight()//
+					, color.property.value().intValue()//
+					, gradient.property.value().intValue()//
+					, Shader.TileMode.MIRROR));
+			//Tools.log(getWidth()+"/"+getHeight());
+		}
+		me.postInvalidate();
+	}
 
+*/
 	public Plate() {
 		width.is(100);
 		height.is(100);
