@@ -19,7 +19,7 @@ import java.io.*;
 import java.text.*;
 
 public class Layoutless extends RelativeLayout {
-	public static float density =1;
+	public static float density = 1;
 	private static double tapDiff = 8;
 	//private final static int UNKNOWN_ID = -123456789;
 	public final static int NONE = 0;
@@ -46,19 +46,27 @@ public class Layoutless extends RelativeLayout {
 	public ItProperty<Layoutless, Task> afterTap = new ItProperty<Layoutless, Task>(this);
 	//public ItProperty<Layoutless, Task> afterPress = new ItProperty<Layoutless, Task>(this);
 	public NumericProperty<Layoutless> mode = new NumericProperty<Layoutless>(this);
-	
+	public static int foreColor = 0xff00ff00;
+	public static int blurColor = 0xffff0000;
+	public static int backColor = 0xff0000ff;
 
+	void fillBaseColors() {
+		Decor colorTest = new Decor(this.getContext());
+		foreColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
+		blurColor = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
+		backColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+	}
 	public Layoutless(Context context) {
 		super(context);
-		 density = context.getResources().getDisplayMetrics().density;
+		density = context.getResources().getDisplayMetrics().density;
 	}
 	public Layoutless(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		 density = context.getResources().getDisplayMetrics().density;
+		density = context.getResources().getDisplayMetrics().density;
 	}
 	public Layoutless(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		 density = context.getResources().getDisplayMetrics().density;
+		density = context.getResources().getDisplayMetrics().density;
 	}
 	public Layoutless child(View v) {
 		this.addView(v);
@@ -78,7 +86,7 @@ public class Layoutless extends RelativeLayout {
 			initialShiftY = shiftY.property.value().floatValue();
 			lastEventX = event.getX();
 			lastEventY = event.getY();
-			mode.is( DRAG);
+			mode.is(DRAG);
 		}
 		else {
 			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
@@ -91,7 +99,7 @@ public class Layoutless extends RelativeLayout {
 						//System.out.println("startZoom");
 						initialSpacing = spacing(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
 						currentSpacing = initialSpacing;
-						mode.is( ZOOM);
+						mode.is(ZOOM);
 					}
 				}
 				else {
@@ -129,7 +137,6 @@ public class Layoutless extends RelativeLayout {
 		float y = y0 - y1;
 		return FloatMath.sqrt(x * x + y * y);
 	}
-
 	void setShift(float x, float y) {
 		double newShiftX = shiftX.property.value() + x - lastEventX;
 		double newShiftY = shiftY.property.value() + y - lastEventY;
@@ -167,7 +174,7 @@ public class Layoutless extends RelativeLayout {
 		else {
 			//
 		}
-		mode.is( NONE);
+		mode.is(NONE);
 	}
 	void finishTap(float x, float y) {
 		shiftX.property.value((double) initialShiftX);
@@ -191,6 +198,6 @@ public class Layoutless extends RelativeLayout {
 		}
 		shiftX.property.value((double) initialShiftX);
 		shiftY.property.value((double) initialShiftY);
-		mode.is( NONE);
+		mode.is(NONE);
 	}
 }

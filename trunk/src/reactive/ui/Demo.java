@@ -30,14 +30,19 @@ public class Demo extends Activity {
 		final Numeric shiftY = new Numeric();
 		final Numeric zoom = new Numeric().value(1);
 		view = new Layoutless(this);
-		final Fit t=new Fit(this);
+		final Decor t = new Decor(this);
+		Decor colorTest = new Decor(this);
+		int norm = colorTest.labelStyleLargeNormal().getCurrentTextColor();
+		int normH = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
+		int inv = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+		int invH = colorTest.labelStyleLargeInverse().getCurrentHintTextColor();
 		view//
 		.width.is(screenWidth).height.is(screenHeight)//
 		.innerWidth.is(2000).innerHeight.is(1000)//
 		.shiftX.is(shiftX).shiftY.is(shiftY)//
 		.maxZoom.is(3).zoom.is(zoom)
 		//
-				.child(new Fit(this)//
+				.child(new Decor(this)//
 				.labelText.is("Very long string for testing purpose only.")//
 				.left.is(shiftX)//
 				.top.is(shiftY)//
@@ -55,21 +60,22 @@ public class Demo extends Activity {
 				.top.is(100)//
 				.width.is(700)//
 				.height.is(500)//
-				.labelCenterBottom()
+						.labelAlignCenterBottom()
 				//.gravity.is(Gravity.CENTER)//
-				.background.is(0xff003300)//
-				//.labelSize.is(zoom.multiply(20).plus(20))
-				//.la
-				//.foreground.is(Color.YELLOW)//
-				//.textAppearance.is(android.R.style.TextAppearance_Large)//
-				//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/Rurintania.ttf"))//
-				.sketch(new Plate()//
-				.left.is(50)
-				.top.is(10)
-				.width.is(250)
-				.height.is(120)
-				.background.is(0xff009999)
-				)
+				.background.is(0xff003366)//
+						//.labelSize.is(zoom.multiply(20).plus(20))
+						//.la
+						//.foreground.is(Color.YELLOW)//
+						//.textAppearance.is(android.R.style.TextAppearance_Large)//
+						//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/Rurintania.ttf"))//
+						.sketch(new SketchFill()//
+						.left.is(50).top.is(10).width.is(50).height.is(120).background.is(norm))//
+						.sketch(new SketchFill()//
+						.left.is(50).top.is(150).width.is(50).height.is(120).background.is(inv))//
+						.sketch(new SketchFill()//
+						.left.is(150).top.is(10).width.is(50).height.is(120).background.is(normH))//
+						.sketch(new SketchFill()//
+						.left.is(150).top.is(150).width.is(50).height.is(120).background.is(invH))//
 				)//
 				.child(new Knob(this)//
 				.labelText.is("botright")//
@@ -83,8 +89,7 @@ public class Demo extends Activity {
 						System.out.println("11111");
 						//t.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
 						//t.width.is(800);
-						t.labelLargeNormal();
-						
+						t.labelStyleLargeNormal();
 					}
 				}))//
 				.child(new Knob(this)//
@@ -102,8 +107,10 @@ public class Demo extends Activity {
 						//t.width.is(700);
 					}
 				}))//
-				;
+				.child(new Picture(this)//
+				.bitmap.is(BitmapFactory.decodeStream(getResources().openRawResource(R.drawable.rocket)))
+				.left.is(400)//
+				);
 		setContentView(view);
-		
 	}
 }

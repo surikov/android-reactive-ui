@@ -17,18 +17,18 @@ import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
 
-public class Fit extends TextView {
-	public NoteProperty<Fit> labelText = new NoteProperty<Fit>(this);
-	public NumericProperty<Fit> width = new NumericProperty<Fit>(this);
-	public NumericProperty<Fit> height = new NumericProperty<Fit>(this);
-	public NumericProperty<Fit> left = new NumericProperty<Fit>(this);
-	public NumericProperty<Fit> top = new NumericProperty<Fit>(this);
+public class Decor extends TextView {
+	public NoteProperty<Decor> labelText = new NoteProperty<Decor>(this);
+	public NumericProperty<Decor> width = new NumericProperty<Decor>(this);
+	public NumericProperty<Decor> height = new NumericProperty<Decor>(this);
+	public NumericProperty<Decor> left = new NumericProperty<Decor>(this);
+	public NumericProperty<Decor> top = new NumericProperty<Decor>(this);
 	//public NumericProperty<Fit> gravity = new NumericProperty<Fit>(this); //android.view.Gravity.CENTER
-	public NumericProperty<Fit> labelColor = new NumericProperty<Fit>(this);
-	public NumericProperty<Fit> background = new NumericProperty<Fit>(this);
+	public NumericProperty<Decor> labelColor = new NumericProperty<Decor>(this);
+	public NumericProperty<Decor> background = new NumericProperty<Decor>(this);
 	//public NumericProperty<Fit> textAppearance = new NumericProperty<Fit>(this); //android.R.style.TextAppearance_Small_Inverse
-	public ItProperty<Fit, Typeface> labelFace = new ItProperty<Fit, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
-	public NumericProperty<Fit> labelSize = new NumericProperty<Fit>(this);
+	public ItProperty<Decor, Typeface> labelFace = new ItProperty<Decor, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
+	public NumericProperty<Decor> labelSize = new NumericProperty<Decor>(this);
 	//public ItProperty<Fit, Task> afterDrag = new ItProperty<Fit, Task>(this);
 	Vector<Sketch> sketches = new Vector<Sketch>();
 	Context context;
@@ -41,7 +41,7 @@ public class Fit extends TextView {
 					, height.property.value().intValue());
 			params.leftMargin = left.property.value().intValue();
 			params.topMargin = top.property.value().intValue();
-			Fit.this.setLayoutParams(params);
+			Decor.this.setLayoutParams(params);
 		}
 	};
 	Task postInvalidate = new Task() {
@@ -51,89 +51,89 @@ public class Fit extends TextView {
 		}
 	};
 
-	public Fit labelLeftTop() {
+	public Decor labelAlignLeftTop() {
 		setGravity(android.view.Gravity.LEFT | android.view.Gravity.TOP);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelLeftCenter() {
+	public Decor labelAlignLeftCenter() {
 		setGravity(android.view.Gravity.LEFT | android.view.Gravity.CENTER_VERTICAL);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelLeftBottom() {
+	public Decor labelAlignLeftBottom() {
 		setGravity(android.view.Gravity.LEFT | android.view.Gravity.BOTTOM);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelRightTop() {
+	public Decor labelAlignRightTop() {
 		setGravity(android.view.Gravity.RIGHT | android.view.Gravity.TOP);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelRightCenter() {
+	public Decor labelAlignRightCenter() {
 		setGravity(android.view.Gravity.RIGHT | android.view.Gravity.CENTER_VERTICAL);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelRightBottom() {
+	public Decor labelAlignRightBottom() {
 		setGravity(android.view.Gravity.RIGHT | android.view.Gravity.BOTTOM);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelCenterTop() {
+	public Decor labelAlignCenterTop() {
 		setGravity(android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.TOP);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelCenterCenter() {
+	public Decor labelAlignCenterCenter() {
 		setGravity(android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.CENTER_VERTICAL);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelCenterBottom() {
+	public Decor labelAlignCenterBottom() {
 		setGravity(android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.BOTTOM);
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	public Fit labelSmallNormal() {
+	public Decor labelStyleSmallNormal() {
 		setTextAppearance(context, android.R.style.TextAppearance_Small);
 		return this;
 	}
-	public Fit labelMediumNormal() {
+	public Decor labelStyleMediumNormal() {
 		setTextAppearance(context, android.R.style.TextAppearance_Medium);
 		return this;
 	}
-	public Fit labelLargeNormal() {
+	public Decor labelStyleLargeNormal() {
 		setTextAppearance(context, android.R.style.TextAppearance_Large);
 		return this;
 	}
 	
 	
-	public Fit labelSmallInverse() {
+	public Decor labelStyleSmallInverse() {
 		setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
 		return this;
 	}
-	public Fit labelMediumInverse() {
+	public Decor labelStyleMediumInverse() {
 		setTextAppearance(context, android.R.style.TextAppearance_Medium_Inverse);
 		return this;
 	}
-	public Fit labelLargeInverse() {
+	public Decor labelStyleLargeInverse() {
 		setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
 		return this;
 	}
 	
 	
 	
-	public Fit(Context context) {
+	public Decor(Context context) {
 		super(context);
 		init(context);
 	}
-	public Fit(Context context, AttributeSet attrs) {
+	public Decor(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(context);
 	}
-	public Fit(Context context, AttributeSet attrs, int defStyle) {
+	public Decor(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init(context);
 	}
@@ -216,7 +216,7 @@ public class Fit extends TextView {
 		//labelSize.property.afterChange(reLayout);
 		//this.setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
 	}
-	public Fit sketch(Sketch f) {
+	public Decor sketch(Sketch f) {
 		this.sketches.add(f);
 		f.forUpdate = this;
 		this.postInvalidate();
