@@ -8,12 +8,16 @@ import android.graphics.Shader;
 import tee.binding.properties.*;
 import tee.binding.task.Task;
 
-public class Plate extends Sketch {
-	public NumericProperty<Plate> width = new NumericProperty<Plate>(this);
-	public NumericProperty<Plate> height = new NumericProperty<Plate>(this);
-	public NumericProperty<Plate> left = new NumericProperty<Plate>(this);
-	public NumericProperty<Plate> top = new NumericProperty<Plate>(this);
-	public NumericProperty<Plate> background = new NumericProperty<Plate>(this);
+public class SketchFill extends Sketch {
+	public NumericProperty<SketchFill> width = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> height = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> left = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> top = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> background = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> strokeColor = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> strokeWidth = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> arcX = new NumericProperty<SketchFill>(this);
+	public NumericProperty<SketchFill> arcY = new NumericProperty<SketchFill>(this);
 	Paint paint = new Paint();
 	protected Task postInvalidate = new Task() {
 		@Override
@@ -38,7 +42,7 @@ private void resetPaint() {
 	}
 
 */
-	public Plate() {
+	public SketchFill() {
 		width.is(100);
 		height.is(100);
 		left.is(0);

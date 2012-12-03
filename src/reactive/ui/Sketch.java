@@ -14,7 +14,7 @@ import tee.binding.it.*;
 
 abstract public class Sketch {
 	//Vector<Sketch> figures = new Vector<Sketch>();
-	public Fit forUpdate;
+	public Decor forUpdate;
 	abstract public void draw(Canvas canvas);/* {
 		int w = 100;
 		int h = 100;
