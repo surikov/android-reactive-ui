@@ -36,6 +36,13 @@ public class Demo extends Activity {
 		int normH = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
 		int inv = colorTest.labelStyleLargeInverse().getCurrentTextColor();
 		int invH = colorTest.labelStyleLargeInverse().getCurrentHintTextColor();
+		Paint paint=new Paint();
+		paint.setColor(Color.YELLOW);
+		paint.setAntiAlias(true);
+		paint.setShader(new LinearGradient(150, 150, 150+50, 150+120//
+				, Color.MAGENTA//
+				, Color.CYAN//
+				, Shader.TileMode.MIRROR));
 		view//
 		.width.is(screenWidth).height.is(screenHeight)//
 		.innerWidth.is(2000).innerHeight.is(1000)//
@@ -75,7 +82,7 @@ public class Demo extends Activity {
 						.sketch(new SketchFill()//
 						.left.is(150).top.is(10).width.is(50).height.is(120).background.is(normH))//
 						.sketch(new SketchFill()//
-						.left.is(150).top.is(150).width.is(50).height.is(120).background.is(invH))//
+						.left.is(150).top.is(150).width.is(50).height.is(120).paint.is(paint).arcX.is(25).arcY.is(25))//
 				)//
 				.child(new Knob(this)//
 				.labelText.is("botright")//
@@ -101,15 +108,24 @@ public class Demo extends Activity {
 				.tap.is(new Task() {
 					@Override
 					public void doTask() {
-						System.out.println("lt");
+						System.out.println("222");
 						//t.setGravity(Gravity.LEFT|Gravity.TOP);
 						//t.labelText.is("qwdqfqefqewfewqf Very long string for testing purpose only. То-сё на русском.");
 						//t.width.is(700);
+						//File file = new File("/sdcard/horeca/Report-157944867.htm");
+						Intent intent = new Intent();
+						intent.setAction(android.content.Intent.ACTION_VIEW);
+						intent.setDataAndType(android.net.Uri.fromFile(new File("/sdcard/horeca/Report-157944867.htm")),"text/html");
+						//intent.setData(android.net.Uri.fromFile(file));
+						//System.out.println(android.net.Uri.fromFile(file));
+						//intent.setType("text/html");
+						//startActivity(intent);
+						Intent ch = Intent.createChooser(intent, "Выбор");
+						startActivity(ch);
 					}
 				}))//
 				.child(new Picture(this)//
-				.bitmap.is(BitmapFactory.decodeStream(getResources().openRawResource(R.drawable.rocket)))
-				.left.is(400)//
+				.bitmap.is(BitmapFactory.decodeStream(getResources().openRawResource(R.drawable.rocket))).left.is(400)//
 				);
 		setContentView(view);
 	}
