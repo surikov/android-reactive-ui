@@ -71,32 +71,32 @@ public class Demo extends Activity {
 				.afterTap.is(new Task() {
 					@Override
 					public void doTask() {
-						System.out.println("tap decor");
+						//System.out.println("tap decor");
 					}
 				})//
 				.afterShift.is(new Task() {
 					@Override
 					public void doTask() {
-						System.out.println("shift decor");
+						//System.out.println("shift decor");
 					}
 				})//
 				)//
 		.afterTap.is(new Task() {
 			@Override
 			public void doTask() {
-				System.out.println("tap view " + view.tapX.property.value() + "x" + view.tapY.property.value());
+				//System.out.println("tap view " + view.tapX.property.value() + "x" + view.tapY.property.value());
 			}
 		})//
 		.afterShift.is(new Task() {
 			@Override
 			public void doTask() {
-				System.out.println("shift view " + view.shiftX.property.value() + "x" + view.shiftY.property.value());
+				//System.out.println("shift view " + view.shiftX.property.value() + "x" + view.shiftY.property.value());
 			}
 		})//
 		.afterZoom.is(new Task() {
 			@Override
 			public void doTask() {
-				System.out.println("zoom view " + view.zoom.property.value());
+				//System.out.println("zoom view " + view.zoom.property.value());
 			}
 		})//
 		.child(new Decor(this)//
@@ -110,7 +110,7 @@ public class Demo extends Activity {
 				.afterTap.is(new Task() {
 					@Override
 					public void doTask() {
-						System.out.println("tap green");
+						//System.out.println("tap green");
 					}
 				})//
 				);//
