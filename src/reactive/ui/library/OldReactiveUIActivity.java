@@ -9,7 +9,7 @@ import android.content.DialogInterface;
 import android.os.*;
 import java.io.*;
 
-public class ReactiveUIActivity extends Activity {
+public class OldReactiveUIActivity extends Activity {
 	LayoutlessView layoutlessView;
 
 	//WhiteBoard grid;

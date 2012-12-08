@@ -24,109 +24,125 @@ public class Demo extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		final Numeric screenWidth = new Numeric();
-		final Numeric screenHeight = new Numeric();
-		final Numeric shiftX = new Numeric();
-		final Numeric shiftY = new Numeric();
-		final Numeric zoom = new Numeric().value(1);
 		view = new Layoutless(this);
-		final Decor t = new Decor(this);
-		Decor colorTest = new Decor(this);
-		int norm = colorTest.labelStyleLargeNormal().getCurrentTextColor();
-		int normH = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-		int inv = colorTest.labelStyleLargeInverse().getCurrentTextColor();
-		int invH = colorTest.labelStyleLargeInverse().getCurrentHintTextColor();
-		Paint paint=new Paint();
-		paint.setColor(Color.YELLOW);
-		paint.setAntiAlias(true);
-		paint.setShader(new LinearGradient(150, 150, 150+50, 150+120//
-				, Color.MAGENTA//
-				, Color.CYAN//
-				, Shader.TileMode.MIRROR));
+		Bitmap b = Bitmap.createScaledBitmap(//
+				BitmapFactory.decodeResource(getResources(), R.drawable.rocket)//
+				, 200, 100//
+				, true//
+				);
 		view//
-		.width.is(screenWidth).height.is(screenHeight)//
-		.innerWidth.is(2000).innerHeight.is(1000)//
-		.shiftX.is(shiftX).shiftY.is(shiftY)//
-		.maxZoom.is(3).zoom.is(zoom)
+		.maxZoom.is(3).zoom.is(view.zoom.property).innerHeight.is(1000).innerWidth.is(1500)
 		//
 				.child(new Decor(this)//
 				.labelText.is("Very long string for testing purpose only.")//
-				.left.is(shiftX)//
-				.top.is(shiftY)//
-				.width.is(240)//
-				.height.is(100)//
+						.labelStyleLargeNormal()//
+						.left.is(view.shiftX.property.plus(100))//
+				.top.is(view.shiftY.property)//
+				.width.is(view.zoom.property.multiply(50).plus(540))//
+				.height.is(view.zoom.property.multiply(50).plus(400))//
+				//.left.is(100)
 				//.gravity.is(Gravity.CENTER)//
+				.bitmap.is(b)//
 				.background.is(Color.RED)//
-				//.foreground.is(Color.YELLOW)//
-				//.textAppearance.is(android.R.style.TextAppearance_Large)//
-				//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/deftone.ttf"))//
-				)//
-				.child(t//
-				.labelText.is("Very long string for testing purpose only. То-сё на русском.")//
-				.left.is(0)//
-				.top.is(100)//
-				.width.is(700)//
-				.height.is(500)//
-						.labelAlignCenterBottom()
-				//.gravity.is(Gravity.CENTER)//
-				.background.is(0xff003366)//
-						//.labelSize.is(zoom.multiply(20).plus(20))
-						//.la
 						//.foreground.is(Color.YELLOW)//
 						//.textAppearance.is(android.R.style.TextAppearance_Large)//
-						//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/Rurintania.ttf"))//
-						.sketch(new SketchFill()//
-						.left.is(50).top.is(10).width.is(50).height.is(120).background.is(norm))//
-						.sketch(new SketchFill()//
-						.left.is(50).top.is(150).width.is(50).height.is(120).background.is(inv))//
-						.sketch(new SketchFill()//
-						.left.is(150).top.is(10).width.is(50).height.is(120).background.is(normH))//
-						.sketch(new SketchFill()//
-						.left.is(150).top.is(150).width.is(50).height.is(120).paint.is(paint).arcX.is(25).arcY.is(25))//
+						//.labelFace.is(Typeface.createFromAsset(getAssets(), "fonts/deftone.ttf"))//
+						.sketch(new SketchPlate()//
+						//.strokeWidth.is(5)//
+						.background.is(0x6600ffff)//
+						//.strokeColor.is(0xff00ff00)//
+						.width.is(250)//
+						.height.is(350)//
+						.top.is(10)//
+						.left.is(30)//
+						)//
+						.sketch(new SketchContour()//
+						.strokeWidth.is(1)//
+						//.background.is(0x6600ffff)//
+						.strokeColor.is(0xff00ff00)//
+						.width.is(250)//
+						.height.is(150)//
+						.top.is(10)//
+						.left.is(30)//
+						.arcX.is(48)//
+						.arcY.is(48)//
+						)//
+				
+				.afterTap.is(new Task() {
+					@Override
+					public void doTask() {
+						System.out.println("tap decor");
+					}
+				})//
+				.afterShift.is(new Task() {
+					@Override
+					public void doTask() {
+						System.out.println("shift decor");
+					}
+				})//
 				)//
-				.child(new Knob(this)//
-				.labelText.is("botright")//
-				.left.is(300)//
-				.top.is(50)//
-				.height.is(50)//
-				.width.is(100)//
-				.tap.is(new Task() {
-					@Override
-					public void doTask() {
-						System.out.println("11111");
-						//t.setGravity(Gravity.RIGHT|Gravity.BOTTOM);
-						//t.width.is(800);
-						t.labelStyleLargeNormal();
-					}
-				}))//
-				.child(new Knob(this)//
-				.labelText.is("22222")//
-				.left.is(500)//
-				.top.is(50)//
-				.height.is(50)//
-				.width.is(100)//
-				.tap.is(new Task() {
-					@Override
-					public void doTask() {
-						System.out.println("222");
-						//t.setGravity(Gravity.LEFT|Gravity.TOP);
-						//t.labelText.is("qwdqfqefqewfewqf Very long string for testing purpose only. То-сё на русском.");
-						//t.width.is(700);
-						//File file = new File("/sdcard/horeca/Report-157944867.htm");
-						Intent intent = new Intent();
-						intent.setAction(android.content.Intent.ACTION_VIEW);
-						intent.setDataAndType(android.net.Uri.fromFile(new File("/sdcard/horeca/Report-157944867.htm")),"text/html");
-						//intent.setData(android.net.Uri.fromFile(file));
-						//System.out.println(android.net.Uri.fromFile(file));
-						//intent.setType("text/html");
-						//startActivity(intent);
-						Intent ch = Intent.createChooser(intent, "Выбор");
-						startActivity(ch);
-					}
-				}))//
-				.child(new Picture(this)//
-				.bitmap.is(BitmapFactory.decodeStream(getResources().openRawResource(R.drawable.rocket))).left.is(400)//
-				);
+		.afterTap.is(new Task() {
+			@Override
+			public void doTask() {
+				System.out.println("tap view " + view.tapX.property.value() + "x" + view.tapY.property.value());
+			}
+		})//
+		.afterShift.is(new Task() {
+			@Override
+			public void doTask() {
+				System.out.println("shift view " + view.shiftX.property.value() + "x" + view.shiftY.property.value());
+			}
+		})//
+		.afterZoom.is(new Task() {
+			@Override
+			public void doTask() {
+				System.out.println("zoom view " + view.zoom.property.value());
+			}
+		})//
+		.child(new Decor(this)//
+				.top.is(view.shiftY.property.plus(200))//
+				.left.is(view.shiftX.property.plus(400))//
+				.width.is(view.zoom.property.multiply(50).plus(140))//
+				.height.is(view.zoom.property.multiply(50).plus(100))//
+				.background.is(0xff00ff66)
+				.active.is(true)//
+				);//
+		;
 		setContentView(view);
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add("First");
+		menu.add("Second");
+		menu.add("Third");
+		MenuItem mi = menu.add("item4");
+		SubMenu sm = menu.addSubMenu("Sub...");
+		sm.add("subitem 1");
+		sm.add("subitem 2");
+		SubMenu sm2 = sm.addSubMenu("another submenu...");
+		sm2.add("another subitem");
+		menu.add("item5");
+		menu.add("item6");
+		menu.add("item7");
+		menu.add("item8");
+		menu.add("item9");
+		menu.add("item10");
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		System.out.println("onOptionsItemSelected " + item.getTitle());
+		// Handle item selection
+		/* switch (item.getItemId()) {
+		     case R.id.new_game:
+		         newGame();
+		         return true;
+		     case R.id.help:
+		         showHelp();
+		         return true;
+		     default:
+		         return super.onOptionsItemSelected(item);
+		 }*/
+		return false;
 	}
 }
