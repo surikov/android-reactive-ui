@@ -15,6 +15,14 @@ import tee.binding.it.*;
 abstract public class Sketch {
 	//Vector<Sketch> figures = new Vector<Sketch>();
 	public Decor forUpdate;
+	public Task postInvalidate = new Task() {
+		@Override
+		public void doTask() {
+			if (forUpdate != null) {
+				forUpdate.postInvalidate();
+			}
+		}
+	};	
 	abstract public void draw(Canvas canvas);/* {
 		int w = 100;
 		int h = 100;

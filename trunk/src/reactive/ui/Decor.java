@@ -11,6 +11,7 @@ import android.graphics.*;
 import tee.binding.properties.*;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.*;
 import tee.binding.task.*;
@@ -18,6 +19,15 @@ import tee.binding.it.*;
 import android.text.*;
 
 public class Decor extends TextView {
+	private int mode = Layoutless.NONE;
+	private float startEventX = 0;
+	private float startEventY = 0;
+	private float initialShiftX = 0;
+	private float initialShiftY = 0;
+	private float initialSpacing;
+	private float currentSpacing;
+	public NumericProperty<Decor> shiftX = new NumericProperty<Decor>(this);
+	public NumericProperty<Decor> shiftY = new NumericProperty<Decor>(this);
 	public NoteProperty<Decor> labelText = new NoteProperty<Decor>(this);
 	public NumericProperty<Decor> width = new NumericProperty<Decor>(this);
 	public NumericProperty<Decor> height = new NumericProperty<Decor>(this);
@@ -29,9 +39,14 @@ public class Decor extends TextView {
 	//public NumericProperty<Fit> textAppearance = new NumericProperty<Fit>(this); //android.R.style.TextAppearance_Small_Inverse
 	public ItProperty<Decor, Typeface> labelFace = new ItProperty<Decor, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
 	public NumericProperty<Decor> labelSize = new NumericProperty<Decor>(this);
+	public ToggleProperty<Decor> active = new ToggleProperty<Decor>(this);
 	//public ItProperty<Fit, Task> afterDrag = new ItProperty<Fit, Task>(this);
+	public ItProperty<Decor, Bitmap> bitmap = new ItProperty<Decor, Bitmap>(this);
+	public ItProperty<Decor, Task> afterTap = new ItProperty<Decor, Task>(this);
+	public ItProperty<Decor, Task> afterShift = new ItProperty<Decor, Task>(this);
 	Vector<Sketch> sketches = new Vector<Sketch>();
 	Context context;
+	Paint paint = new Paint();
 	boolean initialized = false;
 	Task reFit = new Task() {
 		@Override
@@ -39,9 +54,10 @@ public class Decor extends TextView {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
 					width.property.value().intValue()//
 					, height.property.value().intValue());
-			params.leftMargin = left.property.value().intValue();
-			params.topMargin = top.property.value().intValue();
+			params.leftMargin = (int) (left.property.value() + shiftX.property.value());
+			params.topMargin = (int) (top.property.value()+shiftY.property.value());
 			Decor.this.setLayoutParams(params);
+			//System.out.println("reFit " + shiftX.property.value() + "x" + shiftY.property.value());
 		}
 	};
 	Task postInvalidate = new Task() {
@@ -108,8 +124,6 @@ public class Decor extends TextView {
 		setTextAppearance(context, android.R.style.TextAppearance_Large);
 		return this;
 	}
-	
-	
 	public Decor labelStyleSmallInverse() {
 		setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
 		return this;
@@ -122,9 +136,6 @@ public class Decor extends TextView {
 		setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
 		return this;
 	}
-	
-	
-	
 	public Decor(Context context) {
 		super(context);
 		init(context);
@@ -137,12 +148,15 @@ public class Decor extends TextView {
 		super(context, attrs, defStyle);
 		init(context);
 	}
-	
 	void init(Context c) {
 		if (initialized)
 			return;
 		initialized = true;
 		this.context = c;
+		paint.setColor(0xff000000);
+		paint.setAntiAlias(true);
+		paint.setFilterBitmap(true);
+		paint.setDither(true);
 		//final float density = context.getResources().getDisplayMetrics().density;
 		/*textAppearance.property.afterChange(new Task() {
 			@Override
@@ -213,6 +227,8 @@ public class Decor extends TextView {
 		height.property.afterChange(reFit).value(100);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
+		shiftY.property.afterChange(reFit);
+		shiftX.property.afterChange(reFit);
 		//labelSize.property.afterChange(reLayout);
 		//this.setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
 	}
@@ -234,8 +250,106 @@ public class Decor extends TextView {
 		this.sketches.removeAllElements();
 		this.postInvalidate();
 	}
+	void setShift(float x, float y) {
+		//System.out.println("start setShift " + x + "x" + y);
+		double newShiftX = shiftX.property.value() + x -startEventX;
+		double newShiftY = shiftY.property.value() + y - startEventY;
+		/*if (innerWidth.property.value() > width.property.value()) {
+			if (newShiftX < width.property.value() - innerWidth.property.value()) {
+				newShiftX = width.property.value() - innerWidth.property.value();
+			}
+		}
+		else {
+			newShiftX = 0;
+		}
+		if (innerHeight.property.value() > height.property.value()) {
+			if (newShiftY < height.property.value() - innerHeight.property.value()) {
+				newShiftY = height.property.value() - innerHeight.property.value();
+			}
+		}
+		else {
+			newShiftY = 0;
+		}
+		if (newShiftX > 0) {
+			newShiftX = 0;
+		}
+		if (newShiftY > 0) {
+			newShiftY = 0;
+		}*/
+		//System.out.println("result setShift " + newShiftX + "x" + newShiftY);
+		shiftX.property.value(newShiftX);
+		shiftY.property.value(newShiftY);
+		//reFit.start();
+	}
+	void finishDrag(float x, float y) {
+		setShift(x, y);
+		if (Math.abs(initialShiftX - shiftX.property.value()) < Layoutless.tapDiff// 
+				&& Math.abs(initialShiftY - shiftY.property.value()) < Layoutless.tapDiff) {
+			finishTap(x, y);
+		}
+		else {
+			if (afterShift.property.value() != null) {
+				afterShift.property.value().start();
+			}
+		}
+		mode = Layoutless.NONE;
+	}
+	void finishTap(float x, float y) {
+		shiftX.property.value((double) initialShiftX);
+		shiftY.property.value((double) initialShiftY);
+		//tapX.property.value((double) x);
+		//tapY.property.value((double) y);
+		if (afterTap.property.value() != null) {
+			afterTap.property.value().start();
+		}
+	}
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (!active.property.value()) {
+			return false;
+		}
+		
+		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+			//System.out.println("startDrag "+event.getX()+"x"+ event.getY());
+			initialShiftX = shiftX.property.value().floatValue();
+			initialShiftY = shiftY.property.value().floatValue();
+			startEventX = event.getX();
+			startEventY = event.getY();
+			mode = Layoutless.DRAG;
+		}
+		else {
+			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
+				//System.out.println("proceedDrag");
+				setShift(event.getX(), event.getY());
+				//lastEventX = event.getX();
+				//lastEventY = event.getY();
+			}
+			else {
+				if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+					if (mode == Layoutless.DRAG) {
+						//System.out.println("finishDrag");
+						finishDrag(event.getX(), event.getY());
+					}
+					else {
+						//
+					}
+				}
+				else {
+					//System.out.println("not ACTION_UP");
+				}
+			}
+		}
+		return true;
+	}
+	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		if (bitmap.property.value() != null) {
+			canvas.drawBitmap(bitmap.property.value()//
+					, 0//
+					, 0//
+					, paint);
+		}
 		for (int i = 0; i < sketches.size(); i++) {
 			sketches.get(i).draw(canvas);
 		}
