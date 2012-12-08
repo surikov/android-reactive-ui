@@ -144,7 +144,7 @@ public class Layoutless extends RelativeLayout {
 	void setShift(float x, float y) {
 		double newShiftX = shiftX.property.value() + x - lastEventX;
 		double newShiftY = shiftY.property.value() + y - lastEventY;
-		if (innerWidth.property.value() > width.property.value()) {
+		/*if (innerWidth.property.value() > width.property.value()) {
 			if (newShiftX < width.property.value() - innerWidth.property.value()) {
 				newShiftX = width.property.value() - innerWidth.property.value();
 			}
@@ -165,7 +165,7 @@ public class Layoutless extends RelativeLayout {
 		}
 		if (newShiftY > 0) {
 			newShiftY = 0;
-		}
+		}*/
 		shiftX.property.value(newShiftX);
 		shiftY.property.value(newShiftY);
 	}
@@ -176,6 +176,32 @@ public class Layoutless extends RelativeLayout {
 			finishTap(x, y);
 		}
 		else {
+			double newShiftX = shiftX.property.value();
+			double newShiftY = shiftY.property.value() ;
+			if (innerWidth.property.value() > width.property.value()) {
+				if (newShiftX < width.property.value() - innerWidth.property.value()) {
+					newShiftX = width.property.value() - innerWidth.property.value();
+				}
+			}
+			else {
+				newShiftX = 0;
+			}
+			if (innerHeight.property.value() > height.property.value()) {
+				if (newShiftY < height.property.value() - innerHeight.property.value()) {
+					newShiftY = height.property.value() - innerHeight.property.value();
+				}
+			}
+			else {
+				newShiftY = 0;
+			}
+			if (newShiftX > 0) {
+				newShiftX = 0;
+			}
+			if (newShiftY > 0) {
+				newShiftY = 0;
+			}
+			shiftX.property.value(newShiftX);
+			shiftY.property.value(newShiftY);
 			if (afterShift.property.value() != null) {
 				afterShift.property.value().start();
 			}

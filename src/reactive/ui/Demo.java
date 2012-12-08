@@ -106,6 +106,13 @@ public class Demo extends Activity {
 				.height.is(view.zoom.property.multiply(50).plus(100))//
 				.background.is(0xff00ff66)
 				.active.is(true)//
+				.movable.is(true)//
+				.afterTap.is(new Task() {
+					@Override
+					public void doTask() {
+						System.out.println("tap green");
+					}
+				})//
 				);//
 		;
 		setContentView(view);

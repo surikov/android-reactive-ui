@@ -40,7 +40,13 @@ public class Decor extends TextView {
 	public ItProperty<Decor, Typeface> labelFace = new ItProperty<Decor, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
 	public NumericProperty<Decor> labelSize = new NumericProperty<Decor>(this);
 	public ToggleProperty<Decor> active = new ToggleProperty<Decor>(this);
+	public ToggleProperty<Decor> movable = new ToggleProperty<Decor>(this);
 	//public ItProperty<Fit, Task> afterDrag = new ItProperty<Fit, Task>(this);
+	/*Bitmap b = Bitmap.createScaledBitmap(//
+			BitmapFactory.decodeResource(getResources(), R.drawable.rocket)//
+			, 200, 100//
+			, true//
+			);*/
 	public ItProperty<Decor, Bitmap> bitmap = new ItProperty<Decor, Bitmap>(this);
 	public ItProperty<Decor, Task> afterTap = new ItProperty<Decor, Task>(this);
 	public ItProperty<Decor, Task> afterShift = new ItProperty<Decor, Task>(this);
@@ -55,7 +61,7 @@ public class Decor extends TextView {
 					width.property.value().intValue()//
 					, height.property.value().intValue());
 			params.leftMargin = (int) (left.property.value() + shiftX.property.value());
-			params.topMargin = (int) (top.property.value()+shiftY.property.value());
+			params.topMargin = (int) (top.property.value() + shiftY.property.value());
 			Decor.this.setLayoutParams(params);
 			//System.out.println("reFit " + shiftX.property.value() + "x" + shiftY.property.value());
 		}
@@ -251,8 +257,9 @@ public class Decor extends TextView {
 		this.postInvalidate();
 	}
 	void setShift(float x, float y) {
+		if (movable.property.value()) {
 		//System.out.println("start setShift " + x + "x" + y);
-		double newShiftX = shiftX.property.value() + x -startEventX;
+		double newShiftX = shiftX.property.value() + x - startEventX;
 		double newShiftY = shiftY.property.value() + y - startEventY;
 		/*if (innerWidth.property.value() > width.property.value()) {
 			if (newShiftX < width.property.value() - innerWidth.property.value()) {
@@ -280,6 +287,7 @@ public class Decor extends TextView {
 		shiftX.property.value(newShiftX);
 		shiftY.property.value(newShiftY);
 		//reFit.start();
+		}
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
@@ -288,8 +296,10 @@ public class Decor extends TextView {
 			finishTap(x, y);
 		}
 		else {
-			if (afterShift.property.value() != null) {
-				afterShift.property.value().start();
+			if (movable.property.value()) {
+				if (afterShift.property.value() != null) {
+					afterShift.property.value().start();
+				}
 			}
 		}
 		mode = Layoutless.NONE;
@@ -299,17 +309,19 @@ public class Decor extends TextView {
 		shiftY.property.value((double) initialShiftY);
 		//tapX.property.value((double) x);
 		//tapY.property.value((double) y);
-		if (afterTap.property.value() != null) {
-			afterTap.property.value().start();
+		if (active.property.value()) {
+			if (afterTap.property.value() != null) {
+				afterTap.property.value().start();
+			}
 		}
 	}
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (!active.property.value()) {
+		if (!(active.property.value() || movable.property.value())) {
 			return false;
 		}
-		
-		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN //
+				&& (active.property.value() || movable.property.value())) {
 			//System.out.println("startDrag "+event.getX()+"x"+ event.getY());
 			initialShiftX = shiftX.property.value().floatValue();
 			initialShiftY = shiftY.property.value().floatValue();
@@ -318,7 +330,8 @@ public class Decor extends TextView {
 			mode = Layoutless.DRAG;
 		}
 		else {
-			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
+			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE //
+					&& (active.property.value() || movable.property.value())) {
 				//System.out.println("proceedDrag");
 				setShift(event.getX(), event.getY());
 				//lastEventX = event.getX();
@@ -329,6 +342,7 @@ public class Decor extends TextView {
 					if (mode == Layoutless.DRAG) {
 						//System.out.println("finishDrag");
 						finishDrag(event.getX(), event.getY());
+						//System.out.println("done finishDrag");
 					}
 					else {
 						//
