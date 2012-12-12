@@ -24,6 +24,7 @@ public class Demo extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		System.out.println("go----------------------------------");
 		view = new Layoutless(this);
 		Bitmap b = Bitmap.createScaledBitmap(//
 				BitmapFactory.decodeResource(getResources(), R.drawable.rocket)//
@@ -36,7 +37,7 @@ public class Demo extends Activity {
 				.child(new Decor(this)//
 				.labelText.is("Very long string for testing purpose only.")//
 						.labelStyleLargeNormal()//
-						.left.is(view.shiftX.property.plus(100))//
+				.left.is(view.shiftX.property.plus(100))//
 				.top.is(view.shiftY.property)//
 				.width.is(view.zoom.property.multiply(50).plus(540))//
 				.height.is(view.zoom.property.multiply(50).plus(400))//
@@ -67,13 +68,12 @@ public class Demo extends Activity {
 						.arcX.is(48)//
 						.arcY.is(48)//
 						)//
-				
-				.afterTap.is(new Task() {
+				/*.afterTap.is(new Task() {
 					@Override
 					public void doTask() {
 						//System.out.println("tap decor");
 					}
-				})//
+				})*/
 				.afterShift.is(new Task() {
 					@Override
 					public void doTask() {
@@ -99,22 +99,42 @@ public class Demo extends Activity {
 				//System.out.println("zoom view " + view.zoom.property.value());
 			}
 		})//
-		.child(new Decor(this)//
+				.child(new Decor(this)//
 				.top.is(view.shiftY.property.plus(200))//
 				.left.is(view.shiftX.property.plus(400))//
 				.width.is(view.zoom.property.multiply(50).plus(140))//
 				.height.is(view.zoom.property.multiply(50).plus(100))//
 				.background.is(0xff00ff66)
-				.active.is(true)//
-				.movable.is(true)//
-				.afterTap.is(new Task() {
+				//.active.is(true)//
+				.movableX.is(true)//
+				.movableY.is(true)//
+				/*.afterTap.is(new Task() {
 					@Override
 					public void doTask() {
-						//System.out.println("tap green");
+						System.out.println("tap green");
 					}
-				})//
-				);//
-		;
+				})*/
+				)//
+				.child(new Decor(this)//
+				.top.is(view.shiftY.property.plus(250))//
+				.left.is(view.shiftX.property.plus(350))//
+				.width.is(view.zoom.property.multiply(50).plus(140))//
+				.height.is(view.zoom.property.multiply(50).plus(100))//
+				.background.is(0xff3300ff)
+				//.active.is(true)//
+				.movableY.is(true)//
+				/*.afterTap.is(new Task() {
+					@Override
+					public void doTask() {
+						System.out.println("tap green");
+					}
+				})*/
+				)//
+				.child(new SplitLeftRight(this)//
+				.width.is(view.width.property)
+				.height.is(view.height.property)
+				)//
+				;
 		setContentView(view);
 	}
 	@Override
