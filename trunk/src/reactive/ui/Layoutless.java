@@ -20,7 +20,7 @@ import java.text.*;
 
 public class Layoutless extends RelativeLayout {
 	public static float density = 1;
-	public final  static double tapDiff = 8;
+	public static double tapSize = 8;
 	//private final static int UNKNOWN_ID = -123456789;
 	public final static int NONE = 0;
 	public final static int DRAG = 1;
@@ -49,10 +49,10 @@ public class Layoutless extends RelativeLayout {
 	public ItProperty<Layoutless, Task> afterZoom = new ItProperty<Layoutless, Task>(this);
 	//public ItProperty<Layoutless, Task> afterPress = new ItProperty<Layoutless, Task>(this);
 	//public NumericProperty<Layoutless> mode = new NumericProperty<Layoutless>(this);
-	
 	public static int foreColor = 0xff00ff00;
 	public static int blurColor = 0xffff0000;
 	public static int backColor = 0xff0000ff;
+	private boolean initialized = false;
 
 	void fillBaseColors() {
 		Decor colorTest = new Decor(this.getContext());
@@ -60,17 +60,24 @@ public class Layoutless extends RelativeLayout {
 		blurColor = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
 		backColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
 	}
+	private void init() {
+		if (!initialized) {
+			initialized = true;
+			density = this.getContext().getResources().getDisplayMetrics().density;
+			tapSize = 60.0 * density;
+		}
+	}
 	public Layoutless(Context context) {
 		super(context);
-		density = context.getResources().getDisplayMetrics().density;
+		init();
 	}
 	public Layoutless(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		density = context.getResources().getDisplayMetrics().density;
+		init();
 	}
 	public Layoutless(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		density = context.getResources().getDisplayMetrics().density;
+		init();
 	}
 	public Layoutless child(View v) {
 		this.addView(v);
@@ -79,6 +86,11 @@ public class Layoutless extends RelativeLayout {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		onMeasureX();
+	}
+	
+	protected void onMeasureX() {
+		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredHeight());
 		width.is(getMeasuredWidth());
 		height.is(getMeasuredHeight());
 	}
@@ -90,7 +102,7 @@ public class Layoutless extends RelativeLayout {
 			initialShiftY = shiftY.property.value().floatValue();
 			lastEventX = event.getX();
 			lastEventY = event.getY();
-			mode=DRAG;
+			mode = DRAG;
 		}
 		else {
 			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
@@ -103,7 +115,7 @@ public class Layoutless extends RelativeLayout {
 						//System.out.println("startZoom");
 						initialSpacing = spacing(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
 						currentSpacing = initialSpacing;
-						mode=ZOOM;
+						mode = ZOOM;
 					}
 				}
 				else {
@@ -171,13 +183,13 @@ public class Layoutless extends RelativeLayout {
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
-		if (Math.abs(initialShiftX - shiftX.property.value()) < tapDiff// 
-				&& Math.abs(initialShiftY - shiftY.property.value()) < tapDiff) {
+		if (Math.abs(initialShiftX - shiftX.property.value()) < 1 + 0.1 * tapSize// 
+				&& Math.abs(initialShiftY - shiftY.property.value()) < 1 + 0.1 * tapSize) {
 			finishTap(x, y);
 		}
 		else {
 			double newShiftX = shiftX.property.value();
-			double newShiftY = shiftY.property.value() ;
+			double newShiftY = shiftY.property.value();
 			if (innerWidth.property.value() > width.property.value()) {
 				if (newShiftX < width.property.value() - innerWidth.property.value()) {
 					newShiftX = width.property.value() - innerWidth.property.value();
@@ -206,7 +218,7 @@ public class Layoutless extends RelativeLayout {
 				afterShift.property.value().start();
 			}
 		}
-		mode=NONE;
+		mode = NONE;
 	}
 	void finishTap(float x, float y) {
 		shiftX.property.value((double) initialShiftX);
@@ -233,7 +245,6 @@ public class Layoutless extends RelativeLayout {
 		if (afterZoom.property.value() != null) {
 			afterZoom.property.value().start();
 		}
-		mode=NONE;
-		
+		mode = NONE;
 	}
 }
