@@ -19,42 +19,34 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class SplitLeftRight extends Layoutless {
-	private boolean initialized = false;
-	public NumericProperty<SplitLeftRight> split = new NumericProperty<SplitLeftRight>(this);
-	public NumericProperty<SplitLeftRight> left = new NumericProperty<SplitLeftRight>(this);
-	public NumericProperty<SplitLeftRight> top = new NumericProperty<SplitLeftRight>(this);
+public class SplitLeftRight extends SubLayoutless {
+	//private boolean initialized = false;
+	public NumericProperty<SplitLeftRight> split;
 
 	public SplitLeftRight(Context context) {
 		super(context);
-		init();
+		//init();
 	}
 	public SplitLeftRight(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init();
+		//init();
 	}
 	public SplitLeftRight(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init();
+		//init();
 	}
 	@Override
 	protected void onMeasureX() {
-		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredHeight());
-		//width.is(getMeasuredWidth());
-		//height.is(getMeasuredHeight());
+		//
 	}
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredHeight());
-		//width.is(getMeasuredWidth());
-		//height.is(getMeasuredHeight());
 	}
-
+/*
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
-			//System.out.
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
 					width.property.value().intValue()//
 					, height.property.value().intValue());
@@ -62,33 +54,27 @@ public class SplitLeftRight extends Layoutless {
 			params.topMargin = top.property.value().intValue();
 			SplitLeftRight.this.setLayoutParams(params);
 		}
-	};
+	};*/
 
-	private void init() {
-		if (!initialized) {
-			initialized = true;
-			//density = this.getContext().getResources().getDisplayMetrics().density;
-			//tapSize = 60.0 * density;
+	protected void init() {
+		super.init();
+		//if (!initialized) {
+			//initialized = true;
+		//System.out.println();
+		split = new NumericProperty<SplitLeftRight>(this);
+		//left = new NumericProperty<SplitLeftRight>(this);
+		//top = new NumericProperty<SplitLeftRight>(this);
 			this.child(new Knob(this.getContext())//
+			
 			.width.is(split.property.plus(0.5 * Layoutless.tapSize))//
 			.height.is(height.property)//
 			.labelText.is("Left")//
 			);
 			this.child(new Knob(this.getContext())//
 			.left.is(split.property.plus(0.5 * Layoutless.tapSize))//
-			.width.is(width.property.minus(split.property).minus(0.5 * Layoutless.tapSize))
-			.height.is(height.property)//
+			.width.is(width.property.minus(split.property).minus(0.5 * Layoutless.tapSize)).height.is(height.property)//
 			.labelText.is("Rigth")//
 			);
-			//final Numeric nn = new Numeric();
-			//nn.bind(height.property.divide(2).minus(0.5 * Layoutless.tapSize))
-			//.property.divide(2).minus(0.5 * Layoutless.tapSize)
-			/*.afterChange(new Task() {
-				@Override
-				public void doTask() {
-					System.out.println("nn: " + nn.value());
-				}
-			});*/
 			split.is(444);
 			this.child(new Decor(this.getContext())//
 			.left.is(split.property.plus(0.5 * Layoutless.tapSize))//
@@ -97,16 +83,12 @@ public class SplitLeftRight extends Layoutless {
 			.background.is(0xffffffff)//
 			);
 			this.child(new Decor(this.getContext())//
-			//.background.is(0xff00ffff)
 			.width.is(60 * Layoutless.density)//
 			.height.is(60 * Layoutless.density)//
 			.shiftX.is(split.property)//
 			.top.is(height.property.divide(2).minus(0.5 * Layoutless.tapSize))//
-			.movableX.is(true)
-			//.top.is(nn)//
-			//.background.is(0xff660066)//
+			.movableX.is(true)//
 					.sketch(new SketchPlate()//
-					//.left.is(split.property)
 					.width.is(Layoutless.tapSize)//
 					.height.is(Layoutless.tapSize)//
 					.arcX.is(0.5 * Layoutless.tapSize)//
@@ -157,6 +139,6 @@ public class SplitLeftRight extends Layoutless {
 					)//
 			)//
 			;
-		}
+		//}
 	}
 }
