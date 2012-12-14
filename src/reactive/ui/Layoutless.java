@@ -60,7 +60,7 @@ public class Layoutless extends RelativeLayout {
 		blurColor = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
 		backColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
 	}
-	private void init() {
+	protected void init() {
 		if (!initialized) {
 			initialized = true;
 			density = this.getContext().getResources().getDisplayMetrics().density;
