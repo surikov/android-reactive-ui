@@ -19,20 +19,9 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class SubLayoutless extends Layoutless {
-	public NumericProperty<SubLayoutless> left;
-	public NumericProperty<SubLayoutless> top;
-	Task reFit = new Task() {
-		@Override
-		public void doTask() {
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
-					width.property.value().intValue()//
-					, height.property.value().intValue());
-			params.leftMargin = left.property.value().intValue();
-			params.topMargin = top.property.value().intValue();
-			setLayoutParams(params);
-		}
-	};
+public class SubLayoutless extends Layoutless  {
+	
+
 	public SubLayoutless(Context context) {
 		super(context);
 	}
@@ -50,9 +39,39 @@ public class SubLayoutless extends Layoutless {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	}
+	@Override
 	protected void init() {
 		super.init();
-		left = new NumericProperty<SubLayoutless>(this);
-		top = new NumericProperty<SubLayoutless>(this);
+		//left = new NumericProperty<SubLayoutless>(this);
+		//top = new NumericProperty<SubLayoutless>(this);
+		Task reFit = new Task() {
+			@Override
+			public void doTask() {
+				/*System.out.println("reFit " + width.property.value()//
+						+ "/" + height.property.value()//
+						+ "/" + left.property.value()//
+						+ "/" + top.property.value());*/
+				int w = width().property.value().intValue();
+				/*if (w < 1) {
+					w = 1;
+				}*/
+				int h = height().property.value().intValue();
+				/*if (h < 1) {
+					h = 1;
+				}*/
+				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(w, h);
+				params.leftMargin = left().property.value().intValue();
+				params.topMargin = top().property.value().intValue();
+				setLayoutParams(params);
+			}
+		};
+		left().property.afterChange(reFit);
+		top().property.afterChange(reFit);
+		width().property.afterChange(reFit);
+		height().property.afterChange(reFit);
+		//System.out.println(this.getClass().getCanonicalName()+".init "+left.property.value());
+		//left.is(50);
+		//System.out.println(this.getClass().getCanonicalName()+".now "+left.property.value());
 	}
+	
 }

@@ -23,16 +23,13 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class Knob extends Button  implements ViewRake {
-	public NoteProperty<Knob> labelText = new NoteProperty<Knob>(this);
-	private NumericProperty<ViewRake> width = new NumericProperty<ViewRake>(this);
+public class Sheet extends SubLayoutless implements ViewRake {
+	/*private NumericProperty<ViewRake> width = new NumericProperty<ViewRake>(this);
 	private NumericProperty<ViewRake> height = new NumericProperty<ViewRake>(this);
 	private NumericProperty<ViewRake> left = new NumericProperty<ViewRake>(this);
-	private NumericProperty<ViewRake> top = new NumericProperty<ViewRake>(this);
-	public ItProperty<Knob, Task> tap = new ItProperty<Knob, Task>(this);
-	boolean initialized = false;
-	//Context context;
-	Task reFit = new Task() {
+	private NumericProperty<ViewRake> top = new NumericProperty<ViewRake>(this);*/
+	//boolean initialized = false;
+	/*Task reFit = new Task() {
 		@Override
 		public void doTask() {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
@@ -40,47 +37,24 @@ public class Knob extends Button  implements ViewRake {
 					, height.property.value().intValue());
 			params.leftMargin = left.property.value().intValue();
 			params.topMargin = top.property.value().intValue();
-			Knob.this.setLayoutParams(params);
+			Sheet.this.setLayoutParams(params);
 		}
 	};
-	public Knob(Context context) {
+	Context context;*/
+
+	public Sheet(Context context) {
 		super(context);
-		init();
+		//init(context);
 	}
-	public Knob(Context context, AttributeSet attrs) {
+	public Sheet(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init();
+		//init(context);
 	}
-	public Knob(Context context, AttributeSet attrs, int defStyle) {
+	public Sheet(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init();
+		//init(context);
 	}
-	void init() {
-		
-		if (initialized){
-			return;}
-		initialized = true;
-		//this.context = c;
-		labelText.property.afterChange(new Task() {
-			@Override
-			public void doTask() {
-				setText(labelText.property.value());
-			}
-		});
-		width.property.afterChange(reFit).value(100);
-		height.property.afterChange(reFit).value(100);
-		left.property.afterChange(reFit);
-		top.property.afterChange(reFit);
-		setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (tap.property.value() != null) {
-					tap.property.value().doTask();
-				}
-			}
-		});
-	}
-	@Override
+	/*@Override
 	public NumericProperty<ViewRake> left() {
 		return left;
 	}
@@ -99,5 +73,17 @@ public class Knob extends Button  implements ViewRake {
 	@Override
 	public View view() {
 		return this;
+	}*/
+	@Override
+	protected void init() {
+		/*if (initialized) {
+			return;
+		}
+		initialized = true;
+		width.property.afterChange(reFit).value(100);
+		height.property.afterChange(reFit).value(100);
+		left.property.afterChange(reFit);
+		top.property.afterChange(reFit);*/
+		this.child(new Knob(this.getContext()));
 	}
 }

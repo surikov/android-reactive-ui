@@ -14,7 +14,7 @@ import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
 
-public class Decor extends TextView {
+public class Decor extends TextView implements ViewRake{
 	private int mode = Layoutless.NONE;
 	private float startEventX = 0;
 	private float startEventY = 0;
@@ -22,13 +22,13 @@ public class Decor extends TextView {
 	private float initialShiftY = 0;
 	private float initialSpacing;
 	private float currentSpacing;
-	public NumericProperty<Decor> shiftX = new NumericProperty<Decor>(this);
-	public NumericProperty<Decor> shiftY = new NumericProperty<Decor>(this);
+	public NumericProperty<Decor> dragX = new NumericProperty<Decor>(this);
+	public NumericProperty<Decor> dragY = new NumericProperty<Decor>(this);
 	public NoteProperty<Decor> labelText = new NoteProperty<Decor>(this);
-	public NumericProperty<Decor> width = new NumericProperty<Decor>(this);
-	public NumericProperty<Decor> height = new NumericProperty<Decor>(this);
-	public NumericProperty<Decor> left = new NumericProperty<Decor>(this);
-	public NumericProperty<Decor> top = new NumericProperty<Decor>(this);
+	public NumericProperty<ViewRake> width = new NumericProperty<ViewRake>(this);
+	public NumericProperty<ViewRake> height = new NumericProperty<ViewRake>(this);
+	public NumericProperty<ViewRake> left = new NumericProperty<ViewRake>(this);
+	public NumericProperty<ViewRake> top = new NumericProperty<ViewRake>(this);
 	public NumericProperty<Decor> labelColor = new NumericProperty<Decor>(this);
 	public NumericProperty<Decor> background = new NumericProperty<Decor>(this);
 	public ItProperty<Decor, Typeface> labelFace = new ItProperty<Decor, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
@@ -37,9 +37,10 @@ public class Decor extends TextView {
 	public ToggleProperty<Decor> movableY = new ToggleProperty<Decor>(this);
 	public ItProperty<Decor, Bitmap> bitmap = new ItProperty<Decor, Bitmap>(this);//Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rocket),200,100,true);
 	public ItProperty<Decor, Task> afterTap = new ItProperty<Decor, Task>(this);
-	public ItProperty<Decor, Task> afterShift = new ItProperty<Decor, Task>(this);
+	public ItProperty<Decor, Task> afterDrag = new ItProperty<Decor, Task>(this);
+	
 	Vector<Sketch> sketches = new Vector<Sketch>();
-	Context context;
+	//Context context;
 	Paint paint = new Paint();
 	boolean initialized = false;
 	Task reFit = new Task() {
@@ -49,8 +50,8 @@ public class Decor extends TextView {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
 					width.property.value().intValue()//
 					, height.property.value().intValue());
-			params.leftMargin = (int) (left.property.value() + shiftX.property.value());
-			params.topMargin = (int) (top.property.value() + shiftY.property.value());
+			params.leftMargin = (int) (left.property.value() + dragX.property.value());
+			params.topMargin = (int) (top.property.value() + dragY.property.value());
 			
 			Decor.this.setLayoutParams(params);
 			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
@@ -109,47 +110,47 @@ public class Decor extends TextView {
 		return this;
 	}
 	public Decor labelStyleSmallNormal() {
-		setTextAppearance(context, android.R.style.TextAppearance_Small);
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Small);
 		return this;
 	}
 	public Decor labelStyleMediumNormal() {
-		setTextAppearance(context, android.R.style.TextAppearance_Medium);
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Medium);
 		return this;
 	}
 	public Decor labelStyleLargeNormal() {
-		setTextAppearance(context, android.R.style.TextAppearance_Large);
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Large);
 		return this;
 	}
 	public Decor labelStyleSmallInverse() {
-		setTextAppearance(context, android.R.style.TextAppearance_Small_Inverse);
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Small_Inverse);
 		return this;
 	}
 	public Decor labelStyleMediumInverse() {
-		setTextAppearance(context, android.R.style.TextAppearance_Medium_Inverse);
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Medium_Inverse);
 		return this;
 	}
 	public Decor labelStyleLargeInverse() {
-		setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Large_Inverse);
 		return this;
 	}
 	public Decor(Context context) {
 		super(context);
-		init(context);
+		init();
 	}
 	public Decor(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		init();
 	}
 	public Decor(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init(context);
+		init();
 	}
-	void init(Context c) {
+	void init() {
 		if (initialized) {
 			return;
 		}
 		initialized = true;
-		this.context = c;
+		//this.context = c;
 		movableX.is(false);
 		movableY.is(false);
 		paint.setColor(0xff000000);
@@ -196,8 +197,8 @@ public class Decor extends TextView {
 		height.property.afterChange(reFit).value(100);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
-		shiftY.property.afterChange(reFit);
-		shiftX.property.afterChange(reFit);
+		dragY.property.afterChange(reFit);
+		dragX.property.afterChange(reFit);
 	}
 	public Decor sketch(Sketch f) {
 		this.sketches.add(f);
@@ -219,36 +220,36 @@ public class Decor extends TextView {
 	}
 	void setShift(float x, float y) {
 		if (movableX.property.value()) {
-			double newShiftX = shiftX.property.value() + x - startEventX;
+			double newShiftX = dragX.property.value() + x - startEventX;
 			//double newShiftY = shiftY.property.value() + y - startEventY;
-			shiftX.property.value(newShiftX);
+			dragX.property.value(newShiftX);
 			//shiftY.property.value(newShiftY);
 		}
 		if (movableY.property.value()) {
 			//double newShiftX = shiftX.property.value() + x - startEventX;
-			double newShiftY = shiftY.property.value() + y - startEventY;
+			double newShiftY = dragY.property.value() + y - startEventY;
 			//shiftX.property.value(newShiftX);
-			shiftY.property.value(newShiftY);
+			dragY.property.value(newShiftY);
 		}
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
-		if (Math.abs(initialShiftX - shiftX.property.value()) < 1+0.7*Layoutless.tapSize// 
-				&& Math.abs(initialShiftY - shiftY.property.value()) < 1+0.1*Layoutless.tapSize) {
+		if (Math.abs(initialShiftX - dragX.property.value()) < 1+0.7*Layoutless.tapSize// 
+				&& Math.abs(initialShiftY - dragY.property.value()) < 1+0.1*Layoutless.tapSize) {
 			finishTap(x, y);
 		}
 		else {
 			if (movableX.property.value() || movableY.property.value()) {
-				if (afterShift.property.value() != null) {
-					afterShift.property.value().start();
+				if (afterDrag.property.value() != null) {
+					afterDrag.property.value().start();
 				}
 			}
 		}
 		mode = Layoutless.NONE;
 	}
 	void finishTap(float x, float y) {
-		shiftX.property.value((double) initialShiftX);
-		shiftY.property.value((double) initialShiftY);
+		dragX.property.value((double) initialShiftX);
+		dragY.property.value((double) initialShiftY);
 		if (afterTap.property.value() != null) {
 			afterTap.property.value().start();
 		}
@@ -263,8 +264,8 @@ public class Decor extends TextView {
 						|| movableX.property.value() //
 				|| movableY.property.value()//
 				)) {
-			initialShiftX = shiftX.property.value().floatValue();
-			initialShiftY = shiftY.property.value().floatValue();
+			initialShiftX = dragX.property.value().floatValue();
+			initialShiftY = dragY.property.value().floatValue();
 			startEventX = event.getX();
 			startEventY = event.getY();
 			mode = Layoutless.DRAG;
@@ -303,5 +304,25 @@ public class Decor extends TextView {
 		for (int i = 0; i < sketches.size(); i++) {
 			sketches.get(i).draw(canvas);
 		}
+	}
+	@Override
+	public NumericProperty<ViewRake> left() {
+		return left;
+	}
+	@Override
+	public NumericProperty<ViewRake> top() {
+		return top;
+	}
+	@Override
+	public NumericProperty<ViewRake> width() {
+		return width;
+	}
+	@Override
+	public NumericProperty<ViewRake> height() {
+		return height;
+	}
+	@Override
+	public View view() {
+		return this;
 	}
 }

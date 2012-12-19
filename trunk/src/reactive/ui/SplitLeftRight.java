@@ -20,20 +20,19 @@ import java.io.*;
 import java.text.*;
 
 public class SplitLeftRight extends SubLayoutless {
-	//private boolean initialized = false;
 	public NumericProperty<SplitLeftRight> split;
+	public NumericProperty<SplitLeftRight> position;
+	private ViewRake leftSide;
+	private ViewRake rightSide;
 
 	public SplitLeftRight(Context context) {
 		super(context);
-		//init();
 	}
 	public SplitLeftRight(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		//init();
 	}
 	public SplitLeftRight(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		//init();
 	}
 	@Override
 	protected void onMeasureX() {
@@ -43,102 +42,155 @@ public class SplitLeftRight extends SubLayoutless {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	}
-/*
-	Task reFit = new Task() {
-		@Override
-		public void doTask() {
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
-					width.property.value().intValue()//
-					, height.property.value().intValue());
-			params.leftMargin = left.property.value().intValue();
-			params.topMargin = top.property.value().intValue();
-			SplitLeftRight.this.setLayoutParams(params);
+	
+	public SplitLeftRight leftSide(ViewRake v) {
+		if(leftSide!=null){
+		this.removeView(leftSide.view());
 		}
-	};*/
-
+		leftSide=v;
+		this.addView(leftSide//
+				.width().is(split.property)//
+				.height().is(height().property)//
+				.view()//
+				,0//
+				);
+		//this.or
+		return this;
+	}
+	public SplitLeftRight rightSide(ViewRake v) {
+		if(rightSide!=null){
+		this.removeView(rightSide.view());
+		}
+		rightSide=v;
+		this.addView(rightSide//
+				.left().is(split.property)//
+				.width().is(width().property.minus(split.property))//
+				.height().is(height().property)//
+				.view()//
+				,0//
+				);
+		return this;
+	}
 	protected void init() {
 		super.init();
-		//if (!initialized) {
-			//initialized = true;
-		//System.out.println();
+		
 		split = new NumericProperty<SplitLeftRight>(this);
-		//left = new NumericProperty<SplitLeftRight>(this);
-		//top = new NumericProperty<SplitLeftRight>(this);
-			this.child(new Knob(this.getContext())//
-			
-			.width.is(split.property.plus(0.5 * Layoutless.tapSize))//
-			.height.is(height.property)//
-			.labelText.is("Left")//
-			);
-			this.child(new Knob(this.getContext())//
-			.left.is(split.property.plus(0.5 * Layoutless.tapSize))//
-			.width.is(width.property.minus(split.property).minus(0.5 * Layoutless.tapSize)).height.is(height.property)//
-			.labelText.is("Rigth")//
-			);
-			split.is(444);
-			this.child(new Decor(this.getContext())//
-			.left.is(split.property.plus(0.5 * Layoutless.tapSize))//
-			.width.is(1)//
-			.height.is(height.property)//
-			.background.is(0xffffffff)//
-			);
-			this.child(new Decor(this.getContext())//
-			.width.is(60 * Layoutless.density)//
-			.height.is(60 * Layoutless.density)//
-			.shiftX.is(split.property)//
-			.top.is(height.property.divide(2).minus(0.5 * Layoutless.tapSize))//
-			.movableX.is(true)//
-					.sketch(new SketchPlate()//
-					.width.is(Layoutless.tapSize)//
-					.height.is(Layoutless.tapSize)//
-					.arcX.is(0.5 * Layoutless.tapSize)//
-					.arcY.is(0.5 * Layoutless.tapSize)//
-					.background.is(0xff000000)//
-					)//
-					.sketch(new SketchContour()//
-					.width.is(Layoutless.tapSize - 2)//
-					.height.is(Layoutless.tapSize - 2)//
-					.left.is(1)//
-					.top.is(1)//
-					.arcX.is(0.5 * (Layoutless.tapSize - 2))//
-					.arcY.is(0.5 * (Layoutless.tapSize - 2))//
-					.strokeColor.is(0xffffffff)//
-					.strokeWidth.is(1)//
-					)//
-					.sketch(new SketchLine()//
-					.startX.is(0.6 * Layoutless.tapSize)//
-					.startY.is(0.25 * Layoutless.tapSize)//
-					.endX.is(0.8 * Layoutless.tapSize)//
-					.endY.is(0.5 * Layoutless.tapSize)//
-					.strokeColor.is(0xffffffff)//
-					.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
-					)//
-					.sketch(new SketchLine()//
-					.startX.is(0.6 * Layoutless.tapSize)//
-					.startY.is(0.75 * Layoutless.tapSize)//
-					.endX.is(0.8 * Layoutless.tapSize)//
-					.endY.is(0.5 * Layoutless.tapSize)//
-					.strokeColor.is(0xffffffff)//
-					.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
-					)//
-					.sketch(new SketchLine()//
-					.startX.is(0.4 * Layoutless.tapSize)//
-					.startY.is(0.25 * Layoutless.tapSize)//
-					.endX.is(0.2 * Layoutless.tapSize)//
-					.endY.is(0.5 * Layoutless.tapSize)//
-					.strokeColor.is(0xffffffff)//
-					.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
-					)//
-					.sketch(new SketchLine()//
-					.startX.is(0.4 * Layoutless.tapSize)//
-					.startY.is(0.75 * Layoutless.tapSize)//
-					.endX.is(0.2 * Layoutless.tapSize)//
-					.endY.is(0.5 * Layoutless.tapSize)//
-					.strokeColor.is(0xffffffff)//
-					.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
-					)//
-			)//
-			;
-		//}
+		split.is(0.5*Layoutless.tapSize);
+		
+		//leftSide = new SubLayoutless(this.getContext());
+		//rightSide = new SubLayoutless(this.getContext());
+		/*
+		this.child(leftSide//
+		.width().is(split.property)//
+		.height().is(height().property)//
+		.view()//
+		);
+		this.child(rightSide//
+		.left().is(split.property)//
+		.width().is(width().property.minus(split.property))//
+		.height().is(height().property)//
+		.view()//
+		);
+		*/
+		/*
+		this.child(new Decor(this.getContext())//
+		//.left.is(left.property)//
+		.width.is(width.property)//
+		.height.is(height.property)//
+				.sketch(new SketchPlate()//
+				.width.is(width.property)//
+				.height.is(height.property)//
+				.arcX.is(50).arcY.is(50)//
+				.background.is(0x9900ffff)//
+				));*/
+		this.child(new Decor(this.getContext())//
+		.background.is(Layoutless.blurColor)//
+		.left.is(split.property)//
+		.width().is(1)//
+		.height().is(height().property)//
+		.view()//
+		);
+		/*Paint p=new Paint();
+		p.setColor(Layoutless.backColor);
+		p.setAlpha(170);*/
+		this.child(new Decor(this.getContext())//
+		
+		.dragX.is(split.property.minus(0.5 * Layoutless.tapSize))//
+		.afterDrag.is(new Task() {
+					@Override
+					public void doTask() {
+						if(split.property.value()<0.5 * Layoutless.tapSize){
+							split.is(0.5 * Layoutless.tapSize);
+						}
+						if(split.property.value()>width().property.value()-0.5 * Layoutless.tapSize){
+							split.is(width().property.value()-0.5 * Layoutless.tapSize);
+						}
+					}
+				})//
+		.movableX.is(true)//
+				.sketch(new SketchPlate()//
+				.width.is(Layoutless.tapSize)//
+				.height.is(Layoutless.tapSize)//
+				.arcX.is(0.5 * Layoutless.tapSize)//
+				.arcY.is(0.5 * Layoutless.tapSize)//
+				.background.is(Layoutless.backColor)//
+				)//
+				.sketch(new SketchContour()//
+				.width.is(Layoutless.tapSize - 2)//
+				.height.is(Layoutless.tapSize - 2)//
+				.left.is(1)//
+				.top.is(1)//
+				.arcX.is(0.5 * (Layoutless.tapSize - 2))//
+				.arcY.is(0.5 * (Layoutless.tapSize - 2))//
+				.strokeColor.is(Layoutless.blurColor)//
+				.strokeWidth.is(1)//
+				)//
+				.sketch(new SketchLine()//
+				.startX.is(0.6 * Layoutless.tapSize)//
+				.startY.is(0.25 * Layoutless.tapSize)//
+				.endX.is(0.8 * Layoutless.tapSize)//
+				.endY.is(0.5 * Layoutless.tapSize)//
+				.strokeColor.is(Layoutless.blurColor)//
+				.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
+				)//
+				.sketch(new SketchLine()//
+				.startX.is(0.6 * Layoutless.tapSize)//
+				.startY.is(0.75 * Layoutless.tapSize)//
+				.endX.is(0.8 * Layoutless.tapSize)//
+				.endY.is(0.5 * Layoutless.tapSize)//
+				.strokeColor.is(Layoutless.blurColor)//
+				.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
+				)//
+				.sketch(new SketchLine()//
+				.startX.is(0.4 * Layoutless.tapSize)//
+				.startY.is(0.25 * Layoutless.tapSize)//
+				.endX.is(0.2 * Layoutless.tapSize)//
+				.endY.is(0.5 * Layoutless.tapSize)//
+				.strokeColor.is(Layoutless.blurColor)//
+				.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
+				)//
+				.sketch(new SketchLine()//
+				.startX.is(0.4 * Layoutless.tapSize)//
+				.startY.is(0.75 * Layoutless.tapSize)//
+				.endX.is(0.2 * Layoutless.tapSize)//
+				.endY.is(0.5 * Layoutless.tapSize)//
+				.strokeColor.is(Layoutless.blurColor)//
+				.strokeWidth.is(1 + 0.07 * Layoutless.tapSize)//
+				)//
+				.width().is(60 * Layoutless.density)//
+		.height().is(60 * Layoutless.density)//
+		.top().is(height().property.divide(2).minus(0.5 * Layoutless.tapSize))//
+		.view()
+		);
+		/*rightSide.left.property.afterChange(new Task(){
+
+			@Override
+			public void doTask() {
+				System.out.println(this.getClass().getCanonicalName()+".test "+rightSide.left.property.value());
+				
+			}});
+		System.out.println(this.getClass().getCanonicalName()+".test "+rightSide.left.property.value());
+		rightSide.left.is(500);
+		System.out.println(this.getClass().getCanonicalName()+".test "+rightSide.left.property.value());*/
 	}
 }

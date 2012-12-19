@@ -18,7 +18,7 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class Layoutless extends RelativeLayout {
+public class Layoutless extends RelativeLayout implements ViewRake {
 	public static float density = 1;
 	public static double tapSize = 8;
 	//private final static int UNKNOWN_ID = -123456789;
@@ -34,8 +34,10 @@ public class Layoutless extends RelativeLayout {
 	private float initialSpacing;
 	private float currentSpacing;
 	//
-	public NumericProperty<Layoutless> width = new NumericProperty<Layoutless>(this);
-	public NumericProperty<Layoutless> height = new NumericProperty<Layoutless>(this);
+	private NumericProperty<ViewRake> left = new NumericProperty<ViewRake>(this);
+	private NumericProperty<ViewRake> top = new NumericProperty<ViewRake>(this);
+	private NumericProperty<ViewRake> width = new NumericProperty<ViewRake>(this);
+	private NumericProperty<ViewRake> height = new NumericProperty<ViewRake>(this);
 	public NumericProperty<Layoutless> innerWidth = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> innerHeight = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> shiftX = new NumericProperty<Layoutless>(this);
@@ -44,6 +46,7 @@ public class Layoutless extends RelativeLayout {
 	public NumericProperty<Layoutless> maxZoom = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> tapX = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> tapY = new NumericProperty<Layoutless>(this);
+	public ToggleProperty<Layoutless> solid = new ToggleProperty<Layoutless>(this);
 	public ItProperty<Layoutless, Task> afterTap = new ItProperty<Layoutless, Task>(this);
 	public ItProperty<Layoutless, Task> afterShift = new ItProperty<Layoutless, Task>(this);
 	public ItProperty<Layoutless, Task> afterZoom = new ItProperty<Layoutless, Task>(this);
@@ -65,6 +68,7 @@ public class Layoutless extends RelativeLayout {
 			initialized = true;
 			density = this.getContext().getResources().getDisplayMetrics().density;
 			tapSize = 60.0 * density;
+			solid.is(true);
 		}
 	}
 	public Layoutless(Context context) {
@@ -88,7 +92,6 @@ public class Layoutless extends RelativeLayout {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		onMeasureX();
 	}
-	
 	protected void onMeasureX() {
 		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredHeight());
 		width.is(getMeasuredWidth());
@@ -96,6 +99,9 @@ public class Layoutless extends RelativeLayout {
 	}
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		if (!solid.property.value()) {
+			return false;
+		}
 		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
 			//System.out.println("startDrag");
 			initialShiftX = shiftX.property.value().floatValue();
@@ -246,5 +252,25 @@ public class Layoutless extends RelativeLayout {
 			afterZoom.property.value().start();
 		}
 		mode = NONE;
+	}
+	@Override
+	public NumericProperty<ViewRake> left() {
+		return left;
+	}
+	@Override
+	public NumericProperty<ViewRake> top() {
+		return top;
+	}
+	@Override
+	public NumericProperty<ViewRake> width() {
+		return width;
+	}
+	@Override
+	public NumericProperty<ViewRake> height() {
+		return height;
+	}
+	@Override
+	public View view() {
+		return this;
 	}
 }
