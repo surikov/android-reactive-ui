@@ -31,16 +31,15 @@ public class Demo extends Activity {
 				, 200, 100//
 				, true//
 				);
+		Numeric ix = new Numeric();
+		Numeric iy = new Numeric();
+		view.fillBaseColors();
 		view//
 		.maxZoom.is(3).zoom.is(view.zoom.property).innerHeight.is(1000).innerWidth.is(1500)
 		//
 				.child(new Decor(this)//
 				.labelText.is("Very long string for testing purpose only.")//
 						.labelStyleLargeNormal()//
-				.left.is(view.shiftX.property.plus(100))//
-				.top.is(view.shiftY.property)//
-				.width.is(view.zoom.property.multiply(50).plus(540))//
-				.height.is(view.zoom.property.multiply(50).plus(400))//
 				//.left.is(100)
 				//.gravity.is(Gravity.CENTER)//
 				.bitmap.is(b)//
@@ -74,13 +73,17 @@ public class Demo extends Activity {
 						//System.out.println("tap decor");
 					}
 				})*/
-				.afterShift.is(new Task() {
+				.afterDrag.is(new Task() {
 					@Override
 					public void doTask() {
 						//System.out.println("shift decor");
 					}
 				})//
-				)//
+						.left().is(view.shiftX.property.plus(100))//
+						.top().is(view.shiftY.property)//
+						.width().is(view.zoom.property.multiply(50).plus(540))//
+						.height().is(view.zoom.property.multiply(50).plus(400))//
+						.view())//
 		.afterTap.is(new Task() {
 			@Override
 			public void doTask() {
@@ -100,41 +103,73 @@ public class Demo extends Activity {
 			}
 		})//
 				.child(new Decor(this)//
-				.top.is(view.shiftY.property.plus(200))//
-				.left.is(view.shiftX.property.plus(400))//
-				.width.is(view.zoom.property.multiply(50).plus(140))//
-				.height.is(view.zoom.property.multiply(50).plus(100))//
 				.background.is(0xff00ff66)
 				//.active.is(true)//
 				.movableX.is(true)//
 				.movableY.is(true)//
-				/*.afterTap.is(new Task() {
-					@Override
-					public void doTask() {
-						System.out.println("tap green");
-					}
-				})*/
+						/*.afterTap.is(new Task() {
+							@Override
+							public void doTask() {
+								System.out.println("tap green");
+							}
+						})*/
+						.top().is(view.shiftY.property.plus(200))//
+						.left().is(view.shiftX.property.plus(400))//
+						.width().is(view.zoom.property.multiply(50).plus(140))//
+						.height().is(view.zoom.property.multiply(50).plus(100))//
+						.view()//
 				)//
 				.child(new Decor(this)//
-				.top.is(view.shiftY.property.plus(250))//
-				.left.is(view.shiftX.property.plus(350))//
-				.width.is(view.zoom.property.multiply(50).plus(140))//
-				.height.is(view.zoom.property.multiply(50).plus(100))//
 				.background.is(0xff3300ff)
 				//.active.is(true)//
 				.movableY.is(true)//
-				/*.afterTap.is(new Task() {
-					@Override
-					public void doTask() {
-						System.out.println("tap green");
-					}
-				})*/
+						/*.afterTap.is(new Task() {
+							@Override
+							public void doTask() {
+								System.out.println("tap green");
+							}
+						})*/
+						.top().is(view.shiftY.property.plus(250))//
+						.left().is(view.shiftX.property.plus(350))//
+						.width().is(view.zoom.property.multiply(50).plus(140))//
+						.height().is(view.zoom.property.multiply(50).plus(100))//
+						.view()//
 				)//
 				.child(new SplitLeftRight(this)//
-				.width.is(view.width.property)
-				.height.is(view.height.property)
-				)//
-				;
+						.leftSide(new SubLayoutless(this)//
+								.shiftX.is(ix)//
+								.shiftY.is(iy)//
+										.child(new Knob(this)//
+										.labelText.is("inner knob")//
+												.left().is(ix)//
+												.top().is(iy)//
+												.view()//
+										)//
+								.innerHeight.is(500)//
+								.innerWidth.is(500)//
+						)//
+						.rightSide(new Sheet(this))
+						//.solid.is(false)
+						/*
+								.leftChild((new Knob(this)//
+								.width.is(200)//
+								.height.is(200)//
+								.labelText.is("left")//
+								)//
+								)//
+								.rightChild((new Knob(this)//
+								.width.is(100)//
+								.height.is(100)//
+								.labelText.is("right")//
+								)//
+								)//
+								*/
+						//.left.is(200)
+						//.top.is(50)
+						.width().is(view.width().property)//
+						.height().is(view.height().property)//
+						.view())//
+		;
 		setContentView(view);
 	}
 	@Override
