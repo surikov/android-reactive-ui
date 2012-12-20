@@ -14,7 +14,7 @@ import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
 
-public class Decor extends TextView implements ViewRake{
+public class Decor extends TextView implements Rake{
 	private int mode = Layoutless.NONE;
 	private float startEventX = 0;
 	private float startEventY = 0;
@@ -25,10 +25,10 @@ public class Decor extends TextView implements ViewRake{
 	public NumericProperty<Decor> dragX = new NumericProperty<Decor>(this);
 	public NumericProperty<Decor> dragY = new NumericProperty<Decor>(this);
 	public NoteProperty<Decor> labelText = new NoteProperty<Decor>(this);
-	public NumericProperty<ViewRake> width = new NumericProperty<ViewRake>(this);
-	public NumericProperty<ViewRake> height = new NumericProperty<ViewRake>(this);
-	public NumericProperty<ViewRake> left = new NumericProperty<ViewRake>(this);
-	public NumericProperty<ViewRake> top = new NumericProperty<ViewRake>(this);
+	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
 	public NumericProperty<Decor> labelColor = new NumericProperty<Decor>(this);
 	public NumericProperty<Decor> background = new NumericProperty<Decor>(this);
 	public ItProperty<Decor, Typeface> labelFace = new ItProperty<Decor, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
@@ -306,19 +306,19 @@ public class Decor extends TextView implements ViewRake{
 		}
 	}
 	@Override
-	public NumericProperty<ViewRake> left() {
+	public NumericProperty<Rake> left() {
 		return left;
 	}
 	@Override
-	public NumericProperty<ViewRake> top() {
+	public NumericProperty<Rake> top() {
 		return top;
 	}
 	@Override
-	public NumericProperty<ViewRake> width() {
+	public NumericProperty<Rake> width() {
 		return width;
 	}
 	@Override
-	public NumericProperty<ViewRake> height() {
+	public NumericProperty<Rake> height() {
 		return height;
 	}
 	@Override

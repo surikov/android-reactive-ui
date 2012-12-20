@@ -21,7 +21,7 @@ import java.text.*;
 
 public class SubLayoutless extends Layoutless  {
 	
-
+	private boolean initialized = false;
 	public SubLayoutless(Context context) {
 		super(context);
 	}
@@ -42,6 +42,8 @@ public class SubLayoutless extends Layoutless  {
 	@Override
 	protected void init() {
 		super.init();
+		if (!initialized) {
+			initialized = true;
 		//left = new NumericProperty<SubLayoutless>(this);
 		//top = new NumericProperty<SubLayoutless>(this);
 		Task reFit = new Task() {
@@ -72,6 +74,7 @@ public class SubLayoutless extends Layoutless  {
 		//System.out.println(this.getClass().getCanonicalName()+".init "+left.property.value());
 		//left.is(50);
 		//System.out.println(this.getClass().getCanonicalName()+".now "+left.property.value());
+		}
 	}
 	
 }

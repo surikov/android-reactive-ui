@@ -18,7 +18,7 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class Layoutless extends RelativeLayout implements ViewRake {
+public class Layoutless extends RelativeLayout implements Rake {
 	public static float density = 1;
 	public static double tapSize = 8;
 	//private final static int UNKNOWN_ID = -123456789;
@@ -34,10 +34,10 @@ public class Layoutless extends RelativeLayout implements ViewRake {
 	private float initialSpacing;
 	private float currentSpacing;
 	//
-	private NumericProperty<ViewRake> left = new NumericProperty<ViewRake>(this);
-	private NumericProperty<ViewRake> top = new NumericProperty<ViewRake>(this);
-	private NumericProperty<ViewRake> width = new NumericProperty<ViewRake>(this);
-	private NumericProperty<ViewRake> height = new NumericProperty<ViewRake>(this);
+	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	public NumericProperty<Layoutless> innerWidth = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> innerHeight = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> shiftX = new NumericProperty<Layoutless>(this);
@@ -52,16 +52,19 @@ public class Layoutless extends RelativeLayout implements ViewRake {
 	public ItProperty<Layoutless, Task> afterZoom = new ItProperty<Layoutless, Task>(this);
 	//public ItProperty<Layoutless, Task> afterPress = new ItProperty<Layoutless, Task>(this);
 	//public NumericProperty<Layoutless> mode = new NumericProperty<Layoutless>(this);
-	public static int foreColor = 0xff00ff00;
-	public static int blurColor = 0xffff0000;
-	public static int backColor = 0xff0000ff;
+	public static int themeForegroundColor = 0xff00ff00;
+	public static int themeBlurColor = 0xffff0000;
+	public static int themeBackgroundColor = 0xff0000ff;
+	private static Decor colorTest; 
 	private boolean initialized = false;
 
-	void fillBaseColors() {
-		Decor colorTest = new Decor(this.getContext());
-		foreColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
-		blurColor = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-		backColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+	public  static void fillBaseColors(Context c) {
+		if(colorTest==null){
+		 colorTest = new Decor(c);
+		themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
+		themeBlurColor = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
+		themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+		}
 	}
 	protected void init() {
 		if (!initialized) {
@@ -69,6 +72,7 @@ public class Layoutless extends RelativeLayout implements ViewRake {
 			density = this.getContext().getResources().getDisplayMetrics().density;
 			tapSize = 60.0 * density;
 			solid.is(true);
+			fillBaseColors(this.getContext());
 		}
 	}
 	public Layoutless(Context context) {
@@ -254,19 +258,19 @@ public class Layoutless extends RelativeLayout implements ViewRake {
 		mode = NONE;
 	}
 	@Override
-	public NumericProperty<ViewRake> left() {
+	public NumericProperty<Rake> left() {
 		return left;
 	}
 	@Override
-	public NumericProperty<ViewRake> top() {
+	public NumericProperty<Rake> top() {
 		return top;
 	}
 	@Override
-	public NumericProperty<ViewRake> width() {
+	public NumericProperty<Rake> width() {
 		return width;
 	}
 	@Override
-	public NumericProperty<ViewRake> height() {
+	public NumericProperty<Rake> height() {
 		return height;
 	}
 	@Override
