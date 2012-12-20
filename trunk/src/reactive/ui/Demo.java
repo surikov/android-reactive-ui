@@ -26,6 +26,10 @@ public class Demo extends Activity {
 		super.onCreate(savedInstanceState);
 		System.out.println("go----------------------------------");
 		view = new Layoutless(this);
+		//view .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);		
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		Bitmap b = Bitmap.createScaledBitmap(//
 				BitmapFactory.decodeResource(getResources(), R.drawable.rocket)//
 				, 200, 100//
@@ -33,7 +37,8 @@ public class Demo extends Activity {
 				);
 		Numeric ix = new Numeric();
 		Numeric iy = new Numeric();
-		view.fillBaseColors();
+		//Layoutless.fillBaseColors();
+		Sheet testSheet=new Sheet(this);
 		view//
 		.maxZoom.is(3).zoom.is(view.zoom.property).innerHeight.is(1000).innerWidth.is(1500)
 		//
@@ -139,16 +144,83 @@ public class Demo extends Activity {
 						.leftSide(new SubLayoutless(this)//
 								.shiftX.is(ix)//
 								.shiftY.is(iy)//
+								/*
 										.child(new Knob(this)//
 										.labelText.is("inner knob")//
 												.left().is(ix)//
 												.top().is(iy)//
 												.view()//
 										)//
+										*/
 								.innerHeight.is(500)//
 								.innerWidth.is(500)//
 						)//
-						.rightSide(new Sheet(this))
+						.rightSide(testSheet//
+						.column(new SheetColumnText()//
+						.title.is("Number")//						
+						.cell("1")//
+						.cell("2")//
+						.cell("3")//
+						.cell("4")//
+						.cell("5")//
+						.cell("1")//
+						.cell("2")//
+						.cell("3")//
+						.cell("4")//
+						.cell("5")//
+						.cell("1")//
+						.cell("2")//
+						.cell("3")//
+						.cell("4")//
+						.cell("5")//
+						.width.is(200)//
+						)	
+						.column(new SheetColumnText()//
+						.title.is("Text")//						
+						.cell("aa")//
+						.cell("bb")//
+						.cell("cc")//
+						.cell("dd")//
+						.cell("ee")//
+						.cell("aa")//
+						.cell("bb")//
+						.cell("cc")//
+						.cell("dd")//
+						.cell("ee")//
+						.cell("aa")//
+						.cell("bb")//
+						.cell("cc")//
+						.cell("dd")//
+						.cell("ee")//
+						.width.is(250)//
+						)	
+						.column(new SheetColumnText()//
+						.title.is("Any")//						
+						.cell("aa11")//
+						.cell("bb22")//
+						.cell("cc33")//
+						.cell("dd44")//
+						.cell("ee55")//
+						.cell("aa11")//
+						.cell("bb22")//
+						.cell("cc33")//
+						.cell("dd44")//
+						.cell("ee55")//
+						.cell("aa11")//
+						.cell("bb22")//
+						.cell("cc33")//
+						.cell("dd44")//
+						.cell("ee55")//
+						.width.is(170)//
+						.afterHeaderTap.is(new Task(){
+
+							@Override
+							public void doTask() {
+								System.out.println("header Any");
+								
+							}})
+						)
+								)
 						//.solid.is(false)
 						/*
 								.leftChild((new Knob(this)//
@@ -171,6 +243,8 @@ public class Demo extends Activity {
 						.view())//
 		;
 		setContentView(view);
+		//testSheet.clear();
+		testSheet.fill();
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

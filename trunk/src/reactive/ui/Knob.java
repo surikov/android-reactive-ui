@@ -23,12 +23,12 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class Knob extends Button  implements ViewRake {
+public class Knob extends Button  implements Rake {
 	public NoteProperty<Knob> labelText = new NoteProperty<Knob>(this);
-	private NumericProperty<ViewRake> width = new NumericProperty<ViewRake>(this);
-	private NumericProperty<ViewRake> height = new NumericProperty<ViewRake>(this);
-	private NumericProperty<ViewRake> left = new NumericProperty<ViewRake>(this);
-	private NumericProperty<ViewRake> top = new NumericProperty<ViewRake>(this);
+	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
+	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
 	public ItProperty<Knob, Task> tap = new ItProperty<Knob, Task>(this);
 	boolean initialized = false;
 	//Context context;
@@ -81,19 +81,19 @@ public class Knob extends Button  implements ViewRake {
 		});
 	}
 	@Override
-	public NumericProperty<ViewRake> left() {
+	public NumericProperty<Rake> left() {
 		return left;
 	}
 	@Override
-	public NumericProperty<ViewRake> top() {
+	public NumericProperty<Rake> top() {
 		return top;
 	}
 	@Override
-	public NumericProperty<ViewRake> width() {
+	public NumericProperty<Rake> width() {
 		return width;
 	}
 	@Override
-	public NumericProperty<ViewRake> height() {
+	public NumericProperty<Rake> height() {
 		return height;
 	}
 	@Override
