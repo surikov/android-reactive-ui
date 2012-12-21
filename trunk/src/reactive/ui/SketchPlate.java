@@ -18,8 +18,20 @@ public class SketchPlate extends Sketch {
 	//public NumericProperty<SketchPlate> strokeWidth = new NumericProperty<SketchPlate>(this);
 	public NumericProperty<SketchPlate> arcX = new NumericProperty<SketchPlate>(this);
 	public NumericProperty<SketchPlate> arcY = new NumericProperty<SketchPlate>(this);
+	
 	private Tint paint = new Tint();
-
+	
+	@Override
+	 public void unbind(){
+		width.property.unbind();
+		height.property.unbind();
+		left.property.unbind();
+		top.property.unbind();
+		
+		arcX.property.unbind();
+		arcY.property.unbind();
+		paint.unbind();
+	 }
 	//Paint paint = new Paint();
 	public SketchPlate() {
 		//paint.property.value(new Paint());

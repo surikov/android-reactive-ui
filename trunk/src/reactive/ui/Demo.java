@@ -144,14 +144,25 @@ public class Demo extends Activity {
 						.leftSide(new SubLayoutless(this)//
 								.shiftX.is(ix)//
 								.shiftY.is(iy)//
-								/*
+								
 										.child(new Knob(this)//
 										.labelText.is("inner knob")//
 												.left().is(ix)//
 												.top().is(iy)//
 												.view()//
 										)//
-										*/
+										.child(new Knob(this)//
+										.labelText.is("2")//
+												.left().is(ix.plus(100))//
+												.top().is(iy)//
+												.view()//
+										)//
+										.child(new Knob(this)//
+										.labelText.is("3")//
+												.left().is(ix.plus(200))//
+												.top().is(iy)//
+												.view()//
+										)//
 								.innerHeight.is(500)//
 								.innerWidth.is(500)//
 						)//
@@ -160,7 +171,7 @@ public class Demo extends Activity {
 						.title.is("Number")//						
 						.cell("1")//
 						.cell("2")//
-						.cell("3")//
+						.cell("3. В лесу родилась ёлочка, в лесу она росла. Зимой и летом стройная, зелёная была. Метель ей пела песенку: \"Спи ёлочка, бай-бай\", мороз снежком укутывал: \"Смотри, не замерзай!\".")//
 						.cell("4")//
 						.cell("5")//
 						.cell("1")//
@@ -197,17 +208,17 @@ public class Demo extends Activity {
 						.column(new SheetColumnText()//
 						.title.is("Any")//						
 						.cell("aa11")//
-						.cell("bb22")//
+						.cell("bb22",0x99009900)//
 						.cell("cc33")//
+						.cell("dd44",0x99009900)//
+						.cell("ee55",0x99009900)//
+						.cell("aa11",0x99009900)//
+						.cell("bb22",0x99000099)//
+						.cell("cc33",0x99009900)//
 						.cell("dd44")//
 						.cell("ee55")//
 						.cell("aa11")//
-						.cell("bb22")//
-						.cell("cc33")//
-						.cell("dd44")//
-						.cell("ee55")//
-						.cell("aa11")//
-						.cell("bb22")//
+						.cell("bb22",0x99990000)//
 						.cell("cc33")//
 						.cell("dd44")//
 						.cell("ee55")//
@@ -217,6 +228,13 @@ public class Demo extends Activity {
 							@Override
 							public void doTask() {
 								System.out.println("header Any");
+								
+							}})
+							.afterCellTap.is(new Task(){
+
+							@Override
+							public void doTask() {
+								System.out.println("cell Any");
 								
 							}})
 						)

@@ -17,7 +17,18 @@ public class SketchContour extends Sketch{
 	public NumericProperty<SketchContour> arcX = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> arcY = new NumericProperty<SketchContour>(this);
 	private Paint paint = new Paint();
-
+	@Override
+	 public void unbind(){
+		width.property.unbind();
+		height.property.unbind();
+		left.property.unbind();
+		top.property.unbind();
+		strokeColor.property.unbind();
+		strokeWidth.property.unbind();
+		arcX.property.unbind();
+		arcY.property.unbind();
+		
+	 }
 	//Paint paint = new Paint();
 	public SketchContour() {
 		//paint.property.value(new Paint());

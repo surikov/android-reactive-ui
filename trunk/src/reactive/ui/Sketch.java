@@ -23,6 +23,7 @@ abstract public class Sketch {
 			}
 		}
 	};	
+	abstract public void unbind();
 	abstract public void draw(Canvas canvas);/* {
 		int w = 100;
 		int h = 100;

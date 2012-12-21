@@ -9,7 +9,7 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 import reactive.ui.*;
-
+import android.content.res.*;
 import android.view.animation.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
@@ -55,15 +55,26 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public static int themeForegroundColor = 0xff00ff00;
 	public static int themeBlurColor = 0xffff0000;
 	public static int themeBackgroundColor = 0xff0000ff;
-	private static Decor colorTest; 
+	private static Decor colorTest;
 	private boolean initialized = false;
 
-	public  static void fillBaseColors(Context c) {
-		if(colorTest==null){
-		 colorTest = new Decor(c);
-		themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
-		themeBlurColor = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-		themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+	public void fillBaseColors() {
+		if (colorTest == null) {
+			colorTest = new Decor(getContext());
+			themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
+			themeBlurColor = colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
+			themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+			//ColorStateList colorStateList=colorTest.getTextColors();
+			//colorStateList.
+			//TypedValue tv = new TypedValue();
+			//getContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, tv, true);
+			//getContext().getTheme().resolveAttribute(android.R.attr.textColorHighlight, tv, true);
+			//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, tv, true);
+			//getContext().getTheme().resolveAttribute(android.R.attr.textColorHint, tv, true);
+			//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimaryDisableOnly, tv, true);
+			//getContext().getTheme().resolveAttribute(android.R.attr.background, tv, true);
+			//themeBlurColor = getResources().getColor(tv.resourceId);
+			//System.out.println();
 		}
 	}
 	protected void init() {
@@ -72,7 +83,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 			density = this.getContext().getResources().getDisplayMetrics().density;
 			tapSize = 60.0 * density;
 			solid.is(true);
-			fillBaseColors(this.getContext());
+			fillBaseColors();
 		}
 	}
 	public Layoutless(Context context) {
@@ -240,6 +251,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 		}
 	}
 	void finishZoom() {
+		//System.out.println(this.getClass().getCanonicalName()+".finishZoom");
 		if (currentSpacing > initialSpacing) {
 			if (zoom.property.value() < maxZoom.property.value()) {
 				zoom.is(zoom.property.value() + 1);
@@ -276,5 +288,25 @@ public class Layoutless extends RelativeLayout implements Rake {
 	@Override
 	public View view() {
 		return this;
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		left.property.unbind();
+		top.property.unbind();
+		width.property.unbind();
+		height.property.unbind();
+		innerWidth.property.unbind();
+		innerHeight.property.unbind();
+		shiftX.property.unbind();
+		shiftY.property.unbind();
+		zoom.property.unbind();
+		maxZoom.property.unbind();
+		tapX.property.unbind();
+		tapY.property.unbind();
+		solid.property.unbind();
+		afterTap.property.unbind();
+		afterShift.property.unbind();
+		afterZoom.property.unbind();
 	}
 }
