@@ -33,6 +33,9 @@ public class Sheet extends SubLayoutless {
 	public NumericProperty<Sheet> rowHeight;
 	public NumericProperty<Sheet> headerHeight;
 	public NumericProperty<Sheet> selectedRow;
+	Numeric rowCount;
+	Numeric columnCount;
+	//Numeric dataWidth;
 
 	public Sheet(Context context) {
 		super(context);
@@ -44,6 +47,12 @@ public class Sheet extends SubLayoutless {
 		super(context, attrs, defStyle);
 	}
 	public void clear() {
+		data.removeAllViewsInLayout();
+		header.removeAllViews();
+		columns.removeAllElements();
+		//body.innerHeight.property.unbind();
+		//body.innerWidth.property.unbind();
+		fill();
 	}
 	void refreshSelection() {
 		if (selectedRow.property.value() < 0) {
@@ -51,62 +60,59 @@ public class Sheet extends SubLayoutless {
 		}
 		else {
 			//System.out.println("selection " + selectedRow.property.value()*rowHeight.property.value());
-			
-			
-			
 			selection.setVisibility(VISIBLE);
 		}
 	}
 	public void fill() {
-		int columnCount = columns.size();
-		int rowCount = columns.get(0).count();
-		//int columnWidth = 120;
-		int curLeft = 0;
-		//int rowHeight = 50;
-		//System.out.println(columnCount+"x"+rowCount);
-		for (int x = 0; x < columnCount; x++) {
-			if (x > 0) {
-				data.child(new Decor(this.getContext())//
-				.background.is(Layoutless.themeBlurColor)//
-						.width().is(1)//
-						.height().is(rowHeight.property.multiply( rowCount))
-						.left().is(curLeft)//
-						.view());
-			}
-			header.child(columns.get(x).header(this.getContext())//
-					.left().is(header.shiftX.property.plus(curLeft))//
-					//.top().is(2)//
-					.height().is(headerHeight.property.value())//
-					.width().is(columns.get(x).width.property.value())//
-					.view()//
-			);
-			for (int y = 0; y < rowCount; y++) {
-				//System.out.println(x+"x"+y+": ");
-				data.child(columns.get(x).cell(y, this.getContext())//
-						.left().is(curLeft)//
-						.top().is( rowHeight.property.multiply(y))//
-						.height().is(rowHeight.property)//
+		 columnCount.value( columns.size());
+		if (columnCount.value() > 0) {
+			 rowCount.value(columns.get(0).count());
+			//int columnWidth = 120;
+			int curLeft = 0;
+			//int rowHeight = 50;
+			//System.out.println(columnCount+"x"+rowCount);
+			for (int x = 0; x < columnCount.value(); x++) {
+				if (x > 0) {
+					data.child(new Decor(this.getContext())//
+					.background.is(Layoutless.themeBlurColor)//
+							.width().is(1)//
+							.height().is(rowHeight.property.multiply(rowCount))//
+							.left().is(curLeft)//
+							.view());
+				}
+				header.child(columns.get(x).header(this.getContext())//
+						.left().is(header.shiftX.property.plus(curLeft))//
+						//.top().is(2)//
+						.height().is(headerHeight.property.value())//
 						.width().is(columns.get(x).width.property.value())//
-						.view());
+						.view()//
+				);
+				for (int y = 0; y < rowCount.value(); y++) {
+					//System.out.println(x+"x"+y+": ");
+					data.child(columns.get(x).cell(y, this.getContext())//
+							.left().is(curLeft)//
+							.top().is(rowHeight.property.multiply(y))//
+							.height().is(rowHeight.property)//
+							.width().is(columns.get(x).width.property.value())//
+							.view());
+				}
+				curLeft = curLeft + columns.get(x).width.property.value().intValue();
 			}
-			curLeft = curLeft + columns.get(x).width.property.value().intValue();
-		}
-		for (int y = 0; y < rowCount; y++) {
-			if (y > 0) {
-				data.child(new Decor(this.getContext())//
-				.background.is(Layoutless.themeBlurColor)//
-						.width().is(curLeft)//
-						.height().is(1)//
-						.top().is(rowHeight.property.multiply(y))//
-						.view());
+			for (int y = 0; y < rowCount.value(); y++) {
+				if (y > 0) {
+					data.child(new Decor(this.getContext())//
+					.background.is(Layoutless.themeBlurColor)//
+							.width().is(curLeft)//
+							.height().is(1)//
+							.top().is(rowHeight.property.multiply(y))//
+							.view());
+				}
 			}
+			data.width().is(curLeft);
+			
+			this.postInvalidate();
+			setZoom();
 		}
-		data.width().is(curLeft);
-		data.height().is(rowHeight.property.multiply( rowCount));
-		body.innerHeight.is(rowHeight.property.multiply( rowCount));
-		body.innerWidth.is(curLeft);
-		header.innerWidth.is(curLeft);
-		selection.width().is(curLeft);
 	}
 	public Sheet column(SheetColumn c) {
 		columns.add(c);
@@ -117,8 +123,10 @@ public class Sheet extends SubLayoutless {
 		super.init();
 		if (!initialized) {
 			initialized = true;
+			 rowCount=new Numeric();
+			 columnCount=new Numeric();
+			//dataWidth=new Numeric();
 			selection = new Decor(this.getContext()).background.is(0x66999999);
-			
 			selection.setVisibility(INVISIBLE);
 			selectedRow = new NumericProperty<Sheet>(this);
 			selectedRow.is(-1);
@@ -154,12 +162,12 @@ public class Sheet extends SubLayoutless {
 								if (body.tapY.property.value() >= 0) {
 									int columnCount = columns.size();
 									int curLeft = 0;
-									int tc=-1;
+									int tc = -1;
 									for (int c = 0; c < columnCount; c++) {
 										curLeft = curLeft + columns.get(c).width.property.value().intValue();
 										if (body.tapX.property.value() <= curLeft) {
 											//System.out.println("column " + c);
-											tc=c;
+											tc = c;
 											break;
 										}
 									}
@@ -168,9 +176,9 @@ public class Sheet extends SubLayoutless {
 									//System.out.println("row " + r);
 									selectedRow.is(r);
 									refreshSelection();
-									if(tc>-1){
-										if(columns.size()>tc){
-											if(columns.get(tc).afterCellTap.property.value()!=null){
+									if (tc > -1) {
+										if (columns.size() > tc) {
+											if (columns.get(tc).afterCellTap.property.value() != null) {
 												columns.get(tc).afterCellTap.property.value().start();
 											}
 										}
@@ -201,17 +209,26 @@ public class Sheet extends SubLayoutless {
 				}
 			});
 			body.maxZoom.is(3);
-			
-			body.afterZoom.is(new Task(){
-
+			body.afterZoom.is(new Task() {
 				@Override
 				public void doTask() {
-					System.out.println("zoom "+body.zoom.property.value());
+					System.out.println("zoom " + body.zoom.property.value());
 					//rowHeight.property.bind(body.zoom.property.multiply(Layoutless.tapSize));
-					rowHeight.is((1+body.zoom.property.value())*Layoutless.tapSize);
-				}});
+					setZoom();
+				}
+			});
 			selection.height().is(rowHeight.property);
 			selection.top().is(selectedRow.property.multiply(rowHeight.property));
+			
+data.height().is(rowHeight.property.multiply(rowCount));
+			
+			body.innerHeight.is(rowHeight.property.multiply(rowCount));
+			body.innerWidth.is(data.width().property);
+			header.innerWidth.is(data.width().property);
+			selection.width().is(data.width().property);
 		}
+	}
+	void setZoom() {
+		rowHeight.is((1 + body.zoom.property.value()) * Layoutless.tapSize);
 	}
 }
