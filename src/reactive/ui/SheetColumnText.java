@@ -32,6 +32,7 @@ public class SheetColumnText extends SheetColumn {
 			}
 		}
 		cell.setPadding(3, 3, 3, 3);
+		cell.labelStyleMediumNormal();
 		//cell.labelText.is("cells.get(row)");
 		return cell;
 	}

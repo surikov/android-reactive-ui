@@ -29,7 +29,6 @@ public class Demo extends Activity {
 		//view .setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);		
 		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		
 		Bitmap b = Bitmap.createScaledBitmap(//
 				BitmapFactory.decodeResource(getResources(), R.drawable.rocket)//
 				, 200, 100//
@@ -38,7 +37,7 @@ public class Demo extends Activity {
 		Numeric ix = new Numeric();
 		Numeric iy = new Numeric();
 		//Layoutless.fillBaseColors();
-		Sheet testSheet=new Sheet(this);
+		final Sheet testSheet = new Sheet(this);
 		view//
 		.maxZoom.is(3).zoom.is(view.zoom.property).innerHeight.is(1000).innerWidth.is(1500)
 		//
@@ -144,15 +143,39 @@ public class Demo extends Activity {
 						.leftSide(new SubLayoutless(this)//
 								.shiftX.is(ix)//
 								.shiftY.is(iy)//
-								
 										.child(new Knob(this)//
-										.labelText.is("inner knob")//
+										.labelText.is("clear")//
+										.tap.is(new Task() {
+											@Override
+											public void doTask() {
+												System.out.println("clear");
+												testSheet.clear();
+											}
+										})//
 												.left().is(ix)//
 												.top().is(iy)//
 												.view()//
 										)//
 										.child(new Knob(this)//
-										.labelText.is("2")//
+										.labelText.is("test data")//
+										.tap.is(new Task() {
+											@Override
+											public void doTask() {
+												System.out.println("test data");
+												testSheet.clear();
+												testSheet.column(new SheetColumnText()//
+														.title.is("Number")
+																
+																.cell("1z")//
+																.cell("2z")//
+																.cell("3z")//
+																.cell("4z")//
+																.cell("5z")//
+														.width.is(400)//
+														);
+												testSheet.fill();
+											}
+										})//
 												.left().is(ix.plus(100))//
 												.top().is(iy)//
 												.view()//
@@ -166,79 +189,78 @@ public class Demo extends Activity {
 								.innerHeight.is(500)//
 								.innerWidth.is(500)//
 						)//
-						.rightSide(testSheet//
-						.column(new SheetColumnText()//
-						.title.is("Number")//						
-						.cell("1")//
-						.cell("2")//
-						.cell("3. В лесу родилась ёлочка, в лесу она росла. Зимой и летом стройная, зелёная была. Метель ей пела песенку: \"Спи ёлочка, бай-бай\", мороз снежком укутывал: \"Смотри, не замерзай!\".")//
-						.cell("4")//
-						.cell("5")//
-						.cell("1")//
-						.cell("2")//
-						.cell("3")//
-						.cell("4")//
-						.cell("5")//
-						.cell("1")//
-						.cell("2")//
-						.cell("3")//
-						.cell("4")//
-						.cell("5")//
-						.width.is(200)//
-						)	
-						.column(new SheetColumnText()//
-						.title.is("Text")//						
-						.cell("aa")//
-						.cell("bb")//
-						.cell("cc")//
-						.cell("dd")//
-						.cell("ee")//
-						.cell("aa")//
-						.cell("bb")//
-						.cell("cc")//
-						.cell("dd")//
-						.cell("ee")//
-						.cell("aa")//
-						.cell("bb")//
-						.cell("cc")//
-						.cell("dd")//
-						.cell("ee")//
-						.width.is(250)//
-						)	
-						.column(new SheetColumnText()//
-						.title.is("Any")//						
-						.cell("aa11")//
-						.cell("bb22",0x99009900)//
-						.cell("cc33")//
-						.cell("dd44",0x99009900)//
-						.cell("ee55",0x99009900)//
-						.cell("aa11",0x99009900)//
-						.cell("bb22",0x99000099)//
-						.cell("cc33",0x99009900)//
-						.cell("dd44")//
-						.cell("ee55")//
-						.cell("aa11")//
-						.cell("bb22",0x99990000)//
-						.cell("cc33")//
-						.cell("dd44")//
-						.cell("ee55")//
-						.width.is(170)//
-						.afterHeaderTap.is(new Task(){
-
-							@Override
-							public void doTask() {
-								System.out.println("header Any");
-								
-							}})
-							.afterCellTap.is(new Task(){
-
-							@Override
-							public void doTask() {
-								System.out.println("cell Any");
-								
-							}})
-						)
-								)
+						.rightSide(
+								testSheet//
+										.column(new SheetColumnText()//
+										.title.is("Number")
+												//						
+												.cell("1")
+												//
+												.cell("2")
+												//
+												.cell("3. В лесу родилась ёлочка, в лесу она росла. Зимой и летом стройная, зелёная была. Метель ей пела песенку: \"Спи ёлочка, бай-бай\", мороз снежком укутывал: \"Смотри, не замерзай!\".")//
+												.cell("4")//
+												.cell("5")//
+												.cell("1")//
+												.cell("2")//
+												.cell("3")//
+												.cell("4")//
+												.cell("5")//
+												.cell("1")//
+												.cell("2")//
+												.cell("3")//
+												.cell("4")//
+												.cell("5")//
+										.width.is(200)//
+										)//
+										.column(new SheetColumnText()//
+										.title.is("Text")//						
+												.cell("aa")//
+												.cell("bb")//
+												.cell("cc")//
+												.cell("dd")//
+												.cell("ee")//
+												.cell("aa")//
+												.cell("bb")//
+												.cell("cc")//
+												.cell("dd")//
+												.cell("ee")//
+												.cell("aa")//
+												.cell("bb")//
+												.cell("cc")//
+												.cell("dd")//
+												.cell("ee")//
+										.width.is(250)//
+										)//
+										.column(new SheetColumnText()//
+										.title.is("Any")//						
+												.cell("aa11")//
+												.cell("bb22", 0x99009900)//
+												.cell("cc33")//
+												.cell("dd44", 0x99009900)//
+												.cell("ee55", 0x99009900)//
+												.cell("aa11", 0x99009900)//
+												.cell("bb22", 0x99000099)//
+												.cell("cc33", 0x99009900)//
+												.cell("dd44")//
+												.cell("ee55")//
+												.cell("aa11")//
+												.cell("bb22", 0x99990000)//
+												.cell("cc33")//
+												.cell("dd44")//
+												.cell("ee55")//
+										.width.is(170)//
+										.afterHeaderTap.is(new Task() {
+											@Override
+											public void doTask() {
+												System.out.println("header Any");
+											}
+										}).afterCellTap.is(new Task() {
+											@Override
+											public void doTask() {
+												System.out.println("cell Any");
+											}
+										})))
 						//.solid.is(false)
 						/*
 								.leftChild((new Knob(this)//
