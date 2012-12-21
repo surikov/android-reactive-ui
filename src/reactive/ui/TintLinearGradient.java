@@ -23,6 +23,16 @@ public class TintLinearGradient extends Tint {
 	public NumericProperty<TintLinearGradient> toX = new NumericProperty<TintLinearGradient>(this);
 	public NumericProperty<TintLinearGradient> toY = new NumericProperty<TintLinearGradient>(this);
 	//public Sketch forUpdate;
+	@Override
+	 public void unbind(){
+		fromColor.property.unbind();
+		fromX.property.unbind();
+		fromY.property.unbind();
+		toColor.property.unbind();
+		
+		toX.property.unbind();
+		toY.property.unbind();
+	 }
 	public Task postInvalidate = new Task() {
 		@Override
 		public void doTask() {

@@ -100,4 +100,13 @@ public class Knob extends Button  implements Rake {
 	public View view() {
 		return this;
 	}
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		labelText.property.unbind();
+		width.property.unbind();
+		height.property.unbind();
+		left.property.unbind();
+		top.property.unbind();
+	}
 }

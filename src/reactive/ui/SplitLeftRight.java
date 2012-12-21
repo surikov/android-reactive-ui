@@ -104,7 +104,7 @@ public class SplitLeftRight extends SubLayoutless {
 				));*/
 		this.child(new Decor(this.getContext())//
 		.background.is(Layoutless.themeBlurColor)//
-		.left().is(split.property)//
+				.left().is(split.property)//
 				.width().is(1)//
 				.height().is(height().property)//
 				.view()//
@@ -143,6 +143,7 @@ public class SplitLeftRight extends SubLayoutless {
 				.strokeColor.is(Layoutless.themeBlurColor)//
 				.strokeWidth.is(1)//
 				)//
+				/*
 				.sketch(new SketchLine()//
 				.startX.is(0.65 * Layoutless.tapSize)//
 				.startY.is(0.3 * Layoutless.tapSize)//
@@ -159,14 +160,21 @@ public class SplitLeftRight extends SubLayoutless {
 				.strokeColor.is(Layoutless.themeBlurColor)//
 				.strokeWidth.is(1 + 0.08 * Layoutless.tapSize)//
 				)//
+				*/
 				.sketch(new SketchLine()//
-				.startX.is(0.35 * Layoutless.tapSize)//
-				.startY.is(0.3 * Layoutless.tapSize)//
-				.endX.is(0.2 * Layoutless.tapSize)//
-				.endY.is(0.5 * Layoutless.tapSize)//
+						.point(0.65 * Layoutless.tapSize, 0.3 * Layoutless.tapSize)//
+						.point(0.8 * Layoutless.tapSize, 0.5 * Layoutless.tapSize)//
+						.point(0.65 * Layoutless.tapSize, 0.7 * Layoutless.tapSize)//
 				.strokeColor.is(Layoutless.themeBlurColor)//
 				.strokeWidth.is(1 + 0.08 * Layoutless.tapSize)//
+				).sketch(new SketchLine()//
+						.point(0.35 * Layoutless.tapSize, 0.3 * Layoutless.tapSize)//
+						.point(0.2 * Layoutless.tapSize, 0.5 * Layoutless.tapSize)//
+						.point(0.35 * Layoutless.tapSize, 0.7 * Layoutless.tapSize)//
+						.strokeColor.is(Layoutless.themeBlurColor)//
+						.strokeWidth.is(1 + 0.08 * Layoutless.tapSize)//
 				)//
+				/*
 				.sketch(new SketchLine()//
 				.startX.is(0.35 * Layoutless.tapSize)//
 				.startY.is(0.7 * Layoutless.tapSize)//
@@ -175,10 +183,10 @@ public class SplitLeftRight extends SubLayoutless {
 				.strokeColor.is(Layoutless.themeBlurColor)//
 				.strokeWidth.is(1 + 0.08 * Layoutless.tapSize)//
 				)//
+				*/
 				.width().is(60 * Layoutless.density)//
 				.height().is(60 * Layoutless.density)//
-				.top().is(height().property.minus(position.property.plus(1).multiply(Layoutless.tapSize))
-				.minus(0.5 * Layoutless.tapSize))//
+				.top().is(height().property.minus(position.property.plus(1).multiply(Layoutless.tapSize)).minus(0.5 * Layoutless.tapSize))//
 				.view());
 		/*rightSide.left.property.afterChange(new Task(){
 

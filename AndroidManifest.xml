@@ -11,7 +11,7 @@
         android:label="ReactiveUI" >
         <activity
             android:name=".Demo"
-            android:label="Reactive Demo" android:theme="@android:style/Theme.Black">
+            android:label="Reactive Demo" android:theme="@android:style/Theme.Light">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" /> 
                 <category android:name="android.intent.category.LAUNCHER" />

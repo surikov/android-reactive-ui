@@ -14,7 +14,7 @@ import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
 
-public class Decor extends TextView implements Rake{
+public class Decor extends TextView implements Rake {
 	private int mode = Layoutless.NONE;
 	private float startEventX = 0;
 	private float startEventY = 0;
@@ -38,7 +38,6 @@ public class Decor extends TextView implements Rake{
 	public ItProperty<Decor, Bitmap> bitmap = new ItProperty<Decor, Bitmap>(this);//Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rocket),200,100,true);
 	public ItProperty<Decor, Task> afterTap = new ItProperty<Decor, Task>(this);
 	public ItProperty<Decor, Task> afterDrag = new ItProperty<Decor, Task>(this);
-	
 	Vector<Sketch> sketches = new Vector<Sketch>();
 	//Context context;
 	Paint paint = new Paint();
@@ -52,7 +51,6 @@ public class Decor extends TextView implements Rake{
 					, height.property.value().intValue());
 			params.leftMargin = (int) (left.property.value() + dragX.property.value());
 			params.topMargin = (int) (top.property.value() + dragY.property.value());
-			
 			Decor.this.setLayoutParams(params);
 			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
 		}
@@ -234,8 +232,8 @@ public class Decor extends TextView implements Rake{
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
-		if (Math.abs(initialShiftX - dragX.property.value()) < 1+0.7*Layoutless.tapSize// 
-				&& Math.abs(initialShiftY - dragY.property.value()) < 1+0.1*Layoutless.tapSize) {
+		if (Math.abs(initialShiftX - dragX.property.value()) < 1 + 0.7 * Layoutless.tapSize// 
+				&& Math.abs(initialShiftY - dragY.property.value()) < 1 + 0.1 * Layoutless.tapSize) {
 			finishTap(x, y);
 		}
 		else {
@@ -324,5 +322,30 @@ public class Decor extends TextView implements Rake{
 	@Override
 	public View view() {
 		return this;
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		//System.out.println(this.getClass().getCanonicalName()+".onDetachedFromWindow");
+		dragX.property.unbind();
+		dragY.property.unbind();
+		labelText.property.unbind();
+		width.property.unbind();
+		height.property.unbind();
+		left.property.unbind();
+		top.property.unbind();
+		labelColor.property.unbind();
+		background.property.unbind();
+		labelFace.property.unbind();
+		labelSize.property.unbind();
+		movableX.property.unbind();
+		movableY.property.unbind();
+		bitmap.property.unbind();
+		afterTap.property.unbind();
+		afterDrag.property.unbind();
+		
+		for(int i=0;i<sketches.size();i++){
+			sketches.get(i).unbind();
+		}
 	}
 }

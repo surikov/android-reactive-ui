@@ -28,9 +28,11 @@ public class Sheet extends SubLayoutless {
 	private SubLayoutless data;
 	private SubLayoutless body;
 	private SubLayoutless header;
+	private Decor selection;
 	Vector<SheetColumn> columns = new Vector<SheetColumn>();
 	public NumericProperty<Sheet> rowHeight;
 	public NumericProperty<Sheet> headerHeight;
+	public NumericProperty<Sheet> selectedRow;
 
 	public Sheet(Context context) {
 		super(context);
@@ -42,6 +44,18 @@ public class Sheet extends SubLayoutless {
 		super(context, attrs, defStyle);
 	}
 	public void clear() {
+	}
+	void refreshSelection() {
+		if (selectedRow.property.value() < 0) {
+			selection.setVisibility(INVISIBLE);
+		}
+		else {
+			//System.out.println("selection " + selectedRow.property.value()*rowHeight.property.value());
+			
+			
+			
+			selection.setVisibility(VISIBLE);
+		}
 	}
 	public void fill() {
 		int columnCount = columns.size();
@@ -55,21 +69,25 @@ public class Sheet extends SubLayoutless {
 				data.child(new Decor(this.getContext())//
 				.background.is(Layoutless.themeBlurColor)//
 						.width().is(1)//
-						.height().is(rowCount * rowHeight.property.value())//
+						.height().is(rowHeight.property.multiply( rowCount))
 						.left().is(curLeft)//
 						.view());
 			}
 			header.child(columns.get(x).header(this.getContext())//
 					.left().is(header.shiftX.property.plus(curLeft))//
 					//.top().is(2)//
-					.height().is(headerHeight.property.value()).width().is(columns.get(x).width.property.value()).view()//
+					.height().is(headerHeight.property.value())//
+					.width().is(columns.get(x).width.property.value())//
+					.view()//
 			);
 			for (int y = 0; y < rowCount; y++) {
 				//System.out.println(x+"x"+y+": ");
 				data.child(columns.get(x).cell(y, this.getContext())//
 						.left().is(curLeft)//
-						.top().is(y * rowHeight.property.value())//
-						.height().is(rowHeight.property.value()).width().is(columns.get(x).width.property.value()).view());
+						.top().is( rowHeight.property.multiply(y))//
+						.height().is(rowHeight.property)//
+						.width().is(columns.get(x).width.property.value())//
+						.view());
 			}
 			curLeft = curLeft + columns.get(x).width.property.value().intValue();
 		}
@@ -79,15 +97,16 @@ public class Sheet extends SubLayoutless {
 				.background.is(Layoutless.themeBlurColor)//
 						.width().is(curLeft)//
 						.height().is(1)//
-						.top().is(y * rowHeight.property.value())//
+						.top().is(rowHeight.property.multiply(y))//
 						.view());
 			}
 		}
 		data.width().is(curLeft);
-		data.height().is(rowHeight.property.value() * rowCount);
-		body.innerHeight.is(rowHeight.property.value() * rowCount);
+		data.height().is(rowHeight.property.multiply( rowCount));
+		body.innerHeight.is(rowHeight.property.multiply( rowCount));
 		body.innerWidth.is(curLeft);
 		header.innerWidth.is(curLeft);
+		selection.width().is(curLeft);
 	}
 	public Sheet column(SheetColumn c) {
 		columns.add(c);
@@ -98,6 +117,11 @@ public class Sheet extends SubLayoutless {
 		super.init();
 		if (!initialized) {
 			initialized = true;
+			selection = new Decor(this.getContext()).background.is(0x66999999);
+			
+			selection.setVisibility(INVISIBLE);
+			selectedRow = new NumericProperty<Sheet>(this);
+			selectedRow.is(-1);
 			rowHeight = new NumericProperty<Sheet>(this);
 			headerHeight = new NumericProperty<Sheet>(this);
 			rowHeight.is(Layoutless.tapSize);
@@ -113,11 +137,50 @@ public class Sheet extends SubLayoutless {
 			body.width().is(this.width().property);
 			body.height().is(this.height().property.minus(headerHeight.property));
 			data = new SubLayoutless(this.getContext());
+			data.child(selection);
 			body.child(data);
 			data.left().is(body.shiftX.property);
 			data.top().is(body.shiftY.property);
 			data.solid.is(false);
 			body.shiftX.property.bind(header.shiftX.property);
+			body.afterTap.is(new Task() {
+				@Override
+				public void doTask() {
+					int xx = 0;
+					int yy = 0;
+					if (columns.size() > 0) {
+						if (columns.get(0).count() > 0) {
+							if (body.tapX.property.value() >= 0) {
+								if (body.tapY.property.value() >= 0) {
+									int columnCount = columns.size();
+									int curLeft = 0;
+									int tc=-1;
+									for (int c = 0; c < columnCount; c++) {
+										curLeft = curLeft + columns.get(c).width.property.value().intValue();
+										if (body.tapX.property.value() <= curLeft) {
+											//System.out.println("column " + c);
+											tc=c;
+											break;
+										}
+									}
+									//int rowCount = columns.get(0).count();
+									int r = (int) ((body.tapY.property.value() - body.shiftY.property.value()) / rowHeight.property.value());
+									//System.out.println("row " + r);
+									selectedRow.is(r);
+									refreshSelection();
+									if(tc>-1){
+										if(columns.size()>tc){
+											if(columns.get(tc).afterCellTap.property.value()!=null){
+												columns.get(tc).afterCellTap.property.value().start();
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
 			header.afterTap.is(new Task() {
 				@Override
 				public void doTask() {
@@ -127,7 +190,7 @@ public class Sheet extends SubLayoutless {
 						for (int x = 0; x < columnCount; x++) {
 							curLeft = curLeft + columns.get(x).width.property.value().intValue();
 							if (header.tapX.property.value() <= curLeft) {
-								if(columns.get(x).afterHeaderTap.property.value()!=null){
+								if (columns.get(x).afterHeaderTap.property.value() != null) {
 									columns.get(x).afterHeaderTap.property.value().start();
 								}
 								//System.out.println("header " + x);
@@ -137,6 +200,18 @@ public class Sheet extends SubLayoutless {
 					}
 				}
 			});
+			body.maxZoom.is(3);
+			
+			body.afterZoom.is(new Task(){
+
+				@Override
+				public void doTask() {
+					System.out.println("zoom "+body.zoom.property.value());
+					//rowHeight.property.bind(body.zoom.property.multiply(Layoutless.tapSize));
+					rowHeight.is((1+body.zoom.property.value())*Layoutless.tapSize);
+				}});
+			selection.height().is(rowHeight.property);
+			selection.top().is(selectedRow.property.multiply(rowHeight.property));
 		}
 	}
 }

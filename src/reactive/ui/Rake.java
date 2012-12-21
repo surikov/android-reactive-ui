@@ -8,4 +8,5 @@ public interface Rake {
 	public NumericProperty<Rake> width();
 	public NumericProperty<Rake> height();
 	public View view();
+	//public View unbind();
 }

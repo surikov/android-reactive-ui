@@ -76,5 +76,12 @@ public class SubLayoutless extends Layoutless  {
 		//System.out.println(this.getClass().getCanonicalName()+".now "+left.property.value());
 		}
 	}
-	
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		/*width().property.unbind();
+		height().property.unbind();
+		left().property.unbind();
+		top().property.unbind();*/
+	}
 }
