@@ -57,7 +57,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public static int themeBackgroundColor = 0xff0000ff;
 	private static Decor colorTest;
 	private boolean initialized = false;
-
+private Vector<Rake>children=new Vector<Rake>();  
 	public void fillBaseColors() {
 		if (colorTest == null) {
 			colorTest = new Decor(getContext());
@@ -98,9 +98,22 @@ public class Layoutless extends RelativeLayout implements Rake {
 		super(context, attrs, defStyle);
 		init();
 	}
-	public Layoutless child(View v) {
-		this.addView(v);
+	public Layoutless child(Rake v) {
+		this.addView(v.view());
+		children.add(v);
+		
 		return this;
+	}
+	public Rake child(int nn){
+		if(nn<children.size()){
+			return children.get(nn);
+		}
+		else{
+			return null;
+		}
+	}
+	public int count(){
+		return children.size();
 	}
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
