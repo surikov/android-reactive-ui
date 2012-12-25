@@ -1,8 +1,6 @@
 package reactive.ui;
 import reactive.ui.*;
-import reactive.ui.library.views.SimpleString;
-import reactive.ui.library.views.WhiteBoard;
-import reactive.ui.library.views.figures.Figure;
+
 import android.content.*;
 import android.graphics.*;
 import tee.binding.properties.*;
