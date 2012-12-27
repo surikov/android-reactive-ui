@@ -35,6 +35,7 @@ public class Sheet extends SubLayoutless {
 	public NumericProperty<Sheet> selectedRow;
 	Numeric rowCount;
 	Numeric columnCount;
+
 	/*
 	Task reWidth = new Task() {
 		@Override
@@ -91,7 +92,7 @@ public class Sheet extends SubLayoutless {
 			}
 		}
 	};
-*/
+	*/
 	private void fill() {
 		if (columns == null) {
 			return;
@@ -109,7 +110,7 @@ public class Sheet extends SubLayoutless {
 					.background.is(Layoutless.themeBlurColor)//
 							.width().is(1)//
 							.height().is(rowHeight.property.multiply(rowCount))//
-					.left().is(curLeft)//
+							.left().is(curLeft)//
 					);
 				}
 				//columns[x].width.property.afterChange(reWidth);
@@ -117,7 +118,7 @@ public class Sheet extends SubLayoutless {
 						.left().is(header.shiftX.property.plus(curLeft))//
 						//.top().is(2)//
 						.height().is(headerHeight.property)//
-				.width().is(columns[x].width.property.value())//
+						.width().is(columns[x].width.property.value())//
 				//
 				);
 				for (int y = 0; y < rowCount.value(); y++) {
@@ -126,7 +127,7 @@ public class Sheet extends SubLayoutless {
 							.left().is(curLeft)//
 							.top().is(rowHeight.property.multiply(y))//
 							.height().is(rowHeight.property)//
-					.width().is(columns[x].width.property.value())//
+							.width().is(columns[x].width.property.value())//
 					);
 				}
 				curLeft = curLeft + columns[x].width.property.value().intValue();
@@ -142,6 +143,8 @@ public class Sheet extends SubLayoutless {
 				}
 			}
 			data.width().is(curLeft);
+			body.innerWidth.is(curLeft);
+			header.innerWidth.is(curLeft);
 			//reWidth.start();
 			this.postInvalidate();
 			setZoom();
@@ -198,9 +201,8 @@ public class Sheet extends SubLayoutless {
 		//this.fill();
 		//return this;
 	}
-	public void reset(){
+	public void reset() {
 		this.clear();
-		
 		this.fill();
 	}
 	@Override
@@ -208,7 +210,7 @@ public class Sheet extends SubLayoutless {
 		super.init();
 		if (!initialized) {
 			initialized = true;
-			System.out.println("go----------------------------------");
+			//System.out.println("go----------------------------------");
 			rowCount = new Numeric();
 			columnCount = new Numeric();
 			//dataWidth=new Numeric();
@@ -264,11 +266,13 @@ public class Sheet extends SubLayoutless {
 									int r = (int) ((body.tapY.property.value() - body.shiftY.property.value()) / rowHeight.property.value());
 									selectedRow.is(r);
 									refreshSelection();
+									//postInvalidate();
 									if (tc > -1) {
 										if (columns.length > tc) {
-											if (columns[tc].afterCellTap.property.value() != null) {
+											columns[tc].afterTap(r);
+											/*if (columns[tc].afterCellTap.property.value() != null) {
 												columns[tc].afterCellTap.property.value().start();
-											}
+											}*/
 										}
 									}
 								}
@@ -309,8 +313,8 @@ public class Sheet extends SubLayoutless {
 			});
 			data.height().is(rowHeight.property.multiply(rowCount));
 			body.innerHeight.is(rowHeight.property.multiply(rowCount));
-			body.innerWidth.is(data.width().property);
-			header.innerWidth.is(data.width().property);
+			//body.innerWidth.is(data.width().property);
+			//header.innerWidth.is(data.width().property);
 		}
 	}
 	void setZoom() {

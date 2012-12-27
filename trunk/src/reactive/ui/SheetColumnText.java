@@ -16,6 +16,7 @@ import android.text.*;
 
 public class SheetColumnText extends SheetColumn {
 	Vector<String> cells = new Vector<String>();
+	Vector<Task> taps = new Vector<Task>();
 	Vector<Integer> backgrounds = new Vector<Integer>();
 	public NoteProperty<SheetColumnText> title=new NoteProperty<SheetColumnText> (this);
 	@Override
@@ -42,12 +43,17 @@ public class SheetColumnText extends SheetColumn {
 	}
 	
 	public SheetColumnText cell(String s) {
-		cell(s,null);
+		cell(s,null,null);
 		return this;
 	}
-	public SheetColumnText cell(String s,Integer bg) {
+	public SheetColumnText cell(String s,Task t) {
+		cell(s,null,t);
+		return this;
+	}
+	public SheetColumnText cell(String s,Integer bg,Task t) {
 		cells.add(s);
 		backgrounds.add(bg);
+		taps.add(t);
 		return this;
 	}
 	@Override
@@ -57,5 +63,15 @@ public class SheetColumnText extends SheetColumn {
 		header.labelAlignCenterBottom();
 		header.setPadding(3, 3, 3, 3);
 		return header;
+	}
+	@Override
+	void afterTap(int row) {
+		// TODO Auto-generated method stub
+		if(row>-1 && row <taps.size()){
+			Task t=taps.get(row);
+			if(t!=null){
+				t.start();
+			}
+		}
 	}
 }

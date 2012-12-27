@@ -57,7 +57,11 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public static int themeBackgroundColor = 0xff0000ff;
 	private static Decor colorTest;
 	private boolean initialized = false;
-private Vector<Rake>children=new Vector<Rake>();  
+	private Vector<Rake> children = new Vector<Rake>();
+	private Vector<Decor> fogs = new Vector<Decor>();
+	private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
+
+
 	public void fillBaseColors() {
 		if (colorTest == null) {
 			colorTest = new Decor(getContext());
@@ -101,19 +105,40 @@ private Vector<Rake>children=new Vector<Rake>();
 	public Layoutless child(Rake v) {
 		this.addView(v.view());
 		children.add(v);
-		
 		return this;
 	}
-	public Rake child(int nn){
-		if(nn<children.size()){
+	public Rake child(int nn) {
+		if (nn < children.size()) {
 			return children.get(nn);
 		}
-		else{
+		else {
 			return null;
 		}
 	}
-	public int count(){
+	public int count() {
 		return children.size();
+	}
+	public void addDialog(SubLayoutless sub) {
+		Decor fog = new Decor(this.getContext()){
+			@Override
+			public boolean onTouchEvent(MotionEvent event) {return true;}
+		};
+		fog.background.is(0x99666666)
+		.width().is(width.property).height().is(height.property);
+		fogs.add(fog);
+		dialogs.add(sub);
+		this.child(fog);
+		this.child(sub);
+	}
+	public boolean removeDialog(){
+		if(fogs.size()>0){			
+			this.removeView(dialogs.get(dialogs.size()-1));
+			dialogs.remove(dialogs.get(dialogs.size()-1));
+			this.removeView(fogs.get(fogs.size()-1));			
+			fogs.remove(fogs.get(fogs.size()-1));
+			return true;
+		}
+		return false;
 	}
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
