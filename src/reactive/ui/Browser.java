@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 public class Browser extends WebView implements Rake {
 	boolean initialized = false;
 	public NoteProperty<WebView> url = new NoteProperty<WebView>(this);
+	public ItProperty<Browser, Task> afterLink = new ItProperty<Browser, Task>(this);
 	//public NoteProperty<WebView> active = new NoteProperty<WebView>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -73,12 +74,15 @@ public class Browser extends WebView implements Rake {
 				
 				if (shouldOverrideUrlLoading) {
 					//System.out.println("true");
-					//System.out.println("shouldOverrideUrlLoading "+urlString);
+					//System.out.println("url "+urlString);
 					url.is(urlString);
+					if(afterLink.property.value()!=null){
+						afterLink.property.value().start();
+					}
 					return true;
 				}
 				else {
-					//System.out.println("go shouldOverrideUrlLoading "+urlString);
+					System.out.println("go "+urlString);
 					return false;
 				}
 				//return shouldOverrideUrlLoading;
