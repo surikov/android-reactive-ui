@@ -128,16 +128,37 @@ public class Demo extends Activity {
 						System.out.println("ya");
 						//Dialogs.prompt("Лимит клиента ",Demo.this, null, null, "Запросить");
 						SubLayoutless d = new SubLayoutless(Demo.this);
-						d//
-						.child(new Decor(Demo.this)//
-						.labelText.is("zasvfaesbfrfesb")//
-						.background.is(0xff00ff00)//
-								.width().is(100)//
-								.height().is(100)//
-						)//
-								.width().is(100)//
-								.height().is(100)//
-						;
+						d.width().is(500).height().is(300);
+						d.child(new Decor(Demo.this)//
+						.background.is(Layoutless.themeBackgroundColor)//
+								.width().is(d.width().property.value())//
+								.height().is(d.height().property.value())//
+						);
+						d.child(new Decor(Demo.this)//
+						.labelText.is("Клиент")//
+						.background.is(Layoutless.themeBlurColor)//
+								.width().is(d.width().property.value())//
+								.height().is(0.5 * Layoutless.tapSize)//
+								.left().is(8)//
+								.top().is(4)//
+						);
+						d.child(new Decor(Demo.this)//
+						.labelText.is("Новый лимит, т.р.")//
+						.background.is(Layoutless.themeBlurColor)//
+								.labelAlignRightBottom().width().is(200)//
+								.height().is(Layoutless.tapSize)//
+								.left().is(8)//
+								.top().is(4 + 0.5 * Layoutless.tapSize)//
+						);
+						d.child(new RedactText(Demo.this)//
+								//.labelText.is("Новый лимит, т.р.")//
+								//.background.is(Layoutless.themeBlurColor)//
+								//.labelAlignRightBottom()
+								.width().is(300)//
+								.height().is(Layoutless.tapSize)//
+								.left().is(8)//
+								.top().is(200 + 4 + 0.5 * Layoutless.tapSize)//
+						);
 						view.addDialog(d);
 					}
 				}) //
@@ -258,18 +279,37 @@ public class Demo extends Activity {
 		//.afterCellTap.is(open)//
 		.width.is(500)//
 		;
+		final SplitLeftRight slr=new SplitLeftRight(this);
+		
 		view//
-		.child(new SplitLeftRight(this)//
-				.leftSide(brwsr//
+		.child(slr//
+				
+				.leftSide(
+				//new EditString(this)
+						brwsr//
 				)
 				//
-				.rightSide(testSheet//
+				//.rightSide(testSheet//
 				//.data(new SheetColumn[] { links})//
-				)//
+				//)//
+				
 		.split.is(1000)//
 				.width().is(view.width().property)//
 				.height().is(view.height().property)//
 		)//
+				.child(new Decor(this).labelText.is("xzdfvfvsdvf").left().is(300).top().is(120).width().is(300).height().is(50))//
+				.child(new RedactText(this).left().is(100).top().is(20).width().is(300).height().is(50))//
+				.child(new SubLayoutless(this)//
+						.child(new Decor(this).labelText.is("inner").background.is(0x99ff00ff)//
+								.width().is(300).height().is(50))//
+								.left().is(400).top().is(200).width().is(300).height().is(200))//
+				.child(new Knob(this).tap.is(new Task() {
+					@Override
+					public void doTask() {
+						//System.out.println("afbvsfbsfbv");
+						//slr.debug();
+					}
+				}).left().is(50).top().is(220).width().is(100).height().is(50))//
 		;
 		//view.child(nn)
 		testSheet.data(new SheetColumn[] { links });

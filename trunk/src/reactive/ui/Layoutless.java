@@ -61,7 +61,6 @@ public class Layoutless extends RelativeLayout implements Rake {
 	private Vector<Decor> fogs = new Vector<Decor>();
 	private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
 
-
 	public void fillBaseColors() {
 		if (colorTest == null) {
 			colorTest = new Decor(getContext());
@@ -119,23 +118,42 @@ public class Layoutless extends RelativeLayout implements Rake {
 		return children.size();
 	}
 	public void addDialog(SubLayoutless sub) {
-		Decor fog = new Decor(this.getContext()){
+		Decor fog = new Decor(this.getContext()) {
 			@Override
-			public boolean onTouchEvent(MotionEvent event) {return true;}
+			public boolean onTouchEvent(MotionEvent event) {
+				Layoutless.this.removeDialog();
+				return true;
+			}
 		};
-		fog.background.is(0x99666666)
-		.width().is(width.property).height().is(height.property);
+		fog.background.is(0x99666666).width().is(width.property).height().is(height.property);
 		fogs.add(fog);
+		int xx = (int) (0.5 * (width.property.value() - sub.width().property.value()));
+		int yy = (int) (0.5 * (height.property.value() - sub.height().property.value()));
+		if (xx < 0) {
+			xx = 0;
+		}
+		sub.left().is(xx);
+		if (yy < 0) {
+			yy = 0;
+		}
+		sub.top().is(yy);
+		if (width.property.value() < sub.width().property.value()) {
+			sub.width().property.value(width.property.value());
+		}
+		if (height.property.value() < sub.height().property.value()) {
+			sub.height().property.value(height.property.value());
+		}
+			
 		dialogs.add(sub);
 		this.child(fog);
 		this.child(sub);
 	}
-	public boolean removeDialog(){
-		if(fogs.size()>0){			
-			this.removeView(dialogs.get(dialogs.size()-1));
-			dialogs.remove(dialogs.get(dialogs.size()-1));
-			this.removeView(fogs.get(fogs.size()-1));			
-			fogs.remove(fogs.get(fogs.size()-1));
+	public boolean removeDialog() {
+		if (fogs.size() > 0) {
+			this.removeView(dialogs.get(dialogs.size() - 1));
+			dialogs.remove(dialogs.get(dialogs.size() - 1));
+			this.removeView(fogs.get(fogs.size() - 1));
+			fogs.remove(fogs.get(fogs.size() - 1));
 			return true;
 		}
 		return false;
@@ -347,4 +365,5 @@ public class Layoutless extends RelativeLayout implements Rake {
 		afterShift.property.unbind();
 		afterZoom.property.unbind();
 	}
+	
 }

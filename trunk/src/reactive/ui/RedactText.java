@@ -8,8 +8,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.*;
 
-public class EditString extends EditText implements Rake {
-	public NoteProperty<EditString> text = new NoteProperty<EditString>(this);
+public class RedactText extends EditText implements Rake {
+	public NoteProperty<RedactText> text = new NoteProperty<RedactText>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
@@ -24,20 +24,33 @@ public class EditString extends EditText implements Rake {
 					, height.property.value().intValue());
 			params.leftMargin = left.property.value().intValue();
 			params.topMargin = top.property.value().intValue();
-			EditString.this.setLayoutParams(params);
+			params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+			params.alignWithParent=true;
+			
+			
+			RedactText.this.setLayoutParams(params);
+			
+			
+			RedactText.this.setWidth(width.property.value().intValue());
+			RedactText.this.setHeight(height.property.value().intValue());
+			RedactText.this.setMaxWidth(width.property.value().intValue());
+			RedactText.this.setMaxHeight(height.property.value().intValue());
+			RedactText.this.setMinWidth(width.property.value().intValue());
+			RedactText.this.setMinHeight(height.property.value().intValue());
+			
 			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
 		}
 	};
 
-	public EditString(Context context) {
+	public RedactText(Context context) {
 		super(context);
 		init();
 	}
-	public EditString(Context context, AttributeSet attrs) {
+	public RedactText(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
-	public EditString(Context context, AttributeSet attrs, int defStyle) {
+	public RedactText(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -46,6 +59,11 @@ public class EditString extends EditText implements Rake {
 			return;
 		}
 		initialized = true;
+		width.property.afterChange(reFit).value(100);
+		height.property.afterChange(reFit).value(100);
+		left.property.afterChange(reFit);
+		top.property.afterChange(reFit);
+		this.setText("");
 	}
 	@Override
 	public NumericProperty<Rake> left() {
