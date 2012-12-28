@@ -46,6 +46,7 @@ public class Decor extends TextView implements Rake {
 		@Override
 		public void doTask() {
 			//System.out.
+			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
 					width.property.value().intValue()//
 					, height.property.value().intValue());

@@ -22,6 +22,7 @@ import java.text.*;
 public class SubLayoutless extends Layoutless  {
 	
 	private boolean initialized = false;
+	Task reFit ;
 	public SubLayoutless(Context context) {
 		super(context);
 	}
@@ -39,6 +40,22 @@ public class SubLayoutless extends Layoutless  {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	}
+	/*
+	@Override
+	 protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		System.out.println("onSizeChanged " + this.getLeft() + "x" + this.getTop() + "/" + this.getWidth() + "x" + this.getHeight());
+		System.out.println("in " + w + "x" + h + " <- " + oldw + "x" + oldh);
+		if((w!=width().property.value().intValue())
+				&&(h!=height().property.value().intValue())
+				){
+			
+		
+		reFit.start();
+		}
+		//System.out.println("adjust " + this.getLeft() + "x" + this.getTop() + "/" + this.getWidth() + "x" + this.getHeight());
+	    }
+	*/
 	@Override
 	protected void init() {
 		super.init();
@@ -46,27 +63,29 @@ public class SubLayoutless extends Layoutless  {
 			initialized = true;
 		//left = new NumericProperty<SubLayoutless>(this);
 		//top = new NumericProperty<SubLayoutless>(this);
-		Task reFit = new Task() {
-			@Override
-			public void doTask() {
-				/*System.out.println("reFit " + width.property.value()//
-						+ "/" + height.property.value()//
-						+ "/" + left.property.value()//
-						+ "/" + top.property.value());*/
-				int w = width().property.value().intValue();
-				/*if (w < 1) {
-					w = 1;
-				}*/
-				int h = height().property.value().intValue();
-				/*if (h < 1) {
-					h = 1;
-				}*/
-				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(w, h);
-				params.leftMargin = left().property.value().intValue();
-				params.topMargin = top().property.value().intValue();
-				setLayoutParams(params);
-			}
-		};
+			reFit= new Task() {
+				@Override
+				public void doTask() {
+					//System.out.println("start reFit " + getLeft() + "x" + getTop() + "/" + getWidth() + "x" + getHeight());
+					/*System.out.println("reFit " + width().property.value()//
+							+ "x" + height().property.value()//
+							+ "/" + left().property.value()//
+							+ "x" + top().property.value());*/
+					int w = width().property.value().intValue();
+					/*if (w < 1) {
+						w = 1;
+					}*/
+					int h = height().property.value().intValue();
+					/*if (h < 1) {
+						h = 1;
+					}*/
+					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(w, h);
+					params.leftMargin = left().property.value().intValue();
+					params.topMargin = top().property.value().intValue();
+					setLayoutParams(params);
+					//System.out.println("done reFit " + getLeft() + "x" + getTop() + "/" + getWidth() + "x" + getHeight());
+				}
+			};
 		left().property.afterChange(reFit);
 		top().property.afterChange(reFit);
 		width().property.afterChange(reFit);

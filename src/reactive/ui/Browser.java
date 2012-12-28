@@ -8,6 +8,9 @@ import tee.binding.properties.*;
 import tee.binding.task.*;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -38,10 +41,13 @@ public class Browser extends WebView implements Rake {
 			params.leftMargin = left.property.value().intValue();
 			params.topMargin = top.property.value().intValue();
 			Browser.this.setLayoutParams(params);
-			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
+			//System.out.println("params: " + params.topMargin+" / "+Browser.this.getLeft()+"x"+Browser.this.getTop()+"/"+Browser.this.getWidth()+"x"+Browser.this.getHeight());
 		}
 	};
-
+	/*public void debug() {
+		System.out.println("Browser " + this.getLeft() + "x" + this.getTop() + "/" + this.getWidth() + "x" + this.getHeight());
+		System.out.println("bind " + left().property.value() + "x" + top().property.value()+ "/" + width().property.value() + "x" + height().property.value());
+	}*/
 	public Browser(Context context) {
 		super(context);
 		init();
@@ -125,4 +131,21 @@ public class Browser extends WebView implements Rake {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
+	
+	/*
+	@Override
+	public void draw(Canvas canvas) {
+		System.out.println("draw");
+		super.draw(canvas);
+		Path path=new Path();
+		path.lineTo(width().property.value().floatValue(), height().property.value().floatValue());
+		Paint paint=new Paint();
+		paint.setColor(0x99ff0000);
+		paint.setAntiAlias(true);
+		paint.setStrokeCap(Paint.Cap.ROUND);
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(3);
+		canvas.drawPath(path, paint);
+		
+	}*/
 }
