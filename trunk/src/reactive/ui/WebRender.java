@@ -21,42 +21,37 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
-public class Browser extends WebView implements Rake {
+public class WebRender extends WebView implements Rake {
 	boolean initialized = false;
 	public NoteProperty<WebView> url = new NoteProperty<WebView>(this);
-	public ItProperty<Browser, Task> afterLink = new ItProperty<Browser, Task>(this);
+	public ItProperty<WebRender, Task> afterLink = new ItProperty<WebRender, Task>(this);
 	//public NoteProperty<WebView> active = new NoteProperty<WebView>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
+	int maxH=0;
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
 	private boolean shouldOverrideUrlLoading = true;
-	Task reFit = new Task() {
-		@Override
-		public void doTask() {
-			//System.out.
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
-					width.property.value().intValue()//
-					, height.property.value().intValue());
-			params.leftMargin = left.property.value().intValue();
-			params.topMargin = top.property.value().intValue();
-			Browser.this.setLayoutParams(params);
-			//System.out.println("params: " + params.topMargin+" / "+Browser.this.getLeft()+"x"+Browser.this.getTop()+"/"+Browser.this.getWidth()+"x"+Browser.this.getHeight());
-		}
-	};
+	Task reFit ;
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged "+w+"/"+ h+" <- "+oldw+"/"+ oldh);
+		super.onSizeChanged(w, h, oldw, oldh);
+		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged done");
+	}
 	/*public void debug() {
 		System.out.println("Browser " + this.getLeft() + "x" + this.getTop() + "/" + this.getWidth() + "x" + this.getHeight());
 		System.out.println("bind " + left().property.value() + "x" + top().property.value()+ "/" + width().property.value() + "x" + height().property.value());
 	}*/
-	public Browser(Context context) {
+	public WebRender(Context context) {
 		super(context);
 		init();
 	}
-	public Browser(Context context, AttributeSet attrs) {
+	public WebRender(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
-	public Browser(Context context, AttributeSet attrs, int defStyle) {
+	public WebRender(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -64,45 +59,44 @@ public class Browser extends WebView implements Rake {
 		if (initialized) {
 			return;
 		}
-		initialized = true;
-		width.property.afterChange(reFit).value(100);
-		height.property.afterChange(reFit).value(100);
-		left.property.afterChange(reFit);
-		top.property.afterChange(reFit);
+	
+		
 		//loadUrl("file://" + mReportFilePath);
 		//loadUrl("http://www.yandex.ru");
 		getSettings().setJavaScriptEnabled(true);
 		getSettings().setSaveFormData(true);
 		getSettings().setBuiltInZoomControls(true);
+		width.property.value(100);
+		height.property.value(100);
 		setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String urlString) {
-				
 				if (shouldOverrideUrlLoading) {
 					//System.out.println("true");
-					//System.out.println("url "+urlString);
+					System.out.println("shouldOverrideUrlLoading "+urlString);
 					url.is(urlString);
-					if(afterLink.property.value()!=null){
+					if (afterLink.property.value() != null) {
 						afterLink.property.value().start();
 					}
 					return true;
 				}
 				else {
-					System.out.println("go "+urlString);
+					System.out.println("(go) " + urlString);
 					return false;
 				}
 				//return shouldOverrideUrlLoading;
 			}
 			@Override
 			public void onPageFinished(WebView view, String urlString) {
-				//System.out.println("onPageFinished "+urlString);
+				System.out.println("onPageFinished "+urlString);
 				shouldOverrideUrlLoading = true;
 				setEnabled(true);
 			}
 		});
+		initialized = true;
 	}
 	public void go(String urlString) {
-	//System.out.println("go "+urlString);
+		System.out.println("go "+urlString);
 		shouldOverrideUrlLoading = false;
 		this.setEnabled(false);
 		loadUrl(urlString);
@@ -131,7 +125,45 @@ public class Browser extends WebView implements Rake {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
-	
+	@Override
+    protected void onAttachedToWindow() {
+		
+		System.out.println("onAttachedToWindow ");
+		super.onAttachedToWindow();
+		reFit= new Task() {
+			@Override
+			public void doTask() {
+				if(maxH>=height.property.value().intValue()){//hack for 01-03 11:04:39.918: W/webcore(1539): skip viewSizeChanged as w is 0
+					return;
+				}
+				maxH=height.property.value().intValue();
+				//System.out.println("reFit");
+				int ww = width.property.value().intValue();
+				if (ww <= 0) {
+					ww = 300;
+				}
+				int hh = height.property.value().intValue();
+				if (hh <= 0) {
+					hh = 200;
+				}
+				//System.out.println("reFit "+ww+"x"+hh);
+				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ww, hh);
+				params.leftMargin = left.property.value().intValue();
+				params.topMargin = top.property.value().intValue();
+				//WebRender.this.setMinimumWidth(ww);
+				//WebRender.this.setMinimumHeight(hh);
+				setLayoutParams(params);
+				//WebRender.this.setp
+				//System.out.println("reFit params: " + params.width + "x" + params.height + ", get size is " + getWidth() + "x" + getHeight());
+				
+			}
+		};
+		width.property.afterChange(reFit);
+		height.property.afterChange(reFit);
+		left.property.afterChange(reFit);
+		top.property.afterChange(reFit);
+		System.out.println("onAttachedToWindow done");
+	}
 	/*
 	@Override
 	public void draw(Canvas canvas) {

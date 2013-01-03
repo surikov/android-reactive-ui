@@ -158,13 +158,18 @@ public class Layoutless extends RelativeLayout implements Rake {
 		}
 		return false;
 	}
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged "+w+"/"+ h+" <- "+oldw+"/"+ oldh);
+		super.onSizeChanged(w, h, oldw, oldh);
+		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged done");
+	}
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		onMeasureX();
 	}
 	protected void onMeasureX() {
-		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredHeight());
+		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredWidth()+ " x " + getMeasuredHeight());
 		width.is(getMeasuredWidth());
 		height.is(getMeasuredHeight());
 	}
@@ -365,5 +370,10 @@ public class Layoutless extends RelativeLayout implements Rake {
 		afterShift.property.unbind();
 		afterZoom.property.unbind();
 	}
+	/*
+	@Override
+    protected void onAttachedToWindow() {
+		System.out.println("lock");
+	}*/
 	
 }
