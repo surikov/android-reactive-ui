@@ -35,16 +35,12 @@ abstract class UIHook {
 }
 
 public class Demo extends Activity {
-	Browser brwsr;
-	Layoutless view;
+	WebRender brwsr;
+	Layoutless layoutless;
 	boolean lock = false;
 	String tekushieLimityTP = "tekushieLimityTP";
 	String gruppadogovorov = "gruppadogovorov";
 
-	/*
-		void trafikiPoTP() {
-			b.go("http://78.40.186.186/ReportAndroid.1cws");
-		}*/
 	String replaceLinks(String str, String kind, String p1) {
 		StringBuilder html = new StringBuilder(str);
 		int start = html.indexOf("№");
@@ -60,67 +56,32 @@ public class Demo extends Activity {
 		return html.toString();
 	}
 	void requestLimityChange(int nn) throws MalformedURLException {
-		//System.out.println("requestLimityChange " + nn);
 		Numeric lim = new Numeric().value(22);
-		//Dialogs.prompt("Лимит клиента " + nn, this, null, lim, "Запросить");
-		/*
-		final String file = Environment.getExternalStorageDirectory().getAbsolutePath() + "/horeca/report_" + tekushieLimityTP + ".html";
-		String show = new File(file).toURL().toString();		
-		brwsr.go(show);
-		*/
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		System.out.println("go----------------------------------" + Environment.getExternalStorageDirectory().getAbsolutePath());
-		view = new Layoutless(this);
+		layoutless = new Layoutless(this);
 		final Sheet testSheet = new Sheet(this).headerHeight.is(0);
-		brwsr = new Browser(this).afterLink.is(new Task() {
+		brwsr = new WebRender(this)//
+		.afterLink.is(new Task() {
 			@Override
 			public void doTask() {
-				// TODO Auto-generated method stub
-				//System.out.println("url " + brwsr.url.property.value());
 				try {
-					//URL url = new URL(brwsr.url.property.value());
-					//System.out.println(url.getQuery());
 					android.net.Uri uri = android.net.Uri.parse(brwsr.url.property.value());
 					if (uri.getQueryParameter("kind").equals(tekushieLimityTP)) {
 						int nn = Integer.parseInt(uri.getQueryParameter(gruppadogovorov));
-						//System.out.println("gruppadogovorov " + nn);
 						requestLimityChange(nn);
 					}
 				}
 				catch (Throwable t) {
 					t.printStackTrace();
 				}
-				//brwsr.go("http://yandex.ru");
 			}
 		});
-		/*b.active.property.afterChange(new Task(){
-
-			@Override
-			public void doTask() {
-				System.out.println("afterChange "+b.active.property.value());
-			}});*/
+		System.out.println(brwsr.getContext());
 		SheetColumnText links = new SheetColumnText();
-		/*Task open = new Task() {
-			@Override
-			public void doTask() {
-				//System.out.println(testSheet.selectedRow.property.value());
-				int nn = testSheet.selectedRow.property.value().intValue();
-				if (nn == 0) {
-					b.go("http://yandex.ru");
-				}
-				if (nn == 1) {
-					b.go("http://google.com");
-				}
-				if (nn == 2) {
-					trafikiPoTP();
-				}
-			}
-		};*/
-		//Numeric s=new Numeric();
-		//s.value(1000);
 		links.title.is("Reports from 1C") //						
 				.cell("yandex", new Task() {
 					@Override
@@ -159,7 +120,7 @@ public class Demo extends Activity {
 								.left().is(8)//
 								.top().is(200 + 4 + 0.5 * Layoutless.tapSize)//
 						);
-						view.addDialog(d);
+						layoutless.addDialog(d);
 					}
 				}) //
 				.cell("google", new Task() {
@@ -279,42 +240,47 @@ public class Demo extends Activity {
 		//.afterCellTap.is(open)//
 		.width.is(500)//
 		;
-		final SplitLeftRight slr=new SplitLeftRight(this);
-		
-		view//
-		.child(slr//
-				
-				.leftSide(
-				//new EditString(this)
-						brwsr//
-				)
-				//
-				//.rightSide(testSheet//
-				//.data(new SheetColumn[] { links})//
-				//)//
-				
-		.split.is(1000)//
-				.width().is(view.width().property)//
-				.height().is(view.height().property)//
-		)//
-				.child(new Decor(this).labelText.is("xzdfvfvsdvf").left().is(300).top().is(120).width().is(300).height().is(50))//
-				.child(new RedactText(this).left().is(100).top().is(20).width().is(300).height().is(50))//
-				.child(new SubLayoutless(this)//
-						.child(new Decor(this).labelText.is("inner").background.is(0x99ff00ff)//
-								.width().is(300).height().is(50))//
-								.left().is(400).top().is(200).width().is(300).height().is(200))//
-				.child(new Knob(this).tap.is(new Task() {
-					@Override
-					public void doTask() {
-						//System.out.println("afbvsfbsfbv");
-						//slr.debug();
-					}
-				}).left().is(50).top().is(220).width().is(100).height().is(50))//
-		;
-		//view.child(nn)
-		testSheet.data(new SheetColumn[] { links });
-		testSheet.reset();
-		setContentView(view);
+		final Numeric nn = new Numeric();
+		nn.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				System.out.println("nn " + nn.value() + ", " + layoutless.width().property.value() + "x" + layoutless.height().property.value());
+				//if(nn.value()>0){
+				//brwsr.width().is(nn.value());
+				//}
+			}
+		});
+		//nn.bind(layoutless.width().property.minus(0.5 * Layoutless.tapSize));
+		nn.bind(layoutless.height().property.minus(2 * Layoutless.tapSize + 16));
+		layoutless.child(brwsr//
+				.left().is(0)//
+				.top().is(2 * Layoutless.tapSize + 16)//
+				//.height().is(layoutless.height().property.minus(2 * Layoutless.tapSize + 16))//
+				.height().is(nn)//
+				.width().is(layoutless.width().property.minus(0.5 * Layoutless.tapSize))//
+		);
+		layoutless.child(new Decor(this).labelText.is("from:").labelAlignRightCenter().labelStyleMediumNormal()//
+				.left().is(16).top().is(16).height().is(0.8 * Layoutless.tapSize).width().is(200));
+		layoutless.child(new RedactText(this)//
+				.left().is(200 + 16 + 8).top().is(16).height().is(0.8 * Layoutless.tapSize).width().is(250));
+		layoutless.child(new Decor(this).labelText.is("to:").labelAlignRightCenter().labelStyleMediumNormal()//
+				.left().is(16).top().is(16 + Layoutless.tapSize).height().is(0.8 * Layoutless.tapSize).width().is(200));
+		layoutless.child(new RedactText(this)//
+				.left().is(200 + 16 + 8).top().is(16 + Layoutless.tapSize).height().is(0.8 * Layoutless.tapSize).width().is(250));
+		layoutless.child(new Knob(this).labelText.is("Refresh").tap.is(new Task() {
+			@Override
+			public void doTask() {
+				brwsr.go("http://yandex.ru");
+			}
+		})//
+				.left().is(200 + 16 + 8 + 250 + 8).top().is(16 + Layoutless.tapSize).height().is(0.8 * Layoutless.tapSize).width().is(100));
+		layoutless.child(new Decor(this).background.is(Layoutless.themeBlurColor)//
+				.top().is(2 * Layoutless.tapSize + 16 - 1).height().is(1).width().is(layoutless.width().property));
+		System.out.println("setContentView");
+		setContentView(layoutless);
+		//System.out.println(brwsr.getContext());
+		//System.out.println(layoutless.height().property.value());
+		System.out.println("done onCreate");
 	}
 	void showPage(String xml, String url, String name, final UIHook hook) {
 		if (lock) {
@@ -412,7 +378,7 @@ public class Demo extends Activity {
 	@Override
 	public void onBackPressed() {
 		//System.out.println("onBackPressed");
-		if (view.removeDialog()) {
+		if (layoutless.removeDialog()) {
 			//System.out.println("onBackPressed removeDialog");
 		}
 		else {
