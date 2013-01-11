@@ -25,7 +25,7 @@ public class SplitLeftRight extends SubLayoutless {
 	private Rake leftSide;
 	private Rake rightSide;
 	private boolean initialized = false;
-
+//private boolean lockAdjustSplit=false;
 	/*
 		public void debug() {
 			
@@ -104,6 +104,7 @@ public class SplitLeftRight extends SubLayoutless {
 		super.init();
 		if (!initialized) {
 			initialized = true;
+			this.solid.is(false);
 			split = new NumericProperty<SplitLeftRight>(this);
 			split.is(50);
 			position = new NumericProperty<SplitLeftRight>(this);

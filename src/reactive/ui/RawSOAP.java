@@ -26,39 +26,36 @@ public class RawSOAP {
 	public ItProperty<RawSOAP, Throwable> exception = new ItProperty<RawSOAP, Throwable>(this);
 	public Bough data;
 
-	private boolean invoke() throws Exception {
-		HttpPost request = new HttpPost(url.property.value());
-		HttpParams httpParameters = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParameters, timeout.property.value().intValue());
-		HttpConnectionParams.setSoTimeout(httpParameters, timeout.property.value().intValue());
-		HttpClient client = new DefaultHttpClient(httpParameters);
-		StringEntity stringEntity = new StringEntity(xml.property.value(), requestEncoding.property.value());
-		stringEntity.setContentType("text/xml; charset="+requestEncoding.property.value());
-		request.setEntity(stringEntity);
-		HttpResponse httpResponse = client.execute(request);
-		statusCode.is(httpResponse.getStatusLine().getStatusCode());
-		statusDescription.is(httpResponse.getStatusLine().getReasonPhrase());
-		if (statusCode.property.value() > 100 && statusCode.property.value() < 300) {
-			HttpEntity entity = httpResponse.getEntity();
-			String res = EntityUtils.toString(entity, responseEncoding.property.value());
-			data = tee.binding.Bough.parseXML(res);
-			return true;
+	public boolean startNow() {
+		try {
+			HttpPost request = new HttpPost(url.property.value());
+			HttpParams httpParameters = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpParameters, timeout.property.value().intValue());
+			HttpConnectionParams.setSoTimeout(httpParameters, timeout.property.value().intValue());
+			HttpClient client = new DefaultHttpClient(httpParameters);
+			StringEntity stringEntity = new StringEntity(xml.property.value(), requestEncoding.property.value());
+			stringEntity.setContentType("text/xml; charset=" + requestEncoding.property.value());
+			request.setEntity(stringEntity);
+			HttpResponse httpResponse = client.execute(request);
+			statusCode.is(httpResponse.getStatusLine().getStatusCode());
+			statusDescription.is(httpResponse.getStatusLine().getReasonPhrase());
+			if (statusCode.property.value() > 100 && statusCode.property.value() < 300) {
+				HttpEntity entity = httpResponse.getEntity();
+				String res = EntityUtils.toString(entity, responseEncoding.property.value());
+				data = tee.binding.Bough.parseXML(res);
+				return true;
+			}
 		}
-		else {
-			return false;
+		catch (Throwable t) {
+			exception.is(t);
 		}
+		return false;
 	}
-	public void start() {
+	public void startBackground() {
 		new AsyncTask<Void, Void, Boolean>() {
 			@Override
 			protected Boolean doInBackground(Void... r) {
-				try {
-					return invoke();
-				}
-				catch (Throwable t) {
-					exception.is(t);
-				}
-				return false;
+				return startNow();
 			}
 			@Override
 			protected void onPostExecute(Boolean noError) {
