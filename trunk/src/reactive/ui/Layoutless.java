@@ -60,6 +60,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	private Vector<Rake> children = new Vector<Rake>();
 	private Vector<Decor> fogs = new Vector<Decor>();
 	private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
+	private boolean measured = false;
 
 	public void fillBaseColors() {
 		if (colorTest == null) {
@@ -143,7 +144,6 @@ public class Layoutless extends RelativeLayout implements Rake {
 		if (height.property.value() < sub.height().property.value()) {
 			sub.height().property.value(height.property.value());
 		}
-			
 		dialogs.add(sub);
 		this.child(fog);
 		this.child(sub);
@@ -169,9 +169,12 @@ public class Layoutless extends RelativeLayout implements Rake {
 		onMeasureX();
 	}
 	protected void onMeasureX() {
-		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredWidth()+ " x " + getMeasuredHeight());
-		width.is(getMeasuredWidth());
-		height.is(getMeasuredHeight());
+		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredWidth() + " x " + getMeasuredHeight()+": "+measured);
+		if (!measured) {
+			measured = true;
+			width.is(getMeasuredWidth());
+			height.is(getMeasuredHeight());
+		}
 	}
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -372,8 +375,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	}
 	/*
 	@Override
-    protected void onAttachedToWindow() {
+	protected void onAttachedToWindow() {
 		System.out.println("lock");
 	}*/
-	
 }

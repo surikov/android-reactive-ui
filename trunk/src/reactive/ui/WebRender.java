@@ -128,7 +128,7 @@ public class WebRender extends WebView implements Rake {
 	@Override
     protected void onAttachedToWindow() {
 		
-		System.out.println("onAttachedToWindow ");
+		//System.out.println("onAttachedToWindow ");
 		super.onAttachedToWindow();
 		reFit= new Task() {
 			@Override
@@ -162,7 +162,7 @@ public class WebRender extends WebView implements Rake {
 		height.property.afterChange(reFit);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
-		System.out.println("onAttachedToWindow done");
+		//System.out.println("onAttachedToWindow done");
 	}
 	/*
 	@Override

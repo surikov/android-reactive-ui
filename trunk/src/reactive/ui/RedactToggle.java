@@ -2,15 +2,15 @@ package reactive.ui;
 
 import android.text.*;
 import tee.binding.properties.*;
-import tee.binding.properties.NumericProperty;
 import tee.binding.task.Task;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.*;
 
-public class RedactText extends EditText implements Rake {
-	public NoteProperty<RedactText> text = new NoteProperty<RedactText>(this);
+public class RedactToggle extends CheckBox implements Rake {
+	public NoteProperty<RedactToggle> labelText = new NoteProperty<RedactToggle>(this);
+	public ToggleProperty<RedactToggle> yes = new ToggleProperty<RedactToggle>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
@@ -28,26 +28,26 @@ public class RedactText extends EditText implements Rake {
 			params.topMargin = top.property.value().intValue();
 			params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 			params.alignWithParent = true;
-			RedactText.this.setLayoutParams(params);
-			RedactText.this.setWidth(width.property.value().intValue());
-			RedactText.this.setHeight(height.property.value().intValue());
-			RedactText.this.setMaxWidth(width.property.value().intValue());
-			RedactText.this.setMaxHeight(height.property.value().intValue());
-			RedactText.this.setMinWidth(width.property.value().intValue());
-			RedactText.this.setMinHeight(height.property.value().intValue());
+			RedactToggle.this.setLayoutParams(params);
+			RedactToggle.this.setWidth(width.property.value().intValue());
+			RedactToggle.this.setHeight(height.property.value().intValue());
+			RedactToggle.this.setMaxWidth(width.property.value().intValue());
+			RedactToggle.this.setMaxHeight(height.property.value().intValue());
+			RedactToggle.this.setMinWidth(width.property.value().intValue());
+			RedactToggle.this.setMinHeight(height.property.value().intValue());
 			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
 		}
 	};
 
-	public RedactText(Context context) {
+	public RedactToggle(Context context) {
 		super(context);
 		init();
 	}
-	public RedactText(Context context, AttributeSet attrs) {
+	public RedactToggle(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
-	public RedactText(Context context, AttributeSet attrs, int defStyle) {
+	public RedactToggle(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -60,29 +60,28 @@ public class RedactText extends EditText implements Rake {
 		height.property.afterChange(reFit).value(100);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
-		addTextChangedListener(new TextWatcher() {
+		setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-			}
-			@Override
-			public void afterTextChanged(Editable s) {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (!lock) {
 					lock = true;
-					text.property.value(s.toString());
+					yes.is(isChecked);
 					lock = false;
 				}
 			}
 		});
-		text.property.afterChange(new Task() {
+		labelText.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				
+				setText(labelText.property.value());
+			}
+		});
+		yes.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
 				if (!lock) {
 					lock = true;
-					setText(text.property.value());
+					setChecked(yes.property.value());
 					lock = false;
 				}
 			}
@@ -111,7 +110,8 @@ public class RedactText extends EditText implements Rake {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		text.property.unbind();
+		labelText.property.unbind();
+		yes.property.unbind();
 		width.property.unbind();
 		height.property.unbind();
 		left.property.unbind();

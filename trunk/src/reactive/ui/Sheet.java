@@ -31,7 +31,7 @@ public class Sheet extends SubLayoutless {
 	private SheetColumn[] columns;
 	public NumericProperty<Sheet> rowHeight;
 	public NumericProperty<Sheet> maxRowHeight;
-	public NumericProperty<Sheet> headerHeight;
+	private NumericProperty<Sheet> headerHeight;
 	public NumericProperty<Sheet> selectedRow;
 	Numeric rowCount;
 	Numeric columnCount;
@@ -169,7 +169,7 @@ public class Sheet extends SubLayoutless {
 		//body.innerWidth.property.unbind();
 		//fill();
 	}
-	void refreshSelection() {
+	public void refreshSelection() {
 		//System.out.println("row " + selectedRow.property.value());
 		if (selectedRow.property.value() < 0) {
 			selection.setVisibility(INVISIBLE);
