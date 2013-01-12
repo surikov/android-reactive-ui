@@ -9,14 +9,18 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 import reactive.ui.*;
+
 import android.content.res.*;
 import android.view.animation.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
-
+import tee.binding.*;
+import android.net.*;
 import java.io.*;
 import java.text.*;
+import android.database.*;
+import android.database.sqlite.*;
 
 public class Layoutless extends RelativeLayout implements Rake {
 	public static float density = 1;
@@ -58,10 +62,10 @@ public class Layoutless extends RelativeLayout implements Rake {
 	private static Decor colorTest;
 	private boolean initialized = false;
 	private Vector<Rake> children = new Vector<Rake>();
-	private Vector<Decor> fogs = new Vector<Decor>();
-	private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
+	//private Vector<Decor> fogs = new Vector<Decor>();
+	//private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
 	private boolean measured = false;
-
+	
 	public void fillBaseColors() {
 		if (colorTest == null) {
 			colorTest = new Decor(getContext());
@@ -118,6 +122,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public int count() {
 		return children.size();
 	}
+	/*
 	public void addDialog(SubLayoutless sub) {
 		Decor fog = new Decor(this.getContext()) {
 			@Override
@@ -157,7 +162,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 			return true;
 		}
 		return false;
-	}
+	}*/
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged "+w+"/"+ h+" <- "+oldw+"/"+ oldh);
 		super.onSizeChanged(w, h, oldw, oldh);
