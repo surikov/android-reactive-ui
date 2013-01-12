@@ -430,10 +430,23 @@ public class Demo extends Activity {
 						.item("Свёрнутый")//
 						.item("Свёрнутый по договорам")//
 						.left().is(thirdColumnStart).top().is(margin).width().is(thirdColumnWidth).height().is(0.9 * Layoutless.tapSize))//
-				.child(new RedactToggle(this).labelText.is("Договора группы").yes.is(ballansPartnerovTolkoDogGrup)
-						//
-						.left().is(thirdColumnStart).top().is(margin + Layoutless.tapSize).width().is( thirdColumnWidth).height()
-						.is(0.9 * Layoutless.tapSize))//
+				.child(new RedactToggle(this).labelText.is("Договора группы").yes.is(ballansPartnerovTolkoDogGrup) //
+						.left().is(thirdColumnStart).top().is(margin + Layoutless.tapSize).width().is(thirdColumnWidth).height().is(0.9 * Layoutless.tapSize))//
+				.child(new RedactSelection(this)//
+				/*.text.is("dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+						
+						
+						)*/
+						.left().is(forthColumnStart).top().is(margin).width().is(450).height().is(1.9 * Layoutless.tapSize+margin))//
 				.width().is(layoutless.width().property).height().is(seekBoxHeight);
 		//ballansPartnerovBox.child(new Decor(this).labelText.is("ballansPartnerovBox").width().is(500).height().is(100)).width().is(500).height().is(200);
 		layoutless.child(ballansPartnerovBox);
