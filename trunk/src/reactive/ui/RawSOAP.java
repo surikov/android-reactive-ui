@@ -26,7 +26,8 @@ public class RawSOAP {
 	public ItProperty<RawSOAP, Throwable> exception = new ItProperty<RawSOAP, Throwable>(this);
 	public Bough data;
 
-	public boolean startNow() {
+	public void startNow() {
+		//System.out.println(xml.property.value());
 		try {
 			HttpPost request = new HttpPost(url.property.value());
 			HttpParams httpParameters = new BasicHttpParams();
@@ -39,27 +40,31 @@ public class RawSOAP {
 			HttpResponse httpResponse = client.execute(request);
 			statusCode.is(httpResponse.getStatusLine().getStatusCode());
 			statusDescription.is(httpResponse.getStatusLine().getReasonPhrase());
-			if (statusCode.property.value() > 100 && statusCode.property.value() < 300) {
-				HttpEntity entity = httpResponse.getEntity();
-				String res = EntityUtils.toString(entity, responseEncoding.property.value());
-				data = tee.binding.Bough.parseXML(res);
+			HttpEntity entity = httpResponse.getEntity();
+			String res = EntityUtils.toString(entity, responseEncoding.property.value());
+			data = tee.binding.Bough.parseXML(res);
+			/*if (statusCode.property.value() >= 100 && statusCode.property.value() <= 300) {
 				return true;
 			}
+			else {
+				return false;
+			}*/
 		}
 		catch (Throwable t) {
 			exception.is(t);
 		}
-		return false;
+		//return false;
 	}
-	public void startBackground() {
-		new AsyncTask<Void, Void, Boolean>() {
+	public void startLater() {
+		new AsyncTask<Void, Void, Void>() {
 			@Override
-			protected Boolean doInBackground(Void... r) {
-				return startNow();
+			protected Void doInBackground(Void... r) {
+				 startNow();
+				 return null;
 			}
 			@Override
-			protected void onPostExecute(Boolean noError) {
-				if (noError) {
+			protected void onPostExecute(Void r) {
+				if (exception.property.value()==null) {
 					if (afterSuccess.property.value() != null) {
 						afterSuccess.property.value().start();
 					}
@@ -76,5 +81,6 @@ public class RawSOAP {
 		timeout.is(30 * 1000);
 		responseEncoding.is("UTF-8");
 		requestEncoding.is("UTF-8");
+		statusCode.is(-1);
 	}
 }
