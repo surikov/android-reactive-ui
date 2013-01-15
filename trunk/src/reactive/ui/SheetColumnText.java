@@ -15,7 +15,7 @@ import tee.binding.it.*;
 import android.text.*;
 
 public class SheetColumnText extends SheetColumn {
-	Vector<String> cells = new Vector<String>();
+	public Vector<String> cells = new Vector<String>();
 	Vector<Task> taps = new Vector<Task>();
 	Vector<Integer> backgrounds = new Vector<Integer>();
 	public NoteProperty<SheetColumnText> title=new NoteProperty<SheetColumnText> (this);

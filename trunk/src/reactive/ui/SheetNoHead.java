@@ -22,17 +22,15 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class Sheet extends SubLayoutless {
+public class SheetNoHead extends SubLayoutless {
 	private boolean initialized = false;
 	private SubLayoutless data;
 	private SubLayoutless body;
-	private SubLayoutless header;
 	private Decor selection;
 	private SheetColumn[] columns;
-	public NumericProperty<Sheet> rowHeight;
-	public NumericProperty<Sheet> maxRowHeight;
-	public NumericProperty<Sheet> headerHeight;
-	public NumericProperty<Sheet> selectedRow;
+	public NumericProperty<SheetNoHead> rowHeight;
+	public NumericProperty<SheetNoHead> maxRowHeight;
+	public NumericProperty<SheetNoHead> selectedRow;
 	Numeric rowCount;
 	Numeric columnCount;
 
@@ -53,11 +51,6 @@ public class Sheet extends SubLayoutless {
 							.left().is(curLeft)//
 					);
 				}
-				header.child(columns[x].header(this.getContext())//
-						.left().is(header.shiftX.property.plus(curLeft))//
-						.height().is(headerHeight.property)//
-						.width().is(columns[x].width.property.value())//
-				);
 				for (int y = 0; y < rowCount.value(); y++) {
 					data.child(columns[x].cell(y, this.getContext())//
 							.left().is(curLeft)//
@@ -80,23 +73,21 @@ public class Sheet extends SubLayoutless {
 			}
 			data.width().is(curLeft);
 			body.innerWidth.is(curLeft);
-			header.innerWidth.is(curLeft);
 			this.postInvalidate();
 			setZoom();
 		}
 	}
-	public Sheet(Context context) {
+	public SheetNoHead(Context context) {
 		super(context);
 	}
-	public Sheet(Context context, AttributeSet attrs) {
+	public SheetNoHead(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
-	public Sheet(Context context, AttributeSet attrs, int defStyle) {
+	public SheetNoHead(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 	private void clear() {
 		data.removeAllViews();
-		header.removeAllViews();
 		data.child(selection);
 	}
 	public void refreshSelection() {
@@ -126,29 +117,22 @@ public class Sheet extends SubLayoutless {
 			columnCount = new Numeric();
 			selection = new Decor(this.getContext()).background.is(0x66999999);
 			selection.setVisibility(INVISIBLE);
-			selectedRow = new NumericProperty<Sheet>(this);
+			selectedRow = new NumericProperty<SheetNoHead>(this);
 			selectedRow.is(-1);
-			rowHeight = new NumericProperty<Sheet>(this);
-			maxRowHeight = new NumericProperty<Sheet>(this);
-			headerHeight = new NumericProperty<Sheet>(this);
+			rowHeight = new NumericProperty<SheetNoHead>(this);
+			maxRowHeight = new NumericProperty<SheetNoHead>(this);
 			rowHeight.is(Layoutless.tapSize);
-			headerHeight.is(Layoutless.tapSize);
-			header = new SubLayoutless(this.getContext());
-			header.height().is(headerHeight.property);
-			header.width().is(this.width().property);
-			this.child(header);
 			body = new SubLayoutless(this.getContext());
 			this.child(body);
-			body.top().is(headerHeight.property);
 			body.width().is(this.width().property);
-			body.height().is(this.height().property.minus(headerHeight.property));
+			body.height().is(this.height().property);
 			data = new SubLayoutless(this.getContext());
 			data.child(selection);
 			body.child(data);
 			data.left().is(body.shiftX.property);
 			data.top().is(body.shiftY.property);
 			data.solid.is(false);
-			body.shiftX.property.bind(header.shiftX.property);
+			body.shiftX.property.bind(body.shiftX.property);
 			body.afterTap.is(new Task() {
 				@Override
 				public void doTask() {
@@ -181,27 +165,7 @@ public class Sheet extends SubLayoutless {
 						}
 					}
 				}
-			});
-			header.afterTap.is(new Task() {
-				@Override
-				public void doTask() {
-					if (columns == null)
-						return;
-					if (header.tapX.property.value() >= 0) {
-						int columnCount = columns.length;
-						int curLeft = 0;
-						for (int x = 0; x < columnCount; x++) {
-							curLeft = curLeft + columns[x].width.property.value().intValue();
-							if (header.tapX.property.value() <= curLeft) {
-								if (columns[x].afterHeaderTap.property.value() != null) {
-									columns[x].afterHeaderTap.property.value().start();
-								}
-								break;
-							}
-						}
-					}
-				}
-			});
+			});			
 			body.maxZoom.is(maxRowHeight.property);
 			body.afterZoom.is(new Task() {
 				@Override
