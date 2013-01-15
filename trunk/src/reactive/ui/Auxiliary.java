@@ -4,6 +4,7 @@ import android.view.*;
 import android.app.*;
 import android.content.*;
 import android.graphics.*;
+import android.text.InputType;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
@@ -187,23 +188,183 @@ public class Auxiliary {
 		return bitmap;
 	}
 	public static void inform(String s, Context context) {
-		Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, s, Toast.LENGTH_LONG).show();
 	}
 	public static void warn(String s, Context context) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setMessage(s);
 		builder.create().show();
 	}
-	
-	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
+	public static void pick(Context context,String title,final Note text,String positiveButtonTitle,final Task callbackPositiveBtn){
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setItems(items, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				if (defaultSelection != null) {
-					defaultSelection.value(which);
-				}
+		builder.setTitle(title);
+		final EditText input = new EditText(context);
+		input.setText(text.value());
+		builder.setView(input);
+		builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				text.value("" + input.getText());
+				callbackPositiveBtn.start();
 			}
 		});
 		builder.create().show();
 	}
+	public static void pick(Context context,String title,final Numeric  num,String positiveButtonTitle,final Task callbackPositiveBtn){
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle(title);
+		final EditText input = new EditText(context);
+		input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+		input.setText("" + num.value());
+		
+		builder.setView(input);
+		builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				double nn = Double.parseDouble(input.getText().toString());
+				num.value(nn);
+				callbackPositiveBtn.start();
+			}
+		});
+		builder.create().show();
+	}
+	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
+		pick(context, items, defaultSelection, null,null,null, null, null, null);
+	}
+	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection//
+			,String title//
+			,final Task afterSelect
+			, String positiveButtonTitle//
+			, final Task callbackPositiveBtn//
+			, String neutralButtonTitle//
+			, final Task callbackNeutralBtn//
+	) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		int nn = -1;
+		if (defaultSelection != null) {
+			nn = defaultSelection.value().intValue();
+		}
+		if(title!=null){
+			builder.setTitle(title);
+		}
+		builder.setSingleChoiceItems(items, nn, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if (defaultSelection != null) {
+					defaultSelection.value(which);
+				}
+				dialog.dismiss();
+				if(afterSelect!=null){
+				afterSelect.start();}
+			}
+		});
+		if (callbackPositiveBtn != null) {
+			builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					callbackPositiveBtn.start();
+				}
+			});
+		}
+		if (callbackNeutralBtn != null) {
+			builder.setNeutralButton(neutralButtonTitle, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					callbackNeutralBtn.start();
+				}
+			});
+		}
+		builder.create().show();
+	}
+	public static void pick(Context context, CharSequence[] items, final They<Integer> defaultSelection//
+	) {
+		if (items.length > 0) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(context);
+			boolean[] checks = new boolean[items.length];
+			for (int i = 0; i < defaultSelection.size(); i++) {
+				int n = defaultSelection.at(i);
+				if (n >= 0 && n < checks.length) {
+					checks[n] = true;
+				}
+			}
+			builder.setMultiChoiceItems(items, checks, new DialogInterface.OnMultiChoiceClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+					//System.out.println("onClick "+which+"/"+isChecked);
+					if (isChecked) {
+						for (int i = 0; i < defaultSelection.size(); i++) {
+							int n = defaultSelection.at(i);
+							if (n == which) {
+								return;
+							}
+						}
+						//System.out.println("insert "+which);
+						defaultSelection.insert(0, which);
+					}
+					else {
+						for (int i = 0; i < defaultSelection.size(); i++) {
+							int n = defaultSelection.at(i);
+							if (n == which) {
+								//System.out.println("drop "+n+" at "+i);
+								defaultSelection.delete(defaultSelection.at(i));
+								return;
+							}
+						}
+					}
+				}
+			});
+			builder.create().show();
+		}
+	}
+	public static void pick(Context context//
+			, String title//
+			, String message//
+			, String positiveButtonTitle//
+			, final Task callbackPositiveBtn//
+			, String neutralButtonTitle//
+			, final Task callbackNeutralBtn//
+			, String negativeButtonTitle//
+			, final Task callbackNegativeBtn//
+	) {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+		if (title != null) {
+			dialogBuilder.setTitle(title);
+		}
+		if (message != null) {
+			dialogBuilder.setMessage(message);
+		}
+		dialogBuilder.setNegativeButton(negativeButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if (callbackNegativeBtn != null) {
+					callbackNegativeBtn.start();
+				}
+				dialog.dismiss();
+			}
+		});
+		dialogBuilder.setNeutralButton(neutralButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if (callbackNeutralBtn != null) {
+					callbackNeutralBtn.start();
+				}
+				dialog.dismiss();
+			}
+		});
+		dialogBuilder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if (callbackPositiveBtn != null) {
+					callbackPositiveBtn.start();
+				}
+				dialog.dismiss();
+			}
+		});
+		dialogBuilder.create().show();
+	}
+	/*
+		public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(context);
+			builder.setItems(items, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					if (defaultSelection != null) {
+						defaultSelection.value(which);
+					}
+				}
+			});
+			builder.create().show();
+		}*/
 }

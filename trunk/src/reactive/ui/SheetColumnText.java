@@ -59,7 +59,8 @@ public class SheetColumnText extends SheetColumn {
 	@Override
 	public Rake header(Context c) {
 		Decor header = new Decor(c).labelText.is(title.property);
-		header.background.is(Layoutless.themeBlurColor);
+		//header.background.is(Layoutless.themeBlurColor);
+		header.background.is(0x44999999);
 		header.labelAlignCenterBottom();
 		header.setPadding(3, 3, 3, 3);
 		return header;
