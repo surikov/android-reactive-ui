@@ -195,7 +195,7 @@ public class Auxiliary {
 		builder.setMessage(s);
 		builder.create().show();
 	}
-	public static void pick(Context context,String title,final Note text,String positiveButtonTitle,final Task callbackPositiveBtn){
+	public static void pick(Context context, String title, final Note text, String positiveButtonTitle, final Task callbackPositiveBtn) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		final EditText input = new EditText(context);
@@ -209,30 +209,53 @@ public class Auxiliary {
 		});
 		builder.create().show();
 	}
-	public static void pick(Context context,String title,final Numeric  num,String positiveButtonTitle,final Task callbackPositiveBtn){
+	public static void pick(Context context, String title, final Numeric num//
+			, String positiveButtonTitle, final Task callbackPositiveBtn//
+			, String neutralButtonTitle, final Task callbackNeutralBtn//
+	) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		final EditText input = new EditText(context);
 		input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 		input.setText("" + num.value());
-		
 		builder.setView(input);
-		builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				double nn = Double.parseDouble(input.getText().toString());
-				num.value(nn);
-				callbackPositiveBtn.start();
-			}
-		});
+		if (callbackPositiveBtn != null) {
+			builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					double nn = num.value();
+					try {
+						nn = Double.parseDouble(input.getText().toString());
+					}
+					catch (Throwable t) {
+						t.printStackTrace();
+					}
+					num.value(nn);
+					callbackPositiveBtn.start();
+				}
+			});
+		}
+		
+		
+		
+		
+		if (callbackNeutralBtn != null) {
+			builder.setNeutralButton(neutralButtonTitle, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {					
+					callbackNeutralBtn.start();
+				}
+			});
+		}
+		
+		
+		
 		builder.create().show();
 	}
 	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
-		pick(context, items, defaultSelection, null,null,null, null, null, null);
+		pick(context, items, defaultSelection, null, null, null, null, null, null);
 	}
 	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection//
-			,String title//
-			,final Task afterSelect
-			, String positiveButtonTitle//
+			, String title//
+			, final Task afterSelect, String positiveButtonTitle//
 			, final Task callbackPositiveBtn//
 			, String neutralButtonTitle//
 			, final Task callbackNeutralBtn//
@@ -242,7 +265,7 @@ public class Auxiliary {
 		if (defaultSelection != null) {
 			nn = defaultSelection.value().intValue();
 		}
-		if(title!=null){
+		if (title != null) {
 			builder.setTitle(title);
 		}
 		builder.setSingleChoiceItems(items, nn, new DialogInterface.OnClickListener() {
@@ -252,8 +275,9 @@ public class Auxiliary {
 					defaultSelection.value(which);
 				}
 				dialog.dismiss();
-				if(afterSelect!=null){
-				afterSelect.start();}
+				if (afterSelect != null) {
+					afterSelect.start();
+				}
 			}
 		});
 		if (callbackPositiveBtn != null) {
