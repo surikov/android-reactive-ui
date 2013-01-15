@@ -31,7 +31,7 @@ public class Sheet extends SubLayoutless {
 	private SheetColumn[] columns;
 	public NumericProperty<Sheet> rowHeight;
 	public NumericProperty<Sheet> maxRowHeight;
-	private NumericProperty<Sheet> headerHeight;
+	public NumericProperty<Sheet> headerHeight;
 	public NumericProperty<Sheet> selectedRow;
 	Numeric rowCount;
 	Numeric columnCount;

@@ -24,6 +24,7 @@ import android.database.sqlite.*;
 import reactive.ui.*;
 
 import java.net.*;
+import java.nio.channels.FileChannel;
 
 import android.view.animation.*;
 import tee.binding.properties.*;
@@ -33,7 +34,7 @@ import tee.binding.*;
 import java.io.*;
 import java.text.*;
 
-abstract class UIHook {
+abstract class InteractionHook {
 	public abstract String replace(String s);
 }
 
@@ -41,6 +42,275 @@ class KontragentInfo {
 	public String _idrref = "";
 	public String kod = "";
 	public String naimenovanie = "";
+}
+
+class OrderItemInfo {
+	public String _idrref = "";
+	public String artikul = "";
+	public String naimenovanie = "";
+	public String cena = "";
+	public String kolichestvo = "";
+}
+
+class EditOrderViaWeb {
+	Demo demo;
+	public Vector<OrderItemInfo> orderItems = new Vector<OrderItemInfo>();
+	public Context context;
+	String documentDate;
+	String hrc;
+	String shipDate;
+	String documentNumber;
+	Task refreshTask;
+	Note comment;
+
+	void start() {
+		final RawSOAP r = new RawSOAP();
+		new Expect().status.is("Выполнение...").task.is(new Task() {
+			@Override
+			public void doTask() {
+				r.url.is("http://78.40.186.186/ChangeOfOrders.1cws")//
+				.xml.is("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"//
+						+ "\n<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">"//
+						+ "\n	<S:Body>"//
+						+ "\n		<Gat xmlns=\"http://ws.swl/ChangeOrders\">"//
+						+ "\n			<Namber>" + documentNumber + "</Namber>"//
+						+ "\n			<Date>" + Demo.reformatDate(documentDate) + "</Date>"//
+						+ "\n		</Gat>"//
+						+ "\n	</S:Body>"//
+						+ "\n</S:Envelope>"//
+				);
+				r.startNow();
+				Vector<Bough> items = r.data.child("soap:Body")//
+						.child("m:GatResponse")//
+						.child("m:return")//
+						.child("m:Table")//
+				.children;
+				for (int i = 0; i < items.size(); i++) {
+					OrderItemInfo info = new OrderItemInfo();
+					info.artikul = items.get(i).child("Article").value.property.value();
+					info.cena = items.get(i).child("m:Cena").value.property.value();
+					info.kolichestvo = items.get(i).child("KolVo").value.property.value();
+					info.naimenovanie = demo.nomenklaturaNaimenovanieByArtikul(info.artikul);
+					orderItems.add(info);
+				}
+				comment = r.data.child("soap:Body")//
+						.child("m:GatResponse")//
+						.child("m:return")//
+						.child("m:Head")//
+						.child("Comment").value.property;
+			}
+		}).afterDone.is(new Task() {
+			@Override
+			public void doTask() {
+				promptAction();
+			}
+		}).afterCancel.is(new Task() {
+			@Override
+			public void doTask() {
+				refreshTask.start();
+			}
+		}).start(context);
+	}
+	void promptAction() {
+		Auxiliary.pick(context//
+				, "Действия с документом"//
+				, "Заказ №" + documentNumber + " от " + documentDate + " на " + shipDate//
+				, "Провести", new Task() {
+					@Override
+					public void doTask() {
+						requestChangeOrderState("1");
+					}
+				}//
+				, "Пометить на удаление", new Task() {
+					@Override
+					public void doTask() {
+						requestChangeOrderState("2");
+					}
+				}//
+				, "Изменить", new Task() {
+					@Override
+					public void doTask() {
+						//Auxiliary.warn("Change", Demo.this);
+						requestItemsChange();
+					}
+				}//
+				);
+	}
+	void requestItemsChange() {
+		final Numeric it = new Numeric().value(-1);
+		String[] labels = new String[orderItems.size()];
+		for (int i = 0; i < labels.length; i++) {
+			labels[i] = orderItems.get(i).artikul//
+					+ ": " + orderItems.get(i).naimenovanie//
+					+ ", " + orderItems.get(i).kolichestvo//
+					+ " по " + orderItems.get(i).cena + "руб.";
+		}
+		String c = comment.value();
+		if (c.trim().length() > 0) {
+			c = " (" + c + ")";
+		}
+		Auxiliary.pick(context, labels, it//
+				, "Заказ " + documentNumber + " от " + documentDate + " на " + shipDate + c//
+				, new Task() {
+					@Override
+					public void doTask() {
+						promptItem(it.value().intValue());
+					}
+				}, "Сохранить", new Task() {
+					@Override
+					public void doTask() {
+						requestSaveOrder();
+					}
+				}, "Комментарий", new Task() {
+					@Override
+					public void doTask() {
+						promptComment();
+					}
+				});
+	}
+	void promptItem(int n) {
+		//System.out.println(n);
+		//requestItemsChange();
+		final OrderItemInfo inf = orderItems.get(n);
+		final Numeric nn = new Numeric();
+		nn.value(Double.parseDouble(inf.kolichestvo));
+		Auxiliary.pick(context//
+				, inf.artikul + ": " + inf.naimenovanie + ", " + inf.cena + "руб", nn//
+				, "Сохранить", new Task() {
+					@Override
+					public void doTask() {
+						inf.kolichestvo = "" + nn.value();
+						//System.out.println(comment.value());
+						//requestSaveOrderItems(documentDate, shipDate, documentNumber, comment.value(), orderItems);
+						requestItemsChange();
+					}
+				});
+	}
+	void promptComment() {
+		Auxiliary.pick(context//
+				, "Заказ " + documentNumber + " от " + documentDate + " на " + shipDate//
+				, comment//
+				, "Сохранить", new Task() {
+					@Override
+					public void doTask() {
+						//System.out.println(comment.value());
+						//requestSaveOrderItems(documentDate, shipDate, documentNumber, comment.value(), orderItems);
+						requestItemsChange();
+					}
+				});
+	}
+	void requestSaveOrder() {
+		//System.out.println("save");
+		//refreshTask.start();
+		final RawSOAP r = new RawSOAP();
+		new Expect().status.is("Выполнение...").task.is(new Task() {
+			@Override
+			public void doTask() {
+				String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"//
+						+ "\n<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">"//
+						+ "\n	<S:Body>"//
+						+ "\n		<Change xmlns=\"http://ws.swl/ChangeOrders\">"//
+						+ "\n			<Docs>"//
+						+ "\n				<Head Namber=\"" + documentNumber + "\" Comment=\"" + comment.value() + "\" ThatDone=\"3\" Date=\"" + Demo.reformatDate(documentDate) + "\">"//
+						+ "\n					<Polzov>"+hrc+"</Polzov>"//
+						+ "\n					<DateOtgruz>"+Demo.reformatDate(shipDate)+"</DateOtgruz>"//
+						+ "\n				</Head>"//
+						+ "\n				<Table>"//
+				;
+				for (int i = 0; i < orderItems.size(); i++) {
+					xml = xml + "\n					<Stroki Article=\"" + orderItems.get(i).artikul + "\" KolVo=\"" + orderItems.get(i).kolichestvo + "\">"//
+							+ "\n						<Cena>" + orderItems.get(i).cena + "</Cena>"//
+							+ "\n					</Stroki>"//
+					;
+				}
+				xml = xml + "\n				</Table>"//
+						+ "\n			</Docs>"//
+						+ "\n		</Change>"//
+						+ "\n	</S:Body>"//
+						+ "\n</S:Envelope>";
+				r.url.is("http://78.40.186.186/ChangeOfOrders.1cws")//
+				.xml.is(xml//
+				);
+				System.out.println(xml);
+				r.startNow();
+			}
+		}).afterDone.is(new Task() {
+			@Override
+			public void doTask() {
+				if (r.exception.property.value() != null) {
+					Auxiliary.inform("Ошибка: " + r.exception.property.value().getMessage(), context);
+				}
+				else {
+					if (r.statusCode.property.value() >= 100 && r.statusCode.property.value() <= 300) {
+						Auxiliary.inform("Результат: " //
+								+ r.data.child("soap:Body")//
+										.child("m:ChangeResponse")//
+										.child("m:return")//
+								.value.property.value(), context);
+					}
+					else {
+						Auxiliary.inform("Ошибка: " + r.statusCode.property.value() + ": " + r.statusDescription.property.value(), context);
+					}
+				}
+				refreshTask.start();
+			}
+		}).afterCancel.is(new Task() {
+			@Override
+			public void doTask() {
+				refreshTask.start();
+			}
+		}).start(context);
+	}
+	void requestChangeOrderState(final String thatDone) {
+		final RawSOAP r = new RawSOAP();
+		new Expect().status.is("Выполнение...").task.is(new Task() {
+			@Override
+			public void doTask() {
+				r.url.is("http://78.40.186.186/ChangeOfOrders.1cws")//
+				.xml.is("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"//
+						+ "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">"//
+						+ "	<S:Body>"//
+						+ "		<Change xmlns=\"http://ws.swl/ChangeOrders\">"//
+						+ "			<Docs>"//
+						+ "				<Head Namber=\"" + documentNumber + "\" Comment=\"\" ThatDone=\"" + thatDone + "\" Date=\"" + Demo.reformatDate(documentDate) + "\">"//
+						+ "					<Polzov>" + hrc + "</Polzov>"//
+						+ "					<DateOtgruz>" + Demo.reformatDate(shipDate) + "</DateOtgruz>"//
+						+ "				</Head>"//
+						+ "				<Table></Table>"//
+						+ "			</Docs>"//
+						+ "		</Change>"//
+						+ "	</S:Body>"//
+						+ "</S:Envelope>"//
+				);
+				r.startNow();
+			}
+		}).afterDone.is(new Task() {
+			@Override
+			public void doTask() {
+				if (r.exception.property.value() != null) {
+					Auxiliary.inform("Ошибка: " + r.exception.property.value().getMessage(), context);
+				}
+				else {
+					if (r.statusCode.property.value() >= 100 && r.statusCode.property.value() <= 300) {
+						Auxiliary.inform("Результат: " //
+								+ r.data.child("soap:Body")//
+										.child("m:ChangeResponse")//
+										.child("m:return")//
+								.value.property.value(), context);
+					}
+					else {
+						Auxiliary.inform("Ошибка: " + r.statusCode.property.value() + ": " + r.statusDescription.property.value(), context);
+					}
+				}
+				refreshTask.start();
+			}
+		}).afterCancel.is(new Task() {
+			@Override
+			public void doTask() {
+				refreshTask.start();
+			}
+		}).start(context);
+	}
 }
 
 /*
@@ -88,22 +358,28 @@ class KontragentInfo {
 Долги по накладным
 */
 public class Demo extends Activity {
+	public final static String HOOKReportOrderState = "HookReportOrderState";
+	public final static String FIELDDocumentDate = "documentDate";
+	public final static String FIELDShipDate = "shipDate";
+	public final static String FIELDDocumentNumber = "documentNumber";
+	public final static String HOOKTekushieLimityTP = "tekushieLimityTP";
+	public final static String FIELDGruppadogovorov = "gruppadogovorov";
+	//
 	String cacheHRC = null;
 	String cachePolzovateli_IDRRef = null;
 	String cachePolzovateliPodrazdelenie = null;
 	Vector<KontragentInfo> cacheKontragents = new Vector<KontragentInfo>();
 	//String[] cacheKontragentLabels;
-	SQLiteDatabase cacheSQLiteDatabase = null;
+	static SQLiteDatabase cacheSQLiteDatabase = null;
 	String dbPath = "/sdcard/horeca/swlife_database";
 	WebRender brwsr;
 	Layoutless layoutless;
-	String tekushieLimityTP = "tekushieLimityTP";
-	String gruppadogovorov = "gruppadogovorov";
 	Numeric ballansPartnerovFrom = new Numeric().value(dateOnly(Calendar.getInstance()));
 	Numeric ballansPartnerovTo = new Numeric().value(dateOnly(Calendar.getInstance()));
 	Numeric ballansPartnerovVid = new Numeric().value(0);
 	Toggle ballansPartnerovTolkoDogGrup = new Toggle().value(true);
-	Vector<Integer> ballansPartnerovList = new Vector<Integer>();
+	//Vector<Integer> ballansPartnerovList = new Vector<Integer>();
+	RedactSelection ballansPartnerovKontragenty;
 	String ballansPartnerovFile = "ballansPartnerov";
 	String ballansPartnerovLabel = "Балланс партнёров";
 	SubLayoutless ballansPartnerovBox;
@@ -158,6 +434,247 @@ public class Demo extends Activity {
 	SubLayoutless dolgyPoNakladnymBox;
 	SheetColumnText reports = new SheetColumnText();
 	Sheet sheet;
+	Task refreshTask = new Task() {
+		@Override
+		public void doTask() {
+			if (ballansPartnerovBox.getVisibility() == View.VISIBLE) {
+				if (ballansPartnerovKontragenty.selection.size() < 1) {
+					Auxiliary.warn("Не выбраны контрагенты", Demo.this);
+				}
+				else {
+					String kontragents = "";
+					for (int i = 0; i < ballansPartnerovKontragenty.selection.size(); i++) {
+						int n = ballansPartnerovKontragenty.selection.at(i);
+						KontragentInfo info = cacheKontragents.get(n);
+						kontragents = kontragents + "\n						<Param xmlns=\"http://ws.swl/Param\">"//
+								+ "\n							<Name>Контрагенты</Name>"//
+								+ "\n							<Value>" + info.kod + "</Value>"//
+								+ "\n							<Tipe>Массив</Tipe>"//
+								+ "\n							<TipeElem>Число</TipeElem>"//
+								+ "\n						</Param>";
+					}
+					String tipOpt = "1";//Развёрнутый
+					if (ballansPartnerovVid.value().intValue() == 1) {//Объединённый
+						tipOpt = "3";
+					}
+					if (ballansPartnerovVid.value().intValue() == 2) {//Свёрнутый
+						tipOpt = "4";
+					}
+					if (ballansPartnerovVid.value().intValue() == 3) {//Развёрнутый по договорам
+						tipOpt = "8";
+					}
+					if (ballansPartnerovVid.value().intValue() == 4) {//Свёрнутый по договорам
+						tipOpt = "7";
+					}
+					String tip = "\n						<Param xmlns=\"http://ws.swl/Param\">"//
+							+ "\n							<Name>Развернутый</Name>"//
+							+ "\n							<Value>" + tipOpt + "</Value>"//
+							+ "\n							<Tipe>Значение</Tipe>"//
+							+ "\n							<TipeElem>Число</TipeElem>"//
+							+ "\n						</Param>";
+					invokeReportAndroid(//
+							ballansPartnerovFrom.value().longValue(), ballansPartnerovTo.value().longValue()//
+							, "Взаиморасчеты", ballansPartnerovFile, ballansPartnerovBox//
+							, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
+									+ kontragents//
+									+ tip//
+									+ "\n						<Param xmlns=\"http://ws.swl/Param\">" //
+									+ "\n							<Name>ТолькоДоговораГруппы</Name>" //
+									+ "\n							<Value>" + (ballansPartnerovTolkoDogGrup.value() ? "Истина" : "Ложь") + "</Value>" //
+									+ "\n							<Tipe>Значение</Tipe>" //
+									+ "\n							<TipeElem>Булево</TipeElem>"// 
+									+ "\n						</Param>"// 
+									+ "\n			</m:Параметры>");
+				}
+			}
+			if (statistikaZakazovBox.getVisibility() == View.VISIBLE) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(statistikaZakazovFrom.value().longValue());
+				int fromY = calendar.get(Calendar.YEAR);
+				int fromM = calendar.get(Calendar.MONTH) + 1;
+				int fromD = calendar.get(Calendar.DAY_OF_MONTH);
+				calendar.setTimeInMillis(statistikaZakazovTo.value().longValue());
+				int toY = calendar.get(Calendar.YEAR);
+				int toM = calendar.get(Calendar.MONTH) + 1;
+				int toD = calendar.get(Calendar.DAY_OF_MONTH);
+				String kontragent = "";
+				int s = statistikaZakazovKontragent.selection.property.value().intValue() - 1;
+				if (s >= 0 && s < cacheKontragents.size()) {
+					kontragent = "\n				<Param xmlns=\"http://ws.swl/Param\">"//
+							+ "\n					<Name>Контрагент</Name>"//
+							+ "\n					<Value>" + cacheKontragents.get(s).kod + "</Value>"//
+							+ "\n					<Tipe>Значение</Tipe>"//
+							+ "\n					<TipeElem>Число</TipeElem>"//
+							+ "\n				</Param>";
+				}
+				//System.out.println(fromY +"/"+ pad2(fromM) +"/"+ pad2(fromD));
+				invokeReportAndroid(//
+						statistikaZakazovOtgruzkaFrom.value().longValue(), statistikaZakazovOtgruzkaTo.value().longValue()//
+						, "СтатистикеЗаказовHRC", statistikaZakazovFile, statistikaZakazovBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
+								+ "\n				<Param xmlns=\"http://ws.swl/Param\">"//
+								+ "\n					<Name>ЗаказыПокупателей</Name>"//
+								+ "\n					<Value>Истина</Value>"//
+								+ "\n					<Tipe>Значение</Tipe>"//
+								+ "\n					<TipeElem>Булево</TipeElem>"//
+								+ "\n				</Param>"//
+								+ "\n				<Param xmlns=\"http://ws.swl/Param\">"//
+								+ "\n					<Name>НачЗабития</Name>"//
+								+ "\n					<Value>" + fromY + pad2(fromM) + pad2(fromD) + "000000</Value>"//
+								+ "\n					<Tipe>Значение</Tipe>"//
+								+ "\n					<TipeElem>Дата</TipeElem>"//
+								+ "\n				</Param>"//
+								+ "\n				<Param xmlns=\"http://ws.swl/Param\">"//
+								+ "\n					<Name>КонЗабития</Name>"//
+								+ "\n					<Value>" + toY + pad2(toM) + pad2(toD) + "235959</Value>"//
+								+ "\n					<Tipe>Значение</Tipe>"//
+								+ "\n					<TipeElem>Дата</TipeElem>"//
+								+ "\n				</Param>"//
+								+ kontragent//
+								+ "\n			</m:Параметры>");
+			}
+			if (statusyZakazovBox.getVisibility() == View.VISIBLE) {
+				invokeReportAndroid(//
+						statusyZakazovFrom.value().longValue(), statusyZakazovTo.value().longValue()//
+						, "СтатусыЗаказов", statusyZakazovFile, statusyZakazovBox//
+						, "					<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
+								+ "						<Param xmlns=\"http://ws.swl/Param\">" //
+								+ "							<Name>ТолькоНеПроведенные</Name>" //
+								+ "							<Value>" + (statusyZakazovNepr.value() ? "Истина" : "Ложь") + "</Value>" //
+								+ "							<Tipe>Значение</Tipe>" //
+								+ "							<TipeElem>Булево</TipeElem>"// 
+								+ "						</Param>"// 
+								+ "					</m:Параметры>"//
+						, new InteractionHook() {
+							@Override
+							public String replace(String s) {
+								//s=s.replace('№', '#');
+								String[] strings = s.split("\n");
+								for (int i = 0; i < strings.length; i++) {
+									String line = strings[i];
+									if (i - 2 > -1 && i + 1 < strings.length - 1) {
+										String num = extract(line, '№', '<');
+										String dat = extract(strings[i - 2], '>', '<');
+										String ship = extract(strings[i + 1], '>', '<');
+										if (num.length() > 2 && dat.trim().length() == 10 && ship.trim().length() == 10) {
+											int start = line.indexOf('№');
+											int end = line.indexOf("<", start + 1);
+											//System.out.println(line);
+											line = line.substring(0, start)//
+													+ "№<a href=\"hook"//
+													+ "?kind=" + HOOKReportOrderState// 
+													+ "&" + FIELDDocumentNumber + "=" + num //
+													+ "&" + FIELDDocumentDate + "=" + dat//
+													+ "&" + FIELDShipDate + "=" + ship//
+													+ "\">" + num + "</a>"//
+													+ line.substring(end);
+											//System.out.println(line);
+											strings[i] = line;
+										}
+									}
+								}
+								StringBuilder sb = new StringBuilder();
+								for (int i = 0; i < strings.length; i++) {
+									sb.append(strings[i]);
+								}
+								return sb.toString();
+							}
+						});
+			}
+			if (distribuciaBox.getVisibility() == View.VISIBLE) {
+				invokeReportAndroid(//
+						distribuciaFrom.value().longValue(), distribuciaTo.value().longValue()//
+						, "Дистрибуция", distribuciaFile, distribuciaBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+			}
+			if (traficiBox.getVisibility() == View.VISIBLE) {
+				//
+				String otgr = "Ложь";
+				String neotgr = "Ложь";
+				if (traficiVseOtgNot.value() == 1) {
+					otgr = "Истина";
+				}
+				if (traficiVseOtgNot.value() == 2) {
+					neotgr = "Истина";
+				}
+				invokeReportAndroid(//
+						traficiFrom.value().longValue(), traficiTo.value().longValue()//
+						, "ТрафикиПоТП", traficiFile, traficiBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
+								+ "				<Param xmlns=\"http://ws.swl/Param\">"//
+								+ "					<Name>ТолькоОтгружено</Name>"//
+								+ "					<Value>" + otgr + "</Value>"//
+								+ "					<Tipe>Значение</Tipe>"//
+								+ "					<TipeElem>Булево</TipeElem>"//
+								+ "				</Param>"//
+								+ "				<Param xmlns=\"http://ws.swl/Param\">"//
+								+ "					<Name>ТолькоНеОтгружено</Name>"//
+								+ "					<Value>" + neotgr + "</Value>"//
+								+ "					<Tipe>Значение</Tipe>"//
+								+ "					<TipeElem>Булево</TipeElem>"//
+								+ "				</Param>"//
+								+ "			</m:Параметры>");
+			}
+			if (statusyRasporyajeniyBox.getVisibility() == View.VISIBLE) {
+				invokeReportAndroid(//
+						statusyRasporyajeniyFrom.value().longValue(), statusyRasporyajeniyTo.value().longValue()//
+						, "СтатусыРаспоряжений", statusyRasporyajeniyFile, statusyRasporyajeniyBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+			}
+			if (fixirovannyeCenyBox.getVisibility() == View.VISIBLE) {
+				//Date f = new Date();
+				//f.setTime(fixirovannyeCenyFrom.value().longValue());
+				//System.out.println(f);
+				invokeReportAndroid(//
+						fixirovannyeCenyFrom.value().longValue(), fixirovannyeCenyTo.value().longValue()//
+						, "ЗаявкиНаФиксированныеЦены", fixirovannyeCenyFile, fixirovannyeCenyBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+			}
+			if (pokazateliKPIBox.getVisibility() == View.VISIBLE) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(pokazateliKPIOtgr.value().longValue());
+				int fromY = calendar.get(Calendar.YEAR);
+				int fromM = calendar.get(Calendar.MONTH) + 1;
+				int fromD = calendar.get(Calendar.DAY_OF_MONTH);
+				invokeReportAndroid(//
+						pokazateliKPIFrom.value().longValue(), pokazateliKPITo.value().longValue()//
+						, "Показатели", pokazateliKPIFile, pokazateliKPIBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
+								+ "				<Param xmlns=\"http://ws.swl/Param\">"//
+								+ "					<Name>ДатаОтгрузкиСегодня</Name>"//
+								+ "					<Value>" + fromY + pad2(fromM) + pad2(fromD) + "235959</Value>"//
+								+ "					<Tipe>Значение</Tipe>"//
+								+ "					<TipeElem>Дата</TipeElem>"//
+								+ "				</Param>"//
+								+ "			</m:Параметры>");
+			}
+			if (dostavkaPoVoditelyamBox.getVisibility() == View.VISIBLE) {
+				invokeReportAndroid(//
+						dostavkaPoVoditelyamFrom.value().longValue(), dostavkaPoVoditelyamTo.value().longValue()//
+						, "ДоставкаПоВодителям", dostavkaPoVoditelyamFile, dostavkaPoVoditelyamBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+			}
+			if (predzakazyNaTrafikiBox.getVisibility() == View.VISIBLE) {
+				invokeReportAndroid(//
+						predzakazyNaTrafikiFrom.value().longValue(), predzakazyNaTrafikiTo.value().longValue()//
+						, "ОтчетПоТрафикамHRC", predzakazyNaTrafikiFile, predzakazyNaTrafikiBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+			}
+			if (limityBox.getVisibility() == View.VISIBLE) {
+				invokeReportAndroid(//
+						0, 0//
+						, "ТекущиеЛимитыТП", limityFile, limityBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+			}
+			//dolgyPoNakladnym
+			if (dolgyPoNakladnymBox.getVisibility() == View.VISIBLE) {
+				invokeReportAndroid(//
+						0, 0//
+						, "ДолгиПоНакладным", dolgyPoNakladnymFile, dolgyPoNakladnymBox//
+						, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+			}
+		}
+	};
 
 	SQLiteDatabase db() {
 		if (cacheSQLiteDatabase == null || (!cacheSQLiteDatabase.isOpen())) {
@@ -269,16 +786,121 @@ public class Demo extends Activity {
 		}
 		return html.toString();
 	}
-	void requestLimityChange(int nn) throws MalformedURLException {
+	void requestLimityChange(int nn) {
 		Numeric lim = new Numeric().value(22);
 	}
+	String nomenklaturaNaimenovanieByArtikul(String artikul) {
+		Bough bough = Auxiliary.fromCursor(db().rawQuery(//
+				"select Naimenovanie from nomenklatura where artikul=" + artikul + " limit 1;"//
+				, null));
+		return bough.child("row").child("Naimenovanie").value.property.value();
+	}
+	/*void requestSaveOrderItems(final String documentDate, final String shipDate, final String documentNumber, final String comment, final Vector<OrderItemInfo> orderItems) {
+		requestItemsInfo(documentDate, shipDate, documentNumber);
+	}
+	void requestItemsInfo(final String documentDate, final String shipDate, final String documentNumber) {
+		final RawSOAP r = new RawSOAP();
+		new Expect().status.is("Выполнение...").task.is(new Task() {
+			@Override
+			public void doTask() {
+				r.url.is("http://78.40.186.186/ChangeOfOrders.1cws")//
+				.xml.is("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"//
+						+ "\n<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">"//
+						+ "\n	<S:Body>"//
+						+ "\n		<Gat xmlns=\"http://ws.swl/ChangeOrders\">"//
+						+ "\n			<Namber>" + documentNumber + "</Namber>"//
+						+ "\n			<Date>" + reformatDate(documentDate) + "</Date>"//
+						+ "\n		</Gat>"//
+						+ "\n	</S:Body>"//
+						+ "\n</S:Envelope>"//
+				);
+				r.startNow();
+				Vector<Bough> items = r.data.child("soap:Body")//
+						.child("m:GatResponse")//
+						.child("m:return")//
+						.child("m:Table")//
+				.children;
+				for (int i = 0; i < items.size(); i++) {
+					OrderItemInfo info = new OrderItemInfo();
+					info.artikul = items.get(i).child("Article").value.property.value();
+					info.cena = items.get(i).child("m:Cena").value.property.value();
+					info.kolichestvo = items.get(i).child("KolVo").value.property.value();
+					info.naimenovanie = nomenklaturaNaimenovanieByArtikul(info.artikul);
+					orderItems.add(info);
+				}
+			}
+		}).afterDone.is(new Task() {
+			@Override
+			public void doTask() {
+				if (r.exception.property.value() != null) {
+					Auxiliary.inform("Ошибка: " + r.exception.property.value().getMessage(), Demo.this);
+					refreshTask.start();
+				}
+				else {
+					if (r.statusCode.property.value() >= 100 && r.statusCode.property.value() <= 300) {
+						final Note comment = r.data.child("soap:Body")//
+								.child("m:GatResponse")//
+								.child("m:return")//
+								.child("m:Head")//
+								.child("Comment").value.property;
+						String c = comment.value();
+						if (c.trim().length() > 0) {
+							c = " (" + c + ")";
+						}
+					
+						String[] labels = new String[orderItems.size()];
+						for (int i = 0; i < labels.length; i++) {
+							labels[i] = orderItems.get(i).artikul//
+									+ ": " + orderItems.get(i).naimenovanie//
+									+ ": " + orderItems.get(i).kolichestvo//
+									+ " по " + orderItems.get(i).cena + "руб.";
+						}
+						Numeric it = new Numeric().value(-1);
+						Auxiliary.pick(Demo.this, labels, it//
+								, "Заказ " + documentNumber + " от " + documentDate + " на " + shipDate + c//
+								, "Сохранить", new Task() {
+									@Override
+									public void doTask() {
+										System.out.println("save");
+									}
+								}, "Комментарий", new Task() {
+									@Override
+									public void doTask() {
+										//System.out.println("comment");
+										Auxiliary.pick(Demo.this//
+												, "Заказ " + documentNumber + " от " + documentDate + " на " + shipDate//
+												, comment//
+												, "Сохранить", new Task() {
+													@Override
+													public void doTask() {
+														//System.out.println(comment.value());
+														requestSaveOrderItems(documentDate, shipDate, documentNumber, comment.value(), orderItems);
+													}
+												});
+									}
+								});
+					}
+					else {
+						Auxiliary.inform("Ошибка: " + r.statusCode.property.value() + ": " + r.statusDescription.property.value(), Demo.this);
+						refreshTask.start();
+					}
+				}
+			}
+		}).afterCancel.is(new Task() {
+			@Override
+			public void doTask() {
+				refreshTask.start();
+			}
+		}).start(this);
+	}*/
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//System.out.println("go----------------------------------" + Environment.getExternalStorageDirectory().getAbsolutePath());
 		layoutless = new Layoutless(this);
 		Preferences.init(this);
-		statistikaZakazovKontragent = new RedactChoice(this).item("Все");
+		ballansPartnerovKontragenty = new RedactSelection(this);
+		statistikaZakazovKontragent = new RedactChoice(this).item("[Все контрагенты]");
 		new Expect().status.is("Проверка...")//
 		.task.is(new Task() {
 			@Override
@@ -292,6 +914,7 @@ public class Demo extends Activity {
 				//statistikaZakazovKontragent
 				for (int i = 0; i < cacheKontragents.size(); i++) {
 					statistikaZakazovKontragent.item(cacheKontragents.get(i).naimenovanie);
+					ballansPartnerovKontragenty.item(cacheKontragents.get(i).naimenovanie);
 					//System.out.println(cacheKontragents.get(i).naimenovanie);
 				}
 			}
@@ -302,10 +925,30 @@ public class Demo extends Activity {
 			public void doTask() {
 				try {
 					android.net.Uri uri = android.net.Uri.parse(brwsr.url.property.value());
-					if (uri.getQueryParameter("kind").equals(tekushieLimityTP)) {
-						int nn = Integer.parseInt(uri.getQueryParameter(gruppadogovorov));
+					System.out.println(uri.getQueryParameter("kind"));
+					if (uri.getQueryParameter("kind").equals(HOOKTekushieLimityTP)) {
+						int nn = Integer.parseInt(uri.getQueryParameter(FIELDGruppadogovorov));
 						requestLimityChange(nn);
 					}
+					if (uri.getQueryParameter("kind").equals(HOOKReportOrderState)) {
+						String documentDate = uri.getQueryParameter(FIELDDocumentDate);
+						String shipDate = uri.getQueryParameter(FIELDShipDate);
+						String documentNumber = uri.getQueryParameter(FIELDDocumentNumber);
+						//requestOrderChange(documentDate, shipDate, documentNumber);
+						EditOrderViaWeb editor = new EditOrderViaWeb();
+						editor.demo = Demo.this;
+						editor.context = Demo.this;
+						editor.documentDate = documentDate;
+						editor.shipDate = shipDate;
+						editor.documentNumber = documentNumber;
+						editor.refreshTask = refreshTask;
+						editor.hrc = cacheHRC;
+						editor.start();
+					}
+					//"HookReportOrderState";
+					//public final static String FIELDDocumentDate = "documentDate";
+					//public final static String FIELDShipDate = "shipDate";
+					//public final static String FIELDDocumentNumber = "documentNumber";
 				}
 				catch (Throwable t) {
 					t.printStackTrace();
@@ -405,8 +1048,6 @@ public class Demo extends Activity {
 				.height().is(layoutless.height().property.minus(seekBoxHeight))//
 				.width().is(layoutless.width().property.minus(4 + 0.5 * Layoutless.tapSize))//
 				);
-		layoutless.child(new Decor(this).background.is(Layoutless.themeBlurColor)//
-				.top().is(seekBoxHeight - 1).height().is(1).width().is(layoutless.width().property));
 		final Numeric split = Preferences.integer("test1", 300);
 		new Numeric().bind(layoutless.width().property).afterChange(new Task() {
 			@Override
@@ -428,25 +1069,28 @@ public class Demo extends Activity {
 						.item("Развёрнутый")//
 						.item("Объединённый")//
 						.item("Свёрнутый")//
+						.item("Развёрнутый по договорам")//
 						.item("Свёрнутый по договорам")//
 						.left().is(thirdColumnStart).top().is(margin).width().is(thirdColumnWidth).height().is(0.9 * Layoutless.tapSize))//
 				.child(new RedactToggle(this).labelText.is("Договора группы").yes.is(ballansPartnerovTolkoDogGrup) //
 						.left().is(thirdColumnStart).top().is(margin + Layoutless.tapSize).width().is(thirdColumnWidth).height().is(0.9 * Layoutless.tapSize))//
-				.child(new RedactSelection(this)//
-				/*.text.is("dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
-						
-						
-						)*/
-						.left().is(forthColumnStart).top().is(margin).width().is(450).height().is(1.9 * Layoutless.tapSize+margin))//
+				.child(new Decor(this).labelText.is("Контрагенты").labelAlignLeftTop()//
+						.left().is(forthColumnStart).top().is(margin).width().is(450).height().is(0.3 * Layoutless.tapSize))//
+				.child(ballansPartnerovKontragenty//
+						/*.text.is("dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								+"dzfb;sdfbsdpofbk pofks fbksobkd0er96 hnur9kb 9-w4b ti-9eswrkb -werkj 0w94j bhwtjb tj"
+								
+								
+								)*/
+						.left().is(forthColumnStart).top().is(margin + 0.3 * Layoutless.tapSize).width().is(450).height().is(1.6 * Layoutless.tapSize + margin))//
 				.width().is(layoutless.width().property).height().is(seekBoxHeight);
 		//ballansPartnerovBox.child(new Decor(this).labelText.is("ballansPartnerovBox").width().is(500).height().is(100)).width().is(500).height().is(200);
 		layoutless.child(ballansPartnerovBox);
@@ -594,175 +1238,93 @@ public class Demo extends Activity {
 				.tap.is(new Task() {
 					@Override
 					public void doTask() {
+						if (ballansPartnerovBox.getVisibility() == View.VISIBLE) {
+							sendFile(ballansPartnerovFile);
+						}
+						if (statistikaZakazovBox.getVisibility() == View.VISIBLE) {
+							sendFile(statistikaZakazovFile);
+						}
 						if (statusyZakazovBox.getVisibility() == View.VISIBLE) {
 							sendFile(statusyZakazovFile);
+						}
+						if (distribuciaBox.getVisibility() == View.VISIBLE) {
+							sendFile(distribuciaFile);
+						}
+						if (traficiBox.getVisibility() == View.VISIBLE) {
+							sendFile(traficiFile);
+						}
+						if (fixirovannyeCenyBox.getVisibility() == View.VISIBLE) {
+							sendFile(fixirovannyeCenyFile);
+						}
+						if (pokazateliKPIBox.getVisibility() == View.VISIBLE) {
+							sendFile(pokazateliKPIFile);
+						}
+						if (dostavkaPoVoditelyamBox.getVisibility() == View.VISIBLE) {
+							sendFile(dostavkaPoVoditelyamFile);
+						}
+						if (predzakazyNaTrafikiBox.getVisibility() == View.VISIBLE) {
+							sendFile(predzakazyNaTrafikiFile);
+						}
+						if (limityBox.getVisibility() == View.VISIBLE) {
+							sendFile(limityFile);
+						}
+						if (dolgyPoNakladnymBox.getVisibility() == View.VISIBLE) {
+							sendFile(dolgyPoNakladnymFile);
 						}
 					}
 				}).left().is(margin).top().is(margin).width().is(0.9 * Layoutless.tapSize).height().is(0.9 * Layoutless.tapSize));
 		layoutless.child(new KnobImage(this).bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.refresh),
 				(int) (0.6 * Layoutless.tapSize), (int) (0.6 * Layoutless.tapSize), true))//
+				.tap.is(refreshTask).left().is(margin).top().is(margin + Layoutless.tapSize).width().is(0.9 * Layoutless.tapSize).height().is(0.9 * Layoutless.tapSize));
+		layoutless.child(new KnobImage(this).bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.download),
+				(int) (0.6 * Layoutless.tapSize), (int) (0.6 * Layoutless.tapSize), true))//
 				.tap.is(new Task() {
 					@Override
 					public void doTask() {
+						if (ballansPartnerovBox.getVisibility() == View.VISIBLE) {
+							//sendFile(ballansPartnerovFile);
+							copyFile(ballansPartnerovFile);
+						}
 						if (statistikaZakazovBox.getVisibility() == View.VISIBLE) {
-							Calendar calendar = Calendar.getInstance();
-							calendar.setTimeInMillis(statistikaZakazovFrom.value().longValue());
-							int fromY = calendar.get(Calendar.YEAR);
-							int fromM = calendar.get(Calendar.MONTH) + 1;
-							int fromD = calendar.get(Calendar.DAY_OF_MONTH);
-							calendar.setTimeInMillis(statistikaZakazovTo.value().longValue());
-							int toY = calendar.get(Calendar.YEAR);
-							int toM = calendar.get(Calendar.MONTH) + 1;
-							int toD = calendar.get(Calendar.DAY_OF_MONTH);
-							String kontragent = "";
-							int s = statistikaZakazovKontragent.selection.property.value().intValue() - 1;
-							if (s >= 0 && s < cacheKontragents.size()) {
-								kontragent = "\n				<Param xmlns=\"http://ws.swl/Param\">"//
-										+ "\n					<Name>Контрагент</Name>"//
-										+ "\n					<Value>" + cacheKontragents.get(s).kod + "</Value>"//
-										+ "\n					<Tipe>Значение</Tipe>"//
-										+ "\n					<TipeElem>Число</TipeElem>"//
-										+ "\n				</Param>";
-							}
-							//System.out.println(fromY +"/"+ pad2(fromM) +"/"+ pad2(fromD));
-							invokeReportAndroid(//
-									statistikaZakazovOtgruzkaFrom.value().longValue(), statistikaZakazovOtgruzkaTo.value().longValue()//
-									, "СтатистикеЗаказовHRC", statistikaZakazovFile, statistikaZakazovBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
-											+ "\n				<Param xmlns=\"http://ws.swl/Param\">"//
-											+ "\n					<Name>ЗаказыПокупателей</Name>"//
-											+ "\n					<Value>Истина</Value>"//
-											+ "\n					<Tipe>Значение</Tipe>"//
-											+ "\n					<TipeElem>Булево</TipeElem>"//
-											+ "\n				</Param>"//
-											+ "\n				<Param xmlns=\"http://ws.swl/Param\">"//
-											+ "\n					<Name>НачЗабития</Name>"//
-											+ "\n					<Value>" + fromY + pad2(fromM) + pad2(fromD) + "000000</Value>"//
-											+ "\n					<Tipe>Значение</Tipe>"//
-											+ "\n					<TipeElem>Дата</TipeElem>"//
-											+ "\n				</Param>"//
-											+ "\n				<Param xmlns=\"http://ws.swl/Param\">"//
-											+ "\n					<Name>КонЗабития</Name>"//
-											+ "\n					<Value>" + toY + pad2(toM) + pad2(toD) + "235959</Value>"//
-											+ "\n					<Tipe>Значение</Tipe>"//
-											+ "\n					<TipeElem>Дата</TipeElem>"//
-											+ "\n				</Param>"//
-											+ kontragent//
-											+ "\n			</m:Параметры>");
+							copyFile(statistikaZakazovFile);
 						}
 						if (statusyZakazovBox.getVisibility() == View.VISIBLE) {
-							invokeReportAndroid(//
-									statusyZakazovFrom.value().longValue(), statusyZakazovTo.value().longValue()//
-									, "СтатусыЗаказов", statusyZakazovFile, statusyZakazovBox//
-									, "					<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
-											+ "						<Param xmlns=\"http://ws.swl/Param\">" //
-											+ "							<Name>ТолькоНеПроведенные</Name>" //
-											+ "							<Value>" + (statusyZakazovNepr.value() ? "Истина" : "Ложь") + "</Value>" //
-											+ "							<Tipe>Значение</Tipe>" //
-											+ "							<TipeElem>Булево</TipeElem>"// 
-											+ "						</Param>"// 
-											+ "					</m:Параметры>"//
-							);
+							copyFile(statusyZakazovFile);
 						}
 						if (distribuciaBox.getVisibility() == View.VISIBLE) {
-							invokeReportAndroid(//
-									distribuciaFrom.value().longValue(), distribuciaTo.value().longValue()//
-									, "Дистрибуция", distribuciaFile, distribuciaBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+							copyFile(distribuciaFile);
 						}
 						if (traficiBox.getVisibility() == View.VISIBLE) {
-							//
-							String otgr = "Ложь";
-							String neotgr = "Ложь";
-							if (traficiVseOtgNot.value() == 1) {
-								otgr = "Истина";
-							}
-							if (traficiVseOtgNot.value() == 2) {
-								neotgr = "Истина";
-							}
-							invokeReportAndroid(//
-									traficiFrom.value().longValue(), traficiTo.value().longValue()//
-									, "ТрафикиПоТП", traficiFile, traficiBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
-											+ "				<Param xmlns=\"http://ws.swl/Param\">"//
-											+ "					<Name>ТолькоОтгружено</Name>"//
-											+ "					<Value>" + otgr + "</Value>"//
-											+ "					<Tipe>Значение</Tipe>"//
-											+ "					<TipeElem>Булево</TipeElem>"//
-											+ "				</Param>"//
-											+ "				<Param xmlns=\"http://ws.swl/Param\">"//
-											+ "					<Name>ТолькоНеОтгружено</Name>"//
-											+ "					<Value>" + neotgr + "</Value>"//
-											+ "					<Tipe>Значение</Tipe>"//
-											+ "					<TipeElem>Булево</TipeElem>"//
-											+ "				</Param>"//
-											+ "			</m:Параметры>");
-						}
-						if (statusyRasporyajeniyBox.getVisibility() == View.VISIBLE) {
-							invokeReportAndroid(//
-									statusyRasporyajeniyFrom.value().longValue(), statusyRasporyajeniyTo.value().longValue()//
-									, "СтатусыРаспоряжений", statusyRasporyajeniyFile, statusyRasporyajeniyBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+							copyFile(traficiFile);
 						}
 						if (fixirovannyeCenyBox.getVisibility() == View.VISIBLE) {
-							//Date f = new Date();
-							//f.setTime(fixirovannyeCenyFrom.value().longValue());
-							//System.out.println(f);
-							invokeReportAndroid(//
-									fixirovannyeCenyFrom.value().longValue(), fixirovannyeCenyTo.value().longValue()//
-									, "ЗаявкиНаФиксированныеЦены", fixirovannyeCenyFile, fixirovannyeCenyBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+							copyFile(fixirovannyeCenyFile);
 						}
 						if (pokazateliKPIBox.getVisibility() == View.VISIBLE) {
-							Calendar calendar = Calendar.getInstance();
-							calendar.setTimeInMillis(pokazateliKPIOtgr.value().longValue());
-							int fromY = calendar.get(Calendar.YEAR);
-							int fromM = calendar.get(Calendar.MONTH) + 1;
-							int fromD = calendar.get(Calendar.DAY_OF_MONTH);
-							invokeReportAndroid(//
-									pokazateliKPIFrom.value().longValue(), pokazateliKPITo.value().longValue()//
-									, "Показатели", pokazateliKPIFile, pokazateliKPIBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"//
-											+ "				<Param xmlns=\"http://ws.swl/Param\">"//
-											+ "					<Name>ДатаОтгрузкиСегодня</Name>"//
-											+ "					<Value>" + fromY + pad2(fromM) + pad2(fromD) + "235959</Value>"//
-											+ "					<Tipe>Значение</Tipe>"//
-											+ "					<TipeElem>Дата</TipeElem>"//
-											+ "				</Param>"//
-											+ "			</m:Параметры>");
+							copyFile(pokazateliKPIFile);
 						}
 						if (dostavkaPoVoditelyamBox.getVisibility() == View.VISIBLE) {
-							invokeReportAndroid(//
-									dostavkaPoVoditelyamFrom.value().longValue(), dostavkaPoVoditelyamTo.value().longValue()//
-									, "ДоставкаПоВодителям", dostavkaPoVoditelyamFile, dostavkaPoVoditelyamBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+							copyFile(dostavkaPoVoditelyamFile);
 						}
 						if (predzakazyNaTrafikiBox.getVisibility() == View.VISIBLE) {
-							invokeReportAndroid(//
-									predzakazyNaTrafikiFrom.value().longValue(), predzakazyNaTrafikiTo.value().longValue()//
-									, "ОтчетПоТрафикамHRC", predzakazyNaTrafikiFile, predzakazyNaTrafikiBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+							copyFile(predzakazyNaTrafikiFile);
 						}
 						if (limityBox.getVisibility() == View.VISIBLE) {
-							invokeReportAndroid(//
-									0, 0//
-									, "ТекущиеЛимитыТП", limityFile, limityBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+							copyFile(limityFile);
 						}
-						//dolgyPoNakladnym
 						if (dolgyPoNakladnymBox.getVisibility() == View.VISIBLE) {
-							invokeReportAndroid(//
-									0, 0//
-									, "ДолгиПоНакладным", dolgyPoNakladnymFile, dolgyPoNakladnymBox//
-									, "<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+							copyFile(dolgyPoNakladnymFile);
 						}
 					}
-				}).left().is(margin).top().is(margin + Layoutless.tapSize).width().is(0.9 * Layoutless.tapSize).height().is(0.9 * Layoutless.tapSize));
+				}).left().is(margin + Layoutless.tapSize).top().is(margin + Layoutless.tapSize).width().is(0.9 * Layoutless.tapSize).height().is(0.9 * Layoutless.tapSize));
 		layoutless.child(new Decor(this)//
 				.background.is(Layoutless.themeBackgroundColor)//
 						.left().is(split)//
+						//.top().is(seekBoxHeight )
 						.width().is(layoutless.width().property).height().is(layoutless.height().property));
-		sheet = new Sheet(this);
+		layoutless.child(new Decor(this).background.is(Layoutless.themeBlurColor)//
+				.top().is(seekBoxHeight - 1).height().is(1).width().is(layoutless.width().property));
+		sheet = new Sheet(this).headerHeight.is(seekBoxHeight);
 		layoutless.child(new SplitLeftRight(this)//
 				.split.is(split).rightSide(sheet)//
 						.height().is(layoutless.height().property).width().is(layoutless.width().property));
@@ -816,6 +1378,10 @@ public class Demo extends Activity {
 				"<m:Параметры xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" />");
 	}*/
 	void invokeReportAndroid(final long from, final long to, final String reportName, final String reportFile, final SubLayoutless reportBox, final String parameters) {
+		invokeReportAndroid(from, to, reportName, reportFile, reportBox, parameters);
+	}
+	void invokeReportAndroid(final long from, final long to, final String reportName, final String reportFile, final SubLayoutless reportBox, final String parameters,
+			final InteractionHook hook) {
 		final Toggle cancel = new Toggle();
 		//final Toggle ok = new Toggle();
 		final RawSOAP rawSOAP = new RawSOAP();
@@ -889,7 +1455,17 @@ public class Demo extends Activity {
 								.child("m:Data")//
 						.value.property.value();
 						//System.out.println("response "+s);
-						saveTextToFile(Base64.decode(s, Base64.DEFAULT), reportPath(reportFile));
+						try {
+							String html = new String(Base64.decode(s, Base64.DEFAULT), "UTF-8");
+							if (hook != null) {
+								html = hook.replace(html);
+							}
+							saveTextToFile(html, reportPath(reportFile));
+						}
+						catch (Throwable t) {
+							t.printStackTrace();
+						}
+						//saveTextToFile(Base64.decode(s, Base64.DEFAULT), reportPath(reportFile));
 					}
 				}
 				//else {
@@ -900,9 +1476,40 @@ public class Demo extends Activity {
 			}
 		}).start(Demo.this);
 	}
+	void copyFile(String from) {
+		String fromPath = reportPath(from);
+		String toPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/" + from + ".html";
+		File source = new File(fromPath);
+		File destination = new File(toPath);
+		try {
+			FileChannel src = new FileInputStream(source).getChannel();
+			FileChannel dst = new FileOutputStream(destination).getChannel();
+			dst.transferFrom(src, 0, src.size());
+			src.close();
+			dst.close();
+			Auxiliary.inform("Файл " + from + " сохранён в папку Download", this);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
 	boolean saveTextToFile(byte[] bytes, String file) {
 		try {
 			String txt = new String(bytes, "UTF-8");
+			FileOutputStream fileOutputStream = new FileOutputStream(file);
+			fileOutputStream.write(txt.getBytes("UTF-8"));
+			fileOutputStream.flush();
+			fileOutputStream.close();
+			return true;
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return false;
+	}
+	boolean saveTextToFile(String txt, String file) {
+		try {
+			//String txt = new String(bytes, "UTF-8");
 			FileOutputStream fileOutputStream = new FileOutputStream(file);
 			fileOutputStream.write(txt.getBytes("UTF-8"));
 			fileOutputStream.flush();
@@ -975,5 +1582,28 @@ public class Demo extends Activity {
 			cacheSQLiteDatabase = null;
 		}
 		super.onPause();
+	}
+	public static String reformatDate(String d) {
+		try {
+			DateFormat from = new SimpleDateFormat("dd.MM.yyyy");
+			DateFormat to = new SimpleDateFormat("yyyy-MM-dd");
+			d = to.format(from.parse(d));
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		//System.out.println("d now is "+d);
+		return d;
+	}
+	public static String extract(String line, int startSymbol, int endSymbol) {
+		String r = "";
+		int start = line.indexOf(startSymbol);
+		if (start > -1) {
+			int end = line.indexOf(endSymbol, start + 1);
+			if (end > -1) {
+				r = line.substring(start + 1, end);
+			}
+		}
+		return r;
 	}
 }

@@ -1,22 +1,30 @@
 package reactive.ui;
 
+import java.util.Collections;
+import java.util.Vector;
+
 import android.text.*;
+import android.text.method.*;
+import tee.binding.They;
 import tee.binding.properties.*;
-import tee.binding.properties.NumericProperty;
 import tee.binding.task.Task;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
+import android.widget.TextView.BufferType;
 
 public class RedactSelection extends EditText implements Rake {
-	public NoteProperty<RedactSelection> text = new NoteProperty<RedactSelection>(this);
+	//public NoteProperty<RedactSelection> text = new NoteProperty<RedactSelection>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
 	boolean initialized = false;
-	private boolean lock = false;
+	//private boolean lock = false;
+	private Vector<String> items = new Vector<String>();
+	//public Vector<Integer> selection = new Vector<Integer>();
+	public They<Integer> selection = new They<Integer>();
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
@@ -51,11 +59,32 @@ public class RedactSelection extends EditText implements Rake {
 		super(context, attrs, defStyle);
 		init();
 	}
+	void doSelect() {
+		if (items.size() > 0) {
+			String[] strings = new String[items.size()];
+			for (int i = 0; i < items.size(); i++) {
+				strings[i] = items.get(i);
+			}
+			Auxiliary.pick(this.getContext(), strings, selection);
+		}
+	}
 	void init() {
 		if (initialized) {
 			return;
 		}
 		initialized = true;
+		setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent motionEvent) {
+				// your code here....
+				//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);  
+				if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+					//System.out.println("onTouch"+motionEvent);
+					doSelect();
+				}
+				return true;
+			}
+		});
 		setKeyListener(null);
 		this.setFocusable(false);
 		this.setFocusableInTouchMode(false);
@@ -63,7 +92,7 @@ public class RedactSelection extends EditText implements Rake {
 		height.property.afterChange(reFit).value(100);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
-		addTextChangedListener(new TextWatcher() {
+		/*addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 			}
@@ -89,7 +118,42 @@ public class RedactSelection extends EditText implements Rake {
 					lock = false;
 				}
 			}
+		});*/
+		setGravity(android.view.Gravity.LEFT | android.view.Gravity.TOP);
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Small);
+		setText("", BufferType.SPANNABLE);
+		selection.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				//System.out.println("selection "+selection.size());
+				Vector<String> values = new Vector<String>();
+				for (int i = 0; i < selection.size(); i++) {
+					int n = selection.at(i).intValue();
+					String v = "?";
+					if (n >= 0 && n < items.size()) {
+						v = items.get(n);
+					}
+					values.add(v);
+				}
+				Collections.sort(values);
+				String s = "";//selection "+selection.size();
+				boolean first = true;
+				for (int i = 0; i < values.size(); i++) {
+					if (first) {
+						first = false;
+					}
+					else {
+						s = s + ", ";
+					}
+					s = s + values.get(i);
+				}
+				RedactSelection.this.setText(s);
+			}
 		});
+	}
+	public RedactSelection item(String s) {
+		this.items.add(s);
+		return this;
 	}
 	@Override
 	public NumericProperty<Rake> left() {
@@ -114,11 +178,10 @@ public class RedactSelection extends EditText implements Rake {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		text.property.unbind();
+		//text.property.unbind();
 		width.property.unbind();
 		height.property.unbind();
 		left.property.unbind();
 		top.property.unbind();
 	}
 }
-
