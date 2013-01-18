@@ -108,6 +108,7 @@ public class Decor extends TextView implements Rake {
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
+	
 	public Decor labelStyleSmallNormal() {
 		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Small);
 		return this;
@@ -253,6 +254,7 @@ public class Decor extends TextView implements Rake {
 			afterTap.property.value().start();
 		}
 	}
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (!(afterTap.property.value() != null || movableX.property.value() || movableY.property.value())) {
@@ -295,8 +297,13 @@ public class Decor extends TextView implements Rake {
 		return true;
 	}
 	@Override
+	public void draw(Canvas canvas) {
+		super.draw(canvas);
+	}
+	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		
 		if (bitmap.property.value() != null) {
 			canvas.drawBitmap(bitmap.property.value(), 0, 0, paint);
 		}

@@ -19,6 +19,10 @@ public class SheetColumnText extends SheetColumn {
 	Vector<Task> taps = new Vector<Task>();
 	Vector<Integer> backgrounds = new Vector<Integer>();
 	public NoteProperty<SheetColumnText> title=new NoteProperty<SheetColumnText> (this);
+	public NumericProperty<SheetColumnText> headerBackground=new NumericProperty<SheetColumnText> (this);
+	public SheetColumnText(){
+		headerBackground.is(0x44999999);
+	}
 	@Override
 	public Rake cell(int row, Context c) {
 		Decor cell = new Decor(c);
@@ -34,6 +38,7 @@ public class SheetColumnText extends SheetColumn {
 		}
 		cell.setPadding(3, 3, 3, 3);
 		cell.labelStyleMediumNormal();
+		
 		//cell.labelText.is("cells.get(row)");
 		return cell;
 	}
@@ -60,7 +65,7 @@ public class SheetColumnText extends SheetColumn {
 	public Rake header(Context c) {
 		Decor header = new Decor(c).labelText.is(title.property);
 		//header.background.is(Layoutless.themeBlurColor);
-		header.background.is(0x44999999);
+		header.background.is(headerBackground.property);
 		header.labelAlignCenterBottom();
 		header.setPadding(3, 3, 3, 3);
 		return header;

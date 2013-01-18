@@ -63,6 +63,8 @@ public class SketchLine extends Sketch {
 				postInvalidate.start();
 			}
 		});
+		strokeWidth.is(3);
+		strokeColor.is(0xffff0000);
 		/*startX.property.afterChange(postInvalidate);
 		startY.property.afterChange(postInvalidate);
 		endX.property.afterChange(postInvalidate);
