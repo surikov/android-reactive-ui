@@ -3,6 +3,7 @@ package reactive.ui;
 import android.view.*;
 import android.app.*;
 import android.content.*;
+import android.content.DialogInterface.OnCancelListener;
 import android.graphics.*;
 import android.text.InputType;
 import android.util.*;
@@ -195,7 +196,9 @@ public class Auxiliary {
 		builder.setMessage(s);
 		builder.create().show();
 	}
-	public static void pick(Context context, String title, final Note text, String positiveButtonTitle, final Task callbackPositiveBtn) {
+	public static void pick(Context context, String title, final Note text//
+			, String positiveButtonTitle//
+			, final Task callbackPositiveBtn) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		final EditText input = new EditText(context);
@@ -234,20 +237,13 @@ public class Auxiliary {
 				}
 			});
 		}
-		
-		
-		
-		
 		if (callbackNeutralBtn != null) {
 			builder.setNeutralButton(neutralButtonTitle, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {					
+				public void onClick(DialogInterface dialog, int whichButton) {
 					callbackNeutralBtn.start();
 				}
 			});
 		}
-		
-		
-		
 		builder.create().show();
 	}
 	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
@@ -271,10 +267,10 @@ public class Auxiliary {
 		builder.setSingleChoiceItems(items, nn, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
 				if (defaultSelection != null) {
 					defaultSelection.value(which);
 				}
-				dialog.dismiss();
 				if (afterSelect != null) {
 					afterSelect.start();
 				}
@@ -310,7 +306,6 @@ public class Auxiliary {
 			builder.setMultiChoiceItems(items, checks, new DialogInterface.OnMultiChoiceClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-					//System.out.println("onClick "+which+"/"+isChecked);
 					if (isChecked) {
 						for (int i = 0; i < defaultSelection.size(); i++) {
 							int n = defaultSelection.at(i);
@@ -355,29 +350,111 @@ public class Auxiliary {
 		}
 		dialogBuilder.setNegativeButton(negativeButtonTitle, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
 				if (callbackNegativeBtn != null) {
 					callbackNegativeBtn.start();
 				}
-				dialog.dismiss();
 			}
 		});
 		dialogBuilder.setNeutralButton(neutralButtonTitle, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
 				if (callbackNeutralBtn != null) {
 					callbackNeutralBtn.start();
 				}
-				dialog.dismiss();
 			}
 		});
 		dialogBuilder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
 				if (callbackPositiveBtn != null) {
 					callbackPositiveBtn.start();
 				}
-				dialog.dismiss();
 			}
 		});
 		dialogBuilder.create().show();
+	}
+	public static void pick(Context context//
+			, String title//
+			, final Rake rake//
+			, String positiveButtonTitle//
+			, final Task callbackPositiveBtn//
+			, String neutralButtonTitle//
+			, final Task callbackNeutralBtn//
+			, String negativeButtonTitle//
+			, final Task callbackNegativeBtn//
+	) {
+		//final Vector<Task>dumbGoogle=new  Vector<Task>();
+		final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+		final RelativeLayout rl = new RelativeLayout(context);
+		dialogBuilder.setView(rl);
+		//final View toRemove=null;
+		if (title != null) {
+			dialogBuilder.setTitle(title);
+		}
+		if (rake != null) {
+			if (rake.view() != null) {
+				//toRemove=rake.view();
+				rl.setMinimumWidth(rake.width().property.value().intValue());
+				rl.setMinimumHeight(rake.height().property.value().intValue());
+				//dialogBuilder.setView(rake.view());
+				//dialogBuilder.setView(null);
+				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
+						rake.width().property.value().intValue()//
+						, rake.height().property.value().intValue());
+				//params.leftMargin = (int) (left.property.value() + dragX.property.value());
+				//params.topMargin = (int) (top.property.value() + dragY.property.value());
+				rake.view().setLayoutParams(params);
+				rl.addView(rake.view());
+			}
+		}
+		dialogBuilder.setNegativeButton(negativeButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				//dumbGoogle.get(0).start();
+				if (rake != null) {
+					rl.removeView(rake.view());
+				}
+				dialog.dismiss();
+				if (callbackNegativeBtn != null) {
+					callbackNegativeBtn.start();
+				}
+			}
+		});
+		dialogBuilder.setNeutralButton(neutralButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				//dumbGoogle.get(0).start();
+				if (rake != null) {
+					rl.removeView(rake.view());
+				}
+				dialog.dismiss();
+				if (callbackNeutralBtn != null) {
+					callbackNeutralBtn.start();
+				}
+			}
+		});
+		dialogBuilder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				//dumbGoogle.get(0).start();
+				if (rake != null) {
+					rl.removeView(rake.view());
+				}
+				dialog.dismiss();
+				if (callbackPositiveBtn != null) {
+					callbackPositiveBtn.start();
+				}
+			}
+		});
+		dialogBuilder.setOnCancelListener(new OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				//dumbGoogle.get(0).start();
+				if (rake != null) {
+					rl.removeView(rake.view());
+				}
+			}
+		});
+		final AlertDialog d = dialogBuilder.create();
+		d.show();
 	}
 	/*
 		public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
