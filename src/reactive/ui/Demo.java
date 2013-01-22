@@ -102,7 +102,8 @@ public class Demo extends Activity {
 			public void doTask() {
 				//System.out.println("historyFrom "+historyFrom);
 				currentPageHistory=0;
-				startRefreshHistoryGrid();
+				//startRefreshHistoryGrid();
+				startRefreshHistoryGrid.start(Demo.this);
 			}}, true);
 		/*.bind(new Numeric().value((double) historyFromDate.getTimeInMillis()).afterChange(new Task(){
 
@@ -119,7 +120,8 @@ public class Demo extends Activity {
 			public void doTask() {
 				//System.out.println("historyFrom "+historyFrom);
 				currentPageHistory=0;
-				startRefreshHistoryGrid();
+				//startRefreshHistoryGrid();
+				startRefreshHistoryGrid.start(Demo.this);
 			}}, true);
 		photoIcon = BitmapFactory.decodeResource(getResources(), R.drawable.picture);
 		//System.out.println(photoIcon.getWidth());
@@ -209,7 +211,8 @@ public class Demo extends Activity {
 									Auxiliary.hideSoftKeyboard(Demo.this);
 									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-									startRefreshHistoryGrid();
+									//startRefreshHistoryGrid();
+									startRefreshHistoryGrid.start(Demo.this);
 								}
 								else {
 									if (historyHasMoreData) {
@@ -217,7 +220,8 @@ public class Demo extends Activity {
 										Auxiliary.hideSoftKeyboard(Demo.this);
 										//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 										//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-										startRefreshHistoryGrid();
+										//startRefreshHistoryGrid();
+										startRefreshHistoryGrid.start(Demo.this);
 									}
 								}
 							}
@@ -243,7 +247,8 @@ public class Demo extends Activity {
 									Auxiliary.hideSoftKeyboard(Demo.this);
 									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-									startRefreshHistoryGrid();
+									//startRefreshHistoryGrid();
+									startRefreshHistoryGrid.start(Demo.this);
 								}
 								else {
 									if (currentPageHistory > 0) {
@@ -251,7 +256,8 @@ public class Demo extends Activity {
 										Auxiliary.hideSoftKeyboard(Demo.this);
 										//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 										//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-										startRefreshHistoryGrid();
+										//startRefreshHistoryGrid();
+										startRefreshHistoryGrid.start(Demo.this);
 									}
 								}
 							}
@@ -318,10 +324,11 @@ public class Demo extends Activity {
 		setContentView(layoutless);
 		//glView = new OpenGL2(this);
 		//this.setContentView(glView); 
-		startRefreshHistoryGrid();
+		//startRefreshHistoryGrid();
+		startRefreshHistoryGrid.start(Demo.this);
 	}
-	void startRefreshHistoryGrid() {
-		new Expect()//
+	//void startRefreshHistoryGrid() {
+		Expect startRefreshHistoryGrid=	new Expect()//
 		.task.is(new Task() {
 			@Override
 			public void doTask() {
@@ -335,8 +342,9 @@ public class Demo extends Activity {
 				//System.out.println("slr.split.property.value()) " + slr.split.property.value());
 			}
 		})//
-		.status.is("Подождите...").start(this);
-	}
+		.status.is("Подождите...");
+		//.start(this);
+	//}
 	void historyRequestData() {
 		System.out.println("start query");
 		if (!seekPreHistory.equals(seekStringHistory.value())) {
