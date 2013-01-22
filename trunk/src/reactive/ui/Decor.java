@@ -214,6 +214,7 @@ public class Decor extends TextView implements Rake {
 	public void clear() {
 		for (int i = 0; i < sketches.size(); i++) {
 			this.sketches.get(i).forUpdate = null;
+			this.sketches.get(i).unbind();
 		}
 		this.sketches.removeAllElements();
 		this.postInvalidate();
@@ -352,8 +353,6 @@ public class Decor extends TextView implements Rake {
 		afterTap.property.unbind();
 		afterDrag.property.unbind();
 		
-		for(int i=0;i<sketches.size();i++){
-			sketches.get(i).unbind();
-		}
+clear();
 	}
 }

@@ -9,10 +9,10 @@ import tee.binding.properties.*;
 import tee.binding.task.Task;
 
 public class SketchPlate extends Sketch {
-	public NumericProperty<SketchPlate> width = new NumericProperty<SketchPlate>(this);
+	/*public NumericProperty<SketchPlate> width = new NumericProperty<SketchPlate>(this);
 	public NumericProperty<SketchPlate> height = new NumericProperty<SketchPlate>(this);
 	public NumericProperty<SketchPlate> left = new NumericProperty<SketchPlate>(this);
-	public NumericProperty<SketchPlate> top = new NumericProperty<SketchPlate>(this);
+	public NumericProperty<SketchPlate> top = new NumericProperty<SketchPlate>(this);*/
 	public NumericProperty<SketchPlate> background = new NumericProperty<SketchPlate>(this);
 	//public NumericProperty<SketchPlate> strokeColor = new NumericProperty<SketchPlate>(this);
 	//public NumericProperty<SketchPlate> strokeWidth = new NumericProperty<SketchPlate>(this);
@@ -23,11 +23,11 @@ public class SketchPlate extends Sketch {
 	
 	@Override
 	 public void unbind(){
-		width.property.unbind();
+		/*width.property.unbind();
 		height.property.unbind();
 		left.property.unbind();
-		top.property.unbind();
-		
+		top.property.unbind();*/
+		super.unbind();
 		arcX.property.unbind();
 		arcY.property.unbind();
 		paint.unbind();
@@ -46,6 +46,7 @@ public class SketchPlate extends Sketch {
 		//paint.property.value().setColor(background.property.value().intValue());
 		width.property.afterChange(postInvalidate);
 		height.property.afterChange(postInvalidate);
+		left.property.afterChange(postInvalidate);
 		top.property.afterChange(postInvalidate);
 		background.property.afterChange(new Task(){
 

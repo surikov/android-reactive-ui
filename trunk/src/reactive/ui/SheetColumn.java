@@ -22,7 +22,9 @@ public abstract class SheetColumn {
 	//public ItProperty<SheetColumn, Task> afterCellTap = new ItProperty<SheetColumn, Task>(this);
 	//public NoteProperty<SheetColumn> labelText = new NoteProperty<SheetColumn>(this);
 	abstract void afterTap(int row);
-	abstract public Rake cell(int row,Context c);
+	abstract void unbind();
+	abstract void clear();
+	abstract public Sketch cell(int row);
 	abstract public int count();
 	//public int width();
 	abstract public Rake header(Context c);

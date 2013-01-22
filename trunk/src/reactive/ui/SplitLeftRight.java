@@ -25,7 +25,8 @@ public class SplitLeftRight extends SubLayoutless {
 	private Rake leftSide;
 	private Rake rightSide;
 	private boolean initialized = false;
-//private boolean lockAdjustSplit=false;
+	private boolean firstOnSizeChanged = true;
+	//private boolean lockAdjustSplit=false;
 	/*
 		public void debug() {
 			
@@ -42,6 +43,10 @@ public class SplitLeftRight extends SubLayoutless {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		//System.out.println("onSizeChanged " + w + "x" + h + " <- " + oldw + "x" + oldh);
+		if(firstOnSizeChanged){
+			firstOnSizeChanged=false;
+			split.property.value(this.width().property.value()-Layoutless.tapSize*0.5);
+		}
 	}
 	/*@Override
 	protected boolean setFrame(int left, int top, int right, int bottom) {
@@ -67,7 +72,6 @@ public class SplitLeftRight extends SubLayoutless {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: "+ getMeasuredWidth()+"x" + getMeasuredHeight());
 		//System.out.println( "spec "+ widthMeasureSpec+"x" + heightMeasureSpec);
-		
 	}
 	/*@Override
 	public void layout(int l, int t, int r, int b) {
@@ -148,33 +152,36 @@ public class SplitLeftRight extends SubLayoutless {
 			.afterDrag.is(adjustSplit)//
 			.movableX.is(true)//
 					.sketch(new SketchPlate()//
-					.width.is(4 + Layoutless.tapSize)//
-					.height.is(4 + Layoutless.tapSize)//
 					.arcX.is(0.5 * (4 + Layoutless.tapSize))//
 					.arcY.is(0.5 * (4 + Layoutless.tapSize))//
 					.background.is(0x66999999)//
+					.width.is(4 + Layoutless.tapSize)//
+					.height.is(4 + Layoutless.tapSize)//
 					)//
 					.sketch(new SketchPlate()//
-					.width.is(2 + Layoutless.tapSize)//
-					.height.is(2 + Layoutless.tapSize)//
 					.arcX.is(0.5 * (2 + Layoutless.tapSize))//
 					.arcY.is(0.5 * (2 + Layoutless.tapSize))//
 					.background.is(0x99999999)//
-					.left.is(1).top.is(1))//
+					.left.is(1).top.is(1)//
+					.width.is(2 + Layoutless.tapSize)//
+					.height.is(2 + Layoutless.tapSize)//
+					)//
 					.sketch(new SketchPlate()//
-					.width.is(Layoutless.tapSize)//
-					.height.is(Layoutless.tapSize)//
 					.arcX.is(0.5 * Layoutless.tapSize)//
 					.arcY.is(0.5 * Layoutless.tapSize)//
 					.background.is(Layoutless.themeForegroundColor)//
-					.left.is(2).top.is(2))//
+					.left.is(2).top.is(2)//
+					.width.is(Layoutless.tapSize)//
+					.height.is(Layoutless.tapSize)//
+					)//
 					.sketch(new SketchPlate()//
-					.width.is(Layoutless.tapSize - 2)//
-					.height.is(Layoutless.tapSize - 2)//
 					.arcX.is(0.5 * (Layoutless.tapSize - 2))//
 					.arcY.is(0.5 * (Layoutless.tapSize - 2))//
 					.background.is(Layoutless.themeBackgroundColor)//
-					.left.is(3).top.is(3))//
+					.left.is(3).top.is(3)//
+					.width.is(Layoutless.tapSize - 2)//
+					.height.is(Layoutless.tapSize - 2)//
+					)//
 					/*.sketch(new SketchContour()//
 					.width.is(Layoutless.tapSize - 2)//
 					.height.is(Layoutless.tapSize - 2)//
@@ -204,5 +211,10 @@ public class SplitLeftRight extends SubLayoutless {
 					.top().is(height().property.minus(position.property.plus(1).multiply(Layoutless.tapSize)).minus(0.5 * Layoutless.tapSize))//
 			);
 		}
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		
 	}
 }

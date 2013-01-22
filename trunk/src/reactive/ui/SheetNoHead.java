@@ -24,7 +24,8 @@ import java.text.*;
 
 public class SheetNoHead extends SubLayoutless {
 	private boolean initialized = false;
-	private SubLayoutless data;
+	//private SubLayoutless data;
+	private Decor data;
 	private SubLayoutless body;
 	private Decor selection;
 	private SheetColumn[] columns;
@@ -44,30 +45,49 @@ public class SheetNoHead extends SubLayoutless {
 			int curLeft = 0;
 			for (int x = 0; x < columnCount.value(); x++) {
 				if (x > 0) {
-					data.child(new Decor(this.getContext())//vertical line
+					/*data.child(new Decor(this.getContext())//vertical line
 					.background.is(Layoutless.themeBlurColor)//
 							.width().is(1)//
 							.height().is(rowHeight.property.multiply(rowCount))//
 							.left().is(curLeft)//
+					);*/
+					data.sketch(new SketchPlate()//vertical line
+					.background.is(Layoutless.themeBlurColor)//
+					.width.is(1)//
+					.top.is(0)//
+					.height.is(rowHeight.property.multiply(rowCount))//
+					.left.is(curLeft)//
 					);
 				}
 				for (int y = 0; y < rowCount.value(); y++) {
-					data.child(columns[x].cell(y, this.getContext())//
+					/*data.child(columns[x].cell(y, this.getContext())//
 							.left().is(curLeft)//
 							.top().is(rowHeight.property.multiply(y))//
 							.height().is(rowHeight.property)//
 							.width().is(columns[x].width.property.value())//
-					);
+					);*/
+					data.sketch(columns[x].cell(y)//cell
+														.width.is(columns[x].width.property.value() - 6)//
+							.height.is(rowHeight.property.minus(6))//
+							.top.is(rowHeight.property.multiply(y).plus(3))//
+							.left.is(curLeft + 3) //
+							);
 				}
 				curLeft = curLeft + columns[x].width.property.value().intValue();
 			}
 			for (int y = 0; y < rowCount.value(); y++) {
 				if (y > 0) {
-					data.child(new Decor(this.getContext())//horizontal line
+					/*data.child(new Decor(this.getContext())//horizontal line
 					.background.is(Layoutless.themeBlurColor)//
 							.width().is(curLeft)//
 							.height().is(1)//
 							.top().is(rowHeight.property.multiply(y))//
+					);*/
+					data.sketch(new SketchPlate()//horizontal line
+					.background.is(Layoutless.themeBlurColor)//
+					.width.is(curLeft)//
+					.height.is(1)//
+					.top.is(rowHeight.property.multiply(y))//
 					);
 				}
 			}
@@ -87,17 +107,18 @@ public class SheetNoHead extends SubLayoutless {
 		super(context, attrs, defStyle);
 	}
 	private void clear() {
-		data.removeAllViews();
-		data.child(selection);
+		//data.removeAllViews();
+		//data.child(selection);
+		data.clear();
 	}
 	public void refreshSelection() {
 		if (selectedRow.property.value() < 0) {
 			selection.setVisibility(INVISIBLE);
 		}
 		else {
-			selection.height().is(rowHeight.property.value());
-			selection.top().is(selectedRow.property.value() * rowHeight.property.value());
-			selection.width().is(data.width().property.value());
+			//selection.height().is(rowHeight.property.value());
+			//selection.top().is(selectedRow.property.value() * rowHeight.property.value());
+			//selection.width().is(data.width().property.value());
 			selection.setVisibility(VISIBLE);
 		}
 	}
@@ -126,12 +147,18 @@ public class SheetNoHead extends SubLayoutless {
 			this.child(body);
 			body.width().is(this.width().property);
 			body.height().is(this.height().property);
-			data = new SubLayoutless(this.getContext());
-			data.child(selection);
+			//data = new SubLayoutless(this.getContext());
+			data = new Decor(this.getContext());
+			//data.child(selection);
+			body.child(selection);
+			selection.width().is(data.width().property);
+			selection.height().is(rowHeight.property);
+			selection.left().is(body.shiftX.property);
+			selection.top().is(selectedRow.property.multiply(rowHeight.property).plus(body.shiftY.property));
 			body.child(data);
 			data.left().is(body.shiftX.property);
 			data.top().is(body.shiftY.property);
-			data.solid.is(false);
+			//data.solid.is(false);
 			body.shiftX.property.bind(body.shiftX.property);
 			body.afterTap.is(new Task() {
 				@Override
