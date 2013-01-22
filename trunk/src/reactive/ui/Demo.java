@@ -96,15 +96,15 @@ public class Demo extends Activity {
 		Calendar historyFromDate = Calendar.getInstance();
 		historyFromDate.add(Calendar.DAY_OF_YEAR, -90);
 		historyFrom.value((double) historyFromDate.getTimeInMillis());
-		new Numeric().bind(historyFrom).afterChange(new Task(){
-
+		new Numeric().bind(historyFrom).afterChange(new Task() {
 			@Override
 			public void doTask() {
 				//System.out.println("historyFrom "+historyFrom);
-				currentPageHistory=0;
+				currentPageHistory = 0;
 				//startRefreshHistoryGrid();
 				startRefreshHistoryGrid.start(Demo.this);
-			}}, true);
+			}
+		}, true);
 		/*.bind(new Numeric().value((double) historyFromDate.getTimeInMillis()).afterChange(new Task(){
 
 			@Override
@@ -114,15 +114,15 @@ public class Demo extends Activity {
 			}}));*/
 		Calendar historyToDate = Calendar.getInstance();
 		historyTo.value((double) historyToDate.getTimeInMillis());
-		new Numeric().bind(historyTo).afterChange(new Task(){
-
+		new Numeric().bind(historyTo).afterChange(new Task() {
 			@Override
 			public void doTask() {
 				//System.out.println("historyFrom "+historyFrom);
-				currentPageHistory=0;
+				currentPageHistory = 0;
 				//startRefreshHistoryGrid();
 				startRefreshHistoryGrid.start(Demo.this);
-			}}, true);
+			}
+		}, true);
 		photoIcon = BitmapFactory.decodeResource(getResources(), R.drawable.picture);
 		//System.out.println(photoIcon.getWidth());
 		/*
@@ -193,9 +193,17 @@ public class Demo extends Activity {
 		seekStringHistory.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				System.out.println("seekString: " + seekStringHistory.value());
+				if (seekStringHistory.value().length() > 2) {
+					if (seekStringHistory.value().length() > seekPreHistory.length()) {
+						//System.out.println("seekString: " + seekStringHistory.value() + " /" + seekStringHistory.value().length());
+						currentPageHistory = 0;
+						historyRequestData();
+						historyFillGrid();
+					}
+				}
+				seekPreHistory = seekStringHistory.value();
 			}
-		});
+		}, true);
 		//historyFrom.bind(new Numeric());
 		SubLayoutless gridHistoryPanel = new SubLayoutless(this);
 		SplitLeftRight slr = new SplitLeftRight(this);//.split.is(historySplit);
@@ -216,13 +224,13 @@ public class Demo extends Activity {
 								}
 								else {
 									if (historyHasMoreData) {
-										currentPageHistory++;
+										currentPageHistory++;}
 										Auxiliary.hideSoftKeyboard(Demo.this);
 										//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 										//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 										//startRefreshHistoryGrid();
 										startRefreshHistoryGrid.start(Demo.this);
-									}
+									
 								}
 							}
 						}//
@@ -233,6 +241,7 @@ public class Demo extends Activity {
 								.top().is(0.1 * Layoutless.tapSize)//
 						)//
 						.child(new RedactText(this).text.is(seekStringHistory)//
+								.singleLine.is(true)
 								.width().is(5 * Layoutless.tapSize)//
 								.height().is(0.8 * Layoutless.tapSize)//
 								.left().is(0.9 * Layoutless.tapSize)//
@@ -252,13 +261,13 @@ public class Demo extends Activity {
 								}
 								else {
 									if (currentPageHistory > 0) {
-										currentPageHistory--;
+										currentPageHistory--;}
 										Auxiliary.hideSoftKeyboard(Demo.this);
 										//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 										//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 										//startRefreshHistoryGrid();
 										startRefreshHistoryGrid.start(Demo.this);
-									}
+									
 								}
 							}
 						}//
@@ -298,18 +307,18 @@ public class Demo extends Activity {
 						)//
 						.child(gridHistory//
 						.maxRowHeight.is(2)//
-								.data(new SheetColumn[] { historyArtikul.title.is("Артикул").width.is(90) //
-										, historyNomenklatura.title.is("Номенклатура").width.is(290)//
-										, historyProizvoditel.title.is("Производитель").width.is(140)//
-										, historyMinKol.title.is("Мин. кол.").width.is(50)//
-										, historyKolMest.title.is("Кол. мест").width.is(50)//
-										, historyEdIzm.title.is("Ед. изм.").width.is(50)//
-										, historyCena.title.is("Цена").width.is(80)//
-										, historyRazmSkidki.title.is("Разм. скидки").width.is(80)//
-										, historyVidSkidki.title.is("Вид скидки").width.is(120)//
-										, historyPoslCena.title.is("Посл. цена").width.is(80)//
-										, historyMinCena.title.is("Мин. цена").width.is(80)//
-										, historyMaxCena.title.is("Макс. цена").width.is(80) //
+								.data(new SheetColumn[] { historyArtikul.title.is("Артикул").textSize.is(18).width.is(90) //
+										, historyNomenklatura.title.is("Номенклатура").textSize.is(18).width.is(290)//
+										, historyProizvoditel.title.is("Производитель").textSize.is(18).width.is(140)//
+										, historyMinKol.title.is("Мин. кол.").textSize.is(18).width.is(50)//
+										, historyKolMest.title.is("Кол. мест").textSize.is(18).width.is(50)//
+										, historyEdIzm.title.is("Ед. изм.").textSize.is(18).width.is(50)//
+										, historyCena.title.is("Цена").textSize.is(18).width.is(80)//
+										, historyRazmSkidki.title.is("Разм. скидки").textSize.is(18).width.is(80)//
+										, historyVidSkidki.title.is("Вид скидки").textSize.is(18).width.is(120)//
+										, historyPoslCena.title.is("Посл. цена").textSize.is(18).width.is(80)//
+										, historyMinCena.title.is("Мин. цена").textSize.is(18).width.is(80)//
+										, historyMaxCena.title.is("Макс. цена").textSize.is(18).width.is(80) //
 										, historyPhoto.title.is("Фото").width.is(Layoutless.tapSize) //
 								})//
 								.top().is(Layoutless.tapSize)
@@ -326,24 +335,32 @@ public class Demo extends Activity {
 		//this.setContentView(glView); 
 		//startRefreshHistoryGrid();
 		startRefreshHistoryGrid.start(Demo.this);
+		/*seekStringHistory.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				System.out.println("seekStringHistory: " + seekStringHistory.value());
+			}
+		}, true);*/
 	}
+
 	//void startRefreshHistoryGrid() {
-		Expect startRefreshHistoryGrid=	new Expect()//
-		.task.is(new Task() {
-			@Override
-			public void doTask() {
-				historyRequestData();
-			}
-		})//
-		.afterDone.is(new Task() {
-			@Override
-			public void doTask() {
-				historyFillGrid();
-				//System.out.println("slr.split.property.value()) " + slr.split.property.value());
-			}
-		})//
-		.status.is("Подождите...");
-		//.start(this);
+	Expect startRefreshHistoryGrid = new Expect()//
+	.task.is(new Task() {
+		@Override
+		public void doTask() {
+			historyRequestData();
+		}
+	})//
+	.afterDone.is(new Task() {
+		@Override
+		public void doTask() {
+			historyFillGrid();
+			//System.out.println("slr.split.property.value()) " + slr.split.property.value());
+		}
+	})//
+	.status.is("Подождите...");
+
+	//.start(this);
 	//}
 	void historyRequestData() {
 		System.out.println("start query");
@@ -426,7 +443,7 @@ public class Demo extends Activity {
 						java.util.Calendar now = Calendar.getInstance();
 						now.add(Calendar.DAY_OF_YEAR, -14);
 						if (d.before(now.getTime())) {
-							artikulBG = 0x99ff0000;
+							artikulBG = 0xffff6666;
 							//System.out.println("yes "+now.getTime());
 						}
 					}
@@ -444,13 +461,14 @@ public class Demo extends Activity {
 				//System.out.println("100.0 * (" + CenyNomenklaturySklada + " - " + TekuschieCenyOstatkovPartiy + ") / " + TekuschieCenyOstatkovPartiy + ")=" + procent);
 				if (procent >= 18) {
 					//return true;
-					naimenovanieBG = 0x99ff9966;
+					naimenovanieBG = 0xffff9966;
 				}
 			}
 			catch (Throwable tr) {
 				tr.printStackTrace();
 			}
-			historyArtikul.item(currentPageHistory + "/" + i + ": " + row.child("Artikul").value.property.value(), artikulBG, click);
+			historyArtikul.item(//currentPageHistory + "/" + i + ": " + 
+					row.child("Artikul").value.property.value(), artikulBG, click);
 			historyNomenklatura.item(row.child("Naimenovanie").value.property.value(), naimenovanieBG, click);
 			historyProizvoditel.item(row.child("ProizvoditelNaimenovanie").value.property.value(), click);
 			historyMinKol.item(row.child("MinNorma").value.property.value(), click);
