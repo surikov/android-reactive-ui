@@ -193,12 +193,20 @@ public class Demo extends Activity {
 		seekStringHistory.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				if (seekStringHistory.value().length() > 2) {
-					if (seekStringHistory.value().length() > seekPreHistory.length()) {
-						//System.out.println("seekString: " + seekStringHistory.value() + " /" + seekStringHistory.value().length());
-						currentPageHistory = 0;
-						historyRequestData();
-						historyFillGrid();
+				//System.out.println(seekStringHistory.value().length() + " / " + seekPreHistory.length());
+				if ((seekStringHistory.value().length() == 0 && seekPreHistory.length() > 0)) {
+					//System.out.println("seekString: " + seekStringHistory.value() + " /" + seekStringHistory.value().length());
+					currentPageHistory = 0;
+					historyRequestData();
+					historyFillGrid();
+				}
+				else {
+					if (seekStringHistory.value().length() > 2) {
+						if (seekStringHistory.value().length() > seekPreHistory.length()) {
+							currentPageHistory = 0;
+							historyRequestData();
+							historyFillGrid();
+						}
 					}
 				}
 				seekPreHistory = seekStringHistory.value();
@@ -224,13 +232,13 @@ public class Demo extends Activity {
 								}
 								else {
 									if (historyHasMoreData) {
-										currentPageHistory++;}
-										Auxiliary.hideSoftKeyboard(Demo.this);
-										//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-										//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-										//startRefreshHistoryGrid();
-										startRefreshHistoryGrid.start(Demo.this);
-									
+										currentPageHistory++;
+									}
+									Auxiliary.hideSoftKeyboard(Demo.this);
+									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+									//startRefreshHistoryGrid();
+									startRefreshHistoryGrid.start(Demo.this);
 								}
 							}
 						}//
@@ -241,8 +249,7 @@ public class Demo extends Activity {
 								.top().is(0.1 * Layoutless.tapSize)//
 						)//
 						.child(new RedactText(this).text.is(seekStringHistory)//
-								.singleLine.is(true)
-								.width().is(5 * Layoutless.tapSize)//
+						.singleLine.is(true).width().is(5 * Layoutless.tapSize)//
 								.height().is(0.8 * Layoutless.tapSize)//
 								.left().is(0.9 * Layoutless.tapSize)//
 								.top().is(0.1 * Layoutless.tapSize))//
@@ -261,13 +268,13 @@ public class Demo extends Activity {
 								}
 								else {
 									if (currentPageHistory > 0) {
-										currentPageHistory--;}
-										Auxiliary.hideSoftKeyboard(Demo.this);
-										//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-										//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-										//startRefreshHistoryGrid();
-										startRefreshHistoryGrid.start(Demo.this);
-									
+										currentPageHistory--;
+									}
+									Auxiliary.hideSoftKeyboard(Demo.this);
+									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+									//startRefreshHistoryGrid();
+									startRefreshHistoryGrid.start(Demo.this);
 								}
 							}
 						}//
