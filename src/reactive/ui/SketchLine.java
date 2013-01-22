@@ -20,7 +20,7 @@ public class SketchLine extends Sketch {
 	//private Vector<Integer>yy=new Vector<Integer>();
 	@Override
 	 public void unbind(){
-		
+		super.unbind();
 		strokeColor.property.unbind();
 		strokeWidth.property.unbind();
 		

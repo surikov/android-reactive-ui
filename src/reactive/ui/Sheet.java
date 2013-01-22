@@ -56,6 +56,7 @@ public class Sheet extends SubLayoutless {
 					data.sketch(new SketchPlate()//vertical line
 					.background.is(Layoutless.themeBlurColor)//
 					.width.is(1)//
+					.top.is(0)//
 					.height.is(rowHeight.property.multiply(rowCount))//
 					.left.is(curLeft)//
 					);
@@ -73,13 +74,13 @@ public class Sheet extends SubLayoutless {
 							.width().is(columns[x].width.property.value())//
 					);*/
 					//System.out.println(x+"x"+y+"/"+curLeft+"/"+rowHeight.property.multiply(y).value()+"/"+columns[x].width.property.value()+"/"+rowHeight.property.value());
-					data.sketch(new SketchText()//cell
-					//.size.is(50)
-					.text.is("x" + Math.random())//
-					.width.is(columns[x].width.property.value())//
+					data.sketch(columns[x].cell(y)//cell
+					//data.sketch(new SketchText()//cell
+					//.size.is(16).text.is("x" + Math.random())//
+					.width.is(columns[x].width.property.value() )//
 					.height.is(rowHeight.property)//
 					.top.is(rowHeight.property.multiply(y))//
-					.left.is(curLeft) //
+					.left.is(curLeft ) //
 					);
 					/*data.sketch(new SketchPlate()//fill
 					.background.is(0x3300ff00)//
@@ -178,13 +179,10 @@ public class Sheet extends SubLayoutless {
 			data = new Decor(this.getContext());
 			//data.child(selection);
 			body.child(selection);
-			
 			selection.width().is(data.width().property);
 			selection.height().is(rowHeight.property);
 			selection.left().is(body.shiftX.property);
-			selection.top().is(selectedRow.property.multiply( rowHeight.property).plus(body.shiftY.property));
-			
-			
+			selection.top().is(selectedRow.property.multiply(rowHeight.property).plus(body.shiftY.property));
 			body.child(data);
 			data.left().is(body.shiftX.property);
 			data.top().is(body.shiftY.property);
@@ -209,24 +207,25 @@ public class Sheet extends SubLayoutless {
 						return;
 					if (columns.length > 0) {
 						if (columns[0].count() > 0) {
-							if (body.tapX.property.value() >= 0) {
+							double bodyX=body.tapX.property.value()-body.shiftX.property.value();
+							if ( bodyX>= 0) {
 								if (body.tapY.property.value() >= 0) {
 									int columnCount = columns.length;
 									int curLeft = 0;
-									int tc = -1;
+									int tapColumn = -1;
 									for (int c = 0; c < columnCount; c++) {
 										curLeft = curLeft + columns[c].width.property.value().intValue();
-										if (body.tapX.property.value() <= curLeft) {
-											tc = c;
+										if (bodyX <= curLeft) {
+											tapColumn = c;
 											break;
 										}
 									}
 									int r = (int) ((body.tapY.property.value() - body.shiftY.property.value()) / rowHeight.property.value());
 									selectedRow.is(r);
 									refreshSelection();
-									if (tc > -1) {
-										if (columns.length > tc) {
-											columns[tc].afterTap(r);
+									if (tapColumn > -1) {
+										if (columns.length > tapColumn) {
+											columns[tapColumn].afterTap(r);
 										}
 									}
 								}

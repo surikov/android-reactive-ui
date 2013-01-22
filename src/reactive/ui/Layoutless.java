@@ -92,6 +92,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 			tapSize = 60.0 * density;
 			solid.is(true);
 			fillBaseColors();
+			
 		}
 	}
 	public Layoutless(Context context) {

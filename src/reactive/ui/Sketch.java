@@ -14,6 +14,10 @@ import tee.binding.it.*;
 
 abstract public class Sketch {
 	//Vector<Sketch> figures = new Vector<Sketch>();
+	public NumericProperty<Sketch> width = new NumericProperty<Sketch>(this);
+	public NumericProperty<Sketch> height = new NumericProperty<Sketch>(this);
+	public NumericProperty<Sketch> left = new NumericProperty<Sketch>(this);
+	public NumericProperty<Sketch> top = new NumericProperty<Sketch>(this);
 	public Decor forUpdate;
 	public Task postInvalidate = new Task() {
 		@Override
@@ -23,7 +27,15 @@ abstract public class Sketch {
 			}
 		}
 	};	
-	abstract public void unbind();
+	public Sketch(){
+		
+	}
+	 public void unbind(){
+		 width.property.unbind();
+		 height.property.unbind();
+		 left.property.unbind();
+		top.property.unbind();
+	 }
 	abstract public void draw(Canvas canvas);/* {
 		int w = 100;
 		int h = 100;

@@ -15,6 +15,7 @@ import reactive.ui.*;
 
 import android.content.res.*;
 import android.view.animation.*;
+import android.view.inputmethod.InputMethodManager;
 import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
@@ -55,7 +56,11 @@ public class Auxiliary {
 			DIGITS['a' + i] = (byte) (10 + i);
 		}
 	}
-
+public static void hideSoftKeyboard(Activity activity){
+	InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+	inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	
+}
 	public static boolean isOnline(Context c) {
 		try {
 			ConnectivityManager connectivityManager = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
