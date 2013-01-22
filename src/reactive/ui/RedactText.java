@@ -15,6 +15,7 @@ public class RedactText extends EditText implements Rake {
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
+	public ToggleProperty<Rake> singleLine = new ToggleProperty<Rake>(this);
 	boolean initialized = false;
 	private boolean lock = false;
 	Task reFit = new Task() {
@@ -56,10 +57,12 @@ public class RedactText extends EditText implements Rake {
 			return;
 		}
 		initialized = true;
+		//this.setSingleLine(true);
 		width.property.afterChange(reFit).value(100);
 		height.property.afterChange(reFit).value(100);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
+		setSingleLine(singleLine.property.value());
 		addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -85,6 +88,13 @@ public class RedactText extends EditText implements Rake {
 					setText(text.property.value());
 					lock = false;
 				}
+			}
+		});
+		singleLine.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				
+				setSingleLine(singleLine.property.value());
 			}
 		});
 	}

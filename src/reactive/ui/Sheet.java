@@ -77,10 +77,10 @@ public class Sheet extends SubLayoutless {
 					data.sketch(columns[x].cell(y)//cell
 					//data.sketch(new SketchText()//cell
 					//.size.is(16).text.is("x" + Math.random())//
-					.width.is(columns[x].width.property.value() )//
+					.width.is(columns[x].width.property.value())//
 					.height.is(rowHeight.property)//
 					.top.is(rowHeight.property.multiply(y))//
-					.left.is(curLeft ) //
+					.left.is(curLeft) //
 					);
 					/*data.sketch(new SketchPlate()//fill
 					.background.is(0x3300ff00)//
@@ -114,6 +114,7 @@ public class Sheet extends SubLayoutless {
 			this.postInvalidate();
 			setZoom();
 		}
+		this.refreshSelection();
 	}
 	public Sheet(Context context) {
 		super(context);
@@ -131,6 +132,11 @@ public class Sheet extends SubLayoutless {
 		//data.child(selection);
 	}
 	public void refreshSelection() {
+		if (columns.length > 0) {
+			if (columns[0].count() <= selectedRow.property.value()) {
+				selectedRow.is(-1);
+			}
+		}
 		if (selectedRow.property.value() < 0) {
 			selection.setVisibility(INVISIBLE);
 		}
@@ -207,8 +213,8 @@ public class Sheet extends SubLayoutless {
 						return;
 					if (columns.length > 0) {
 						if (columns[0].count() > 0) {
-							double bodyX=body.tapX.property.value()-body.shiftX.property.value();
-							if ( bodyX>= 0) {
+							double bodyX = body.tapX.property.value() - body.shiftX.property.value();
+							if (bodyX >= 0) {
 								if (body.tapY.property.value() >= 0) {
 									int columnCount = columns.length;
 									int curLeft = 0;
