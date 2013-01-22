@@ -6,8 +6,13 @@ import tee.binding.task.*;
 import android.app.*;
 import android.content.*;
 import android.content.DialogInterface.*;
-
-public class Expect extends AsyncTask<Void, Void, Void> {
+abstract class RealAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result>{
+	public void realPublishProgress(){
+		publishProgress();
+	}
+}
+public class Expect //extends AsyncTask<Void, Void, Void>
+{
 	public ItProperty<Expect, Task> afterDone = new ItProperty<Expect, Task>(this);
 	public ItProperty<Expect, Task> afterCancel = new ItProperty<Expect, Task>(this);
 	public ItProperty<Expect, Task> task = new ItProperty<Expect, Task>(this);
@@ -15,16 +20,18 @@ public class Expect extends AsyncTask<Void, Void, Void> {
 	public ToggleProperty<Expect> cancel = new ToggleProperty<Expect>(this);
 	private AlertDialog dialog;
 	private boolean lock = false;
-
+	RealAsyncTask<Void, Void, Void> asyncTask;
 	public Expect() {
 		status.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				publishProgress();
+				if (asyncTask!=null){
+					asyncTask.realPublishProgress();
+				}
 			}
 		});
 	}
-	@Override
+	/*@Override
 	protected Void doInBackground(Void... params) {
 		if (task.property.value() != null) {
 			try {
@@ -54,6 +61,42 @@ public class Expect extends AsyncTask<Void, Void, Void> {
 		}
 		unbind();
 		lock = false;
+	}*/
+	private void executeTask() {
+		 asyncTask = new RealAsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				if (task.property.value() != null) {
+					try {
+						task.property.value().start();
+					}
+					catch (Throwable t) {
+						t.printStackTrace();
+					}
+				}
+				return null;
+			}
+			@Override
+			protected void onProgressUpdate(Void... values) {
+				if (dialog != null) {
+					dialog.setMessage(status.property.value());
+				}
+			}
+			@Override
+			protected void onPostExecute(Void v) {
+				if (dialog != null) {
+					dialog.dismiss();
+				}
+				if (!cancel.property.value()) {
+					if (afterDone.property.value() != null) {
+						afterDone.property.value().start();
+					}
+				}
+				unbind();
+				lock = false;
+			}
+		};
+		asyncTask.execute();
 	}
 	public boolean start(Context context) {
 		if (lock) {
@@ -74,7 +117,8 @@ public class Expect extends AsyncTask<Void, Void, Void> {
 		});
 		builder.setMessage(status.property.value());
 		dialog = builder.show();
-		execute();
+		//execute();
+		executeTask();
 		return true;
 	}
 	public void unbind() {
