@@ -5,6 +5,7 @@ import android.view.*;
 import android.app.*;
 import android.content.*;
 import android.graphics.*;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.*;
@@ -67,7 +68,9 @@ public class Demo extends Activity {
 	//OpenGL2 glView;
 	Note seekStringHistory = new Note();
 	String seekPreHistory = "";
-	int currentPageHistory = 0;
+	//int currentPageHistory = 0;
+	int currentOffsetHistory = 0;
+	int currentSizeHistory = 0;
 	boolean historyHasMoreData = false;
 	Numeric historyFrom = new Numeric();
 	Numeric historyTo = new Numeric();
@@ -100,9 +103,13 @@ public class Demo extends Activity {
 			@Override
 			public void doTask() {
 				//System.out.println("historyFrom "+historyFrom);
-				currentPageHistory = 0;
+				//currentPageHistory = 0;
+				currentOffsetHistory = 0;
 				//startRefreshHistoryGrid();
-				startRefreshHistoryGrid.start(Demo.this);
+				//startRefreshHistoryGrid.start(Demo.this);
+				Bough b = historyFillData();
+				historyFillGrid(b);
+				gridHistory.reset();
 			}
 		}, true);
 		/*.bind(new Numeric().value((double) historyFromDate.getTimeInMillis()).afterChange(new Task(){
@@ -118,9 +125,13 @@ public class Demo extends Activity {
 			@Override
 			public void doTask() {
 				//System.out.println("historyFrom "+historyFrom);
-				currentPageHistory = 0;
+				//currentPageHistory = 0;
+				currentOffsetHistory = 0;
 				//startRefreshHistoryGrid();
-				startRefreshHistoryGrid.start(Demo.this);
+				//startRefreshHistoryGrid.start(Demo.this);
+				Bough b = historyFillData();
+				historyFillGrid(b);
+				gridHistory.reset();
 			}
 		}, true);
 		photoIcon = BitmapFactory.decodeResource(getResources(), R.drawable.picture);
@@ -139,7 +150,7 @@ public class Demo extends Activity {
 		historyMinCena;
 		historyMaxCena;
 		*/
-		gridHistory = new Sheet(this);
+		gridHistory = new Sheet(this).noHead.is(false);
 		/*layoutless.child(new Decor(this)//
 				.background.is(0x9999ff99)//
 						.sketch(new SketchLine().strokeWidth.is(1).strokeColor.is(0x660000ff).point(100, 50).point(100, 150))//
@@ -196,16 +207,24 @@ public class Demo extends Activity {
 				//System.out.println(seekStringHistory.value().length() + " / " + seekPreHistory.length());
 				if ((seekStringHistory.value().length() == 0 && seekPreHistory.length() > 0)) {
 					//System.out.println("seekString: " + seekStringHistory.value() + " /" + seekStringHistory.value().length());
-					currentPageHistory = 0;
-					historyRequestData();
-					historyFillGrid();
+					//currentPageHistory = 0;
+					currentOffsetHistory = 0;
+					//historyRequestData();
+					//historyFillGrid();
+					Bough b = historyFillData();
+					historyFillGrid(b);
+					gridHistory.reset();
 				}
 				else {
 					if (seekStringHistory.value().length() > 2) {
 						if (seekStringHistory.value().length() > seekPreHistory.length()) {
-							currentPageHistory = 0;
-							historyRequestData();
-							historyFillGrid();
+							//currentPageHistory = 0;
+							currentOffsetHistory = 0;
+							//historyRequestData();
+							//historyFillGrid();
+							Bough b = historyFillData();
+							historyFillGrid(b);
+							gridHistory.reset();
 						}
 					}
 				}
@@ -217,73 +236,80 @@ public class Demo extends Activity {
 		SplitLeftRight slr = new SplitLeftRight(this);//.split.is(historySplit);
 		layoutless.child(slr//
 				.rightSide(gridHistoryPanel//
-						.child(new KnobImage(this)//
-						//.labelText.is("Дальше")
-						.bitmap.is(BitmapFactory.decodeResource(getResources(), R.drawable.goprev)).tap.is(new Task() {
-							@Override
-							public void doTask() {
-								if (!seekPreHistory.equals(seekStringHistory.value())) {
-									currentPageHistory = 0;
-									Auxiliary.hideSoftKeyboard(Demo.this);
-									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-									//startRefreshHistoryGrid();
-									startRefreshHistoryGrid.start(Demo.this);
-								}
-								else {
-									if (historyHasMoreData) {
-										currentPageHistory++;
-									}
-									Auxiliary.hideSoftKeyboard(Demo.this);
-									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-									//startRefreshHistoryGrid();
-									startRefreshHistoryGrid.start(Demo.this);
-								}
-							}
-						}//
-								)//
-								.width().is(0.8 * Layoutless.tapSize)//
+						.child(new RedactText(this).text.is(seekStringHistory)//
+						.singleLine.is(true).width().is(4 * Layoutless.tapSize)//
 								.height().is(0.8 * Layoutless.tapSize)//
 								.left().is(0.1 * Layoutless.tapSize)//
 								.top().is(0.1 * Layoutless.tapSize)//
 						)//
-						.child(new RedactText(this).text.is(seekStringHistory)//
-						.singleLine.is(true).width().is(5 * Layoutless.tapSize)//
-								.height().is(0.8 * Layoutless.tapSize)//
-								.left().is(0.9 * Layoutless.tapSize)//
-								.top().is(0.1 * Layoutless.tapSize))//
 						.child(new KnobImage(this)//
 						//.labelText.is("Пред.")
-						.bitmap.is(BitmapFactory.decodeResource(getResources(), R.drawable.gonext)).tap.is(new Task() {
+						.bitmap.is(BitmapFactory.decodeResource(getResources(), R.drawable.goprev)).tap.is(new Task() {
 							@Override
 							public void doTask() {
+								System.out.println(currentOffsetHistory);
 								if (!seekPreHistory.equals(seekStringHistory.value())) {
-									currentPageHistory = 0;
+									currentOffsetHistory = 0;
 									Auxiliary.hideSoftKeyboard(Demo.this);
 									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 									//startRefreshHistoryGrid();
-									startRefreshHistoryGrid.start(Demo.this);
+									//startRefreshHistoryGrid.start(Demo.this);
+									historyFillGrid(historyFillData());
+									gridHistory.reset();
 								}
 								else {
-									if (currentPageHistory > 0) {
-										currentPageHistory--;
-									}
+									if (currentOffsetHistory > 0) {
+										currentOffsetHistory = currentOffsetHistory - dataPageSize;
+									
 									Auxiliary.hideSoftKeyboard(Demo.this);
 									//InputMethodManager inputManager = (InputMethodManager) Demo.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 									//inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 									//startRefreshHistoryGrid();
-									startRefreshHistoryGrid.start(Demo.this);
+									//startRefreshHistoryGrid.start(Demo.this);
+									historyFillGrid(historyFillData());
+									gridHistory.reset();
+									}
 								}
 							}
 						}//
 								)//
 								.width().is(0.8 * Layoutless.tapSize)//
 								.height().is(0.8 * Layoutless.tapSize)//
-								.left().is(5.9 * Layoutless.tapSize)//
+								.left().is(4.2 * Layoutless.tapSize)//
 								.top().is(0.1 * Layoutless.tapSize)//
 						)//
+						.child(new KnobImage(this)//
+						//.labelText.is("Дальше")
+						.bitmap.is(BitmapFactory.decodeResource(getResources(), R.drawable.gonext)).tap.is(new Task() {
+							@Override
+							public void doTask() {
+								if (!seekPreHistory.equals(seekStringHistory.value())) {
+									currentOffsetHistory = 0;
+									Auxiliary.hideSoftKeyboard(Demo.this);
+									//startRefreshHistoryGrid.start(Demo.this);
+									historyFillGrid(historyFillData());
+									gridHistory.reset();
+								}
+								else {
+									if (historyHasMoreData) {
+										currentOffsetHistory = currentOffsetHistory + dataPageSize;
+									
+									Auxiliary.hideSoftKeyboard(Demo.this);
+									//startRefreshHistoryGrid.start(Demo.this);
+									historyFillGrid(historyFillData());
+									gridHistory.reset();
+									}
+								}
+							}
+						}//
+								)//
+								.width().is(0.8 * Layoutless.tapSize)//
+								.height().is(0.8 * Layoutless.tapSize)//
+								.left().is(5.0 * Layoutless.tapSize)//
+								.top().is(0.1 * Layoutless.tapSize)//
+						)//
+						
 						.child(new Decor(this)//
 						.labelText.is("Период с").labelAlignRightCenter()//
 								.width().is(2 * Layoutless.tapSize)//
@@ -314,18 +340,18 @@ public class Demo extends Activity {
 						)//
 						.child(gridHistory//
 						.maxRowHeight.is(2)//
-								.data(new SheetColumn[] { historyArtikul.title.is("Артикул").textSize.is(18).width.is(90) //
-										, historyNomenklatura.title.is("Номенклатура").textSize.is(18).width.is(290)//
-										, historyProizvoditel.title.is("Производитель").textSize.is(18).width.is(140)//
-										, historyMinKol.title.is("Мин. кол.").textSize.is(18).width.is(50)//
-										, historyKolMest.title.is("Кол. мест").textSize.is(18).width.is(50)//
-										, historyEdIzm.title.is("Ед. изм.").textSize.is(18).width.is(50)//
-										, historyCena.title.is("Цена").textSize.is(18).width.is(80)//
-										, historyRazmSkidki.title.is("Разм. скидки").textSize.is(18).width.is(80)//
-										, historyVidSkidki.title.is("Вид скидки").textSize.is(18).width.is(120)//
-										, historyPoslCena.title.is("Посл. цена").textSize.is(18).width.is(80)//
-										, historyMinCena.title.is("Мин. цена").textSize.is(18).width.is(80)//
-										, historyMaxCena.title.is("Макс. цена").textSize.is(18).width.is(80) //
+								.data(new SheetColumn[] { historyArtikul.title.is("Арт-л").textSize.is(18).width.is(60) //
+										, historyNomenklatura.title.is("Номенклатура").textSize.is(18).width.is(250)//
+										, historyProizvoditel.title.is("Произв-ль").textSize.is(18).width.is(100)//
+										, historyMinKol.title.is("Мин. кол.").textSize.is(18).width.is(40)//
+										, historyKolMest.title.is("Кол. мест").textSize.is(18).width.is(40)//
+										, historyEdIzm.title.is("Ед. изм.").textSize.is(18).width.is(40)//
+										, historyCena.title.is("Цена").textSize.is(18).width.is(70)//
+										, historyRazmSkidki.title.is("Разм. скидки").textSize.is(18).width.is(60)//
+										, historyVidSkidki.title.is("Вид скидки").textSize.is(18).width.is(100)//
+										, historyPoslCena.title.is("Посл. цена").textSize.is(18).width.is(70)//
+										, historyMinCena.title.is("Мин. цена").textSize.is(18).width.is(70)//
+										, historyMaxCena.title.is("Макс. цена").textSize.is(18).width.is(70) //
 										, historyPhoto.title.is("Фото").width.is(Layoutless.tapSize) //
 								})//
 								.top().is(Layoutless.tapSize)
@@ -341,71 +367,90 @@ public class Demo extends Activity {
 		//glView = new OpenGL2(this);
 		//this.setContentView(glView); 
 		//startRefreshHistoryGrid();
-		startRefreshHistoryGrid.start(Demo.this);
+		System.out.println("done");
+		//startRefreshHistoryGrid.start(Demo.this);
+		Bough b = historyFillData();
+		historyFillGrid(b);
+		gridHistory.reset();
 		/*seekStringHistory.afterChange(new Task() {
 			@Override
 			public void doTask() {
 				System.out.println("seekStringHistory: " + seekStringHistory.value());
 			}
 		}, true);*/
+		/*System.out.println("1");
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				System.out.println("2");
+				try {
+					Thread.sleep(5000);
+				}
+				catch (Throwable t) {
+					t.printStackTrace();
+				}
+				System.out.println("3");
+				return null;
+			}
+		}.execute();
+		System.out.println("4");*/
+		/*gridHistory.afterScroll.is(new Task() {
+			@Override
+			public void doTask() {
+				//System.out.println("scroll " + gridHistory.scroll.property.value());
+				int scroll = gridHistory.scroll.property.value().intValue();
+				if (scroll != 0) {
+					System.out.println("scroll " + scroll);
+					//					if(currentOffsetHistory>0)
+					if (currentOffsetHistory > 0 || scroll > 0) {
+						currentOffsetHistory = currentOffsetHistory + scroll;
+						if (currentSizeHistory >= dataPageSize || scroll < 0) {
+							Bough b = historyFillData();
+							if (b.children.size() > 0) {
+								//System.out.println(currentSizeHistory);
+								historyFillGrid(b);
+								gridHistory.reset();
+							}
+							else {
+								currentOffsetHistory = currentOffsetHistory - scroll;
+							}
+						}
+						else {
+							currentOffsetHistory = currentOffsetHistory - scroll;
+						}
+					}
+				}
+				gridHistory.resetYScroll();
+			}
+		});*/
 	}
-
-	//void startRefreshHistoryGrid() {
-	Expect startRefreshHistoryGrid = new Expect()//
-	.task.is(new Task() {
-		@Override
-		public void doTask() {
-			historyRequestData();
-		}
-	})//
-	.afterDone.is(new Task() {
-		@Override
-		public void doTask() {
-			historyFillGrid();
-			//System.out.println("slr.split.property.value()) " + slr.split.property.value());
-		}
-	})//
-	.status.is("Подождите...");
-
+	/*
+		//void startRefreshHistoryGrid() {
+		Expect startRefreshHistoryGrid = new Expect()//
+		.task.is(new Task() {
+			@Override
+			public void doTask() {
+				//historyRequestData();
+				Bough b = historyFillData();
+				historyFillGrid(b);
+			}
+		})//
+		.afterDone.is(new Task() {
+			@Override
+			public void doTask() {
+				gridHistory.reset();
+				//historyFillGrid();
+				//System.out.println("slr.split.property.value()) " + slr.split.property.value());
+			}
+		})//
+		.status.is("Подождите...");
+	*/
 	//.start(this);
 	//}
-	void historyRequestData() {
-		System.out.println("start query");
-		if (!seekPreHistory.equals(seekStringHistory.value())) {
-			currentPageHistory = 0;
-		}
-		seekPreHistory = seekStringHistory.value();
-		if (currentPageHistory < 0) {
-			currentPageHistory = 0;
-		}
-		/*String sql = "select nomenklatura.artikul as artikul,nomenklatura.naimenovanie as naimenovanie"//
-				+ " from Prodazhi"// 
-				+ " join nomenklatura on nomenklatura._idrref=Prodazhi.nomenklatura"// 
-				+ " where nomenklatura.uppername like '%" + seekStringHistory.value().trim().toUpperCase() + "%'"// 
-				+ " order by nomenklatura.naimenovanie"//
-				+ " limit 20 offset " + (currentPageHistory * 20)//
-				+ ";";*/
-		//System.out.println(dataOtgruzki);
-		Date f = new Date();
-		f.setTime(historyFrom.value().longValue());
-		Date t = new Date();
-		t.setTime(historyTo.value().longValue());
-		String sql = historySQL(//
-				//new Date(2012-1900, 11 - 1, 22) //
-				f
-				//, new Date(2013-1900, 1 - 1, 21)//
-				, t, seekStringHistory.value().trim().toUpperCase()//?
-				, "x'8D1B18A90562E07411E1CA6CA7A8B12A'"//
-				, "x'8BB100304885BA0D11DD8BBE2CD8D3BD'"//
-				, new Date(2013 - 1900, 1 - 1, 22)//"2013-01-22"
-				, "x'AAFFF658AE67DCE94696B419219D8E1C'"//
-				, currentPageHistory//
-		);
-		System.out.println("exec query ");
-		Cursor c = db().rawQuery(sql, null);
-		System.out.println("load tree ");
-		Bough b = Auxiliary.fromCursor(c);
+	void historyFillGrid(Bough b) {
+		//Bough b = Auxiliary.fromCursor(c);
 		System.out.println("fill cells");
+		currentSizeHistory = b.children.size();
 		historyArtikul.clear();
 		historyNomenklatura.clear();
 		historyProizvoditel.clear();
@@ -441,10 +486,10 @@ public class Demo extends Activity {
 				}
 			};
 			int artikulBG = 0;
-			try {
-				String LastSell = row.child("LastSell").value.property.value();
-				if (LastSell != null) {
-					if (LastSell.length() > 0) {
+			String LastSell = row.child("LastSell").value.property.value();
+			if (LastSell != null) {
+				if (LastSell.length() > 0) {
+					try {
 						java.util.Date d = DateUtils.parseDate(LastSell, mDateFormatStrings);
 						//System.out.println(d);
 						java.util.Calendar now = Calendar.getInstance();
@@ -454,26 +499,46 @@ public class Demo extends Activity {
 							//System.out.println("yes "+now.getTime());
 						}
 					}
+					catch (Throwable tr) {
+						//tr.printStackTrace();
+					}
 				}
-			}
-			catch (Throwable tr) {
-				tr.printStackTrace();
 			}
 			int naimenovanieBG = 0;
-			try {
-				double CenyNomenklaturySklada = Double.parseDouble(row.child("Cena").value.property.value());
-				double TekuschieCenyOstatkovPartiy = Double.parseDouble(row.child("BasePrice").value.property.value());
-				//cursor.getDouble(cursor.getColumnIndex("BasePrice"));
-				int procent = (int) (100.0 * (CenyNomenklaturySklada - TekuschieCenyOstatkovPartiy) / TekuschieCenyOstatkovPartiy);
-				//System.out.println("100.0 * (" + CenyNomenklaturySklada + " - " + TekuschieCenyOstatkovPartiy + ") / " + TekuschieCenyOstatkovPartiy + ")=" + procent);
-				if (procent >= 18) {
-					//return true;
-					naimenovanieBG = 0xffff9966;
-				}
+			double CenyNomenklaturySklada = Numeric.string2double(row.child("Cena").value.property.value());
+			double TekuschieCenyOstatkovPartiy = Numeric.string2double(row.child("BasePrice").value.property.value());
+			//double CenyNomenklaturySklada = Double.parseDouble(row.child("Cena").value.property.value());
+			//double TekuschieCenyOstatkovPartiy = Double.parseDouble(row.child("BasePrice").value.property.value());
+			//cursor.getDouble(cursor.getColumnIndex("BasePrice"));
+			int procent = (int) (100.0 * (CenyNomenklaturySklada - TekuschieCenyOstatkovPartiy) / TekuschieCenyOstatkovPartiy);
+			//System.out.println("100.0 * (" + CenyNomenklaturySklada + " - " + TekuschieCenyOstatkovPartiy + ") / " + TekuschieCenyOstatkovPartiy + ")=" + procent);
+			if (procent >= 18) {
+				//return true;
+				naimenovanieBG = 0xffff9966;
 			}
-			catch (Throwable tr) {
-				tr.printStackTrace();
+			String razmSkidka = "0.0";
+			double FiksirovannyeCeny = Numeric.string2double(row.child("FiksirovannyeCeny").value.property.value());
+			double SkidkaPartneraKarta = Numeric.string2double(row.child("SkidkaPartneraKarta").value.property.value());
+			double NakopitelnyeSkidki = Numeric.string2double(row.child("NakopitelnyeSkidki").value.property.value());
+			if (FiksirovannyeCeny == 0 && SkidkaPartneraKarta == 0 && NakopitelnyeSkidki > 0) {
+				razmSkidka = "" + NakopitelnyeSkidki;
 			}
+			String withNacenka = "";
+			double nacenka = Numeric.string2double(row.child("Nacenka").value.property.value());
+			if (nacenka > 0) {
+				withNacenka = "+наценка " + nacenka + "%";
+			}
+			String withSkidki = "";
+			if (FiksirovannyeCeny > 0) {
+				withSkidki = "Фикс.цена";
+			}
+			if (SkidkaPartneraKarta > 0) {
+				withSkidki = "Партнёр";
+			}
+			if (NakopitelnyeSkidki > 0) {
+				withSkidki = "Накоп.";
+			}
+			String vidSkidki = withSkidki + " " + withNacenka;
 			historyArtikul.item(//currentPageHistory + "/" + i + ": " + 
 					row.child("Artikul").value.property.value(), artikulBG, click);
 			historyNomenklatura.item(row.child("Naimenovanie").value.property.value(), naimenovanieBG, click);
@@ -482,8 +547,8 @@ public class Demo extends Activity {
 			historyKolMest.item(row.child("Koephphicient").value.property.value(), click);
 			historyEdIzm.item(row.child("EdinicyIzmereniyaNaimenovanie").value.property.value(), click);
 			historyCena.item(row.child("BasePrice").value.property.value(), click);
-			historyRazmSkidki.item(row.child("razmskidki").value.property.value(), click);
-			historyVidSkidki.item(row.child("vidskidki").value.property.value(), click);
+			historyRazmSkidki.item(razmSkidka, click);
+			historyVidSkidki.item(vidSkidki, click);
 			historyPoslCena.item(row.child("LastPrice").value.property.value(), click);
 			historyMinCena.item(row.child("MinCena").value.property.value(), click);
 			historyMaxCena.item(row.child("MaxCena").value.property.value(), click);
@@ -492,13 +557,52 @@ public class Demo extends Activity {
 				historyHasMoreData = true;
 			}
 		}
-		System.out.println("done fill cells " + currentPageHistory);
+		System.out.println("done fill cells " + currentOffsetHistory);
 	}
-	void historyFillGrid() {
+	Bough historyFillData() {
+		System.out.println("start query");
+		if (!seekPreHistory.equals(seekStringHistory.value())) {
+			//currentPageHistory = 0;
+			currentOffsetHistory = 0;
+		}
+		seekPreHistory = seekStringHistory.value();
+		if (currentOffsetHistory < 0) {
+			currentOffsetHistory = 0;
+		}
+		/*String sql = "select nomenklatura.artikul as artikul,nomenklatura.naimenovanie as naimenovanie"//
+				+ " from Prodazhi"// 
+				+ " join nomenklatura on nomenklatura._idrref=Prodazhi.nomenklatura"// 
+				+ " where nomenklatura.uppername like '%" + seekStringHistory.value().trim().toUpperCase() + "%'"// 
+				+ " order by nomenklatura.naimenovanie"//
+				+ " limit 20 offset " + (currentPageHistory * 20)//
+				+ ";";*/
+		//System.out.println(dataOtgruzki);
+		Date f = new Date();
+		f.setTime(historyFrom.value().longValue());
+		Date t = new Date();
+		t.setTime(historyTo.value().longValue());
+		String sql = historySQL(//
+				//new Date(2012-1900, 11 - 1, 22) //
+				f
+				//, new Date(2013-1900, 1 - 1, 21)//
+				, t, seekStringHistory.value().trim().toUpperCase()//?
+				, "x'8D1B18A90562E07411E1CA6CA7A8B12A'"//
+				, "x'8BB100304885BA0D11DD8BBE2CD8D3BD'"//
+				, new Date(2013 - 1900, 1 - 1, 22)//"2013-01-22"
+				, "x'AAFFF658AE67DCE94696B419219D8E1C'"//
+				, currentOffsetHistory//
+		);
+		System.out.println("exec query ");
+		Cursor c = db().rawQuery(sql, null);
+		System.out.println("load tree ");
+		Bough b = Auxiliary.fromCursor(c);
+		return b;
+	}
+	/*void historyFillGrid() {
 		System.out.println("start reset grid");
 		gridHistory.reset();
 		System.out.println("done reset grid");
-	}
+	}*/
 	SQLiteDatabase db() {
 		if (cacheSQLiteDatabase == null || (!cacheSQLiteDatabase.isOpen())) {
 			cacheSQLiteDatabase = Auxiliary.connectSQLiteDatabase("/sdcard/horeca/swlife_database", this, 2);
@@ -630,12 +734,23 @@ public class Demo extends Activity {
 				+ "	,(select max(Cena) from TekuschieCenyOstatkovPartiy 					\n" //
 				+ "			  where TekuschieCenyOstatkovPartiy.nomenklatura=n.[_IDRRef]) 			\n" //
 				+ "		as [BasePrice]				\n" //
-				+ "	,(0.0+Prodazhi.Stoimost/Prodazhi.Kolichestvo) as [LastPrice]  				\n" //				
-				+ " ,(select max(ProcentSkidkiNacenki) from NacenkiKontr"// 
+				+ "	,(0.0+Prodazhi.Stoimost/Prodazhi.Kolichestvo) as [LastPrice]  				\n" //	
+				/*
+				+ " ,(select max(ProcentSkidkiNacenki) from NacenkiKontr"//
 				+ "			where PoluchatelSkidki=parameters.kontragent"//
 				+ "			and Period=(select max(Period) from NacenkiKontr"// 
 				+ "				where PoluchatelSkidki=parameters.kontragent and date(period)<=date(parameters.dataOtgruzki)))"//		
-				+ "		as [Nacenka]\n"//	
+				+ "		as [Nacenka]\n"//
+				*/
+				+ "\n	,(select max(ifnull(nk1.ProcentSkidkiNacenki,nk2.ProcentSkidkiNacenki)) from NacenkiKontr nk1	"
+				+ "\n		join kontragenty on kontragenty._idrref=parameters.kontragent "
+				+ "\n		left join NacenkiKontr nk2 on nk2.PoluchatelSkidki=kontragenty.GolovnoyKontragent"
+				+ "\n		where nk1.PoluchatelSkidki=parameters.kontragent"
+				+ "\n			and nk1.Period=(select max(Period) from NacenkiKontr"
+				+ "\n				where PoluchatelSkidki=parameters.kontragent and date(period)<=date(parameters.dataOtgruzki))"
+				+ "\n			and nk2.Period=(select max(Period) from NacenkiKontr"
+				+ "\n				where PoluchatelSkidki=kontragenty.GolovnoyKontragent and date(period)<=date(parameters.dataOtgruzki))"
+				+ "\n		) as [Nacenka]"
 				+ "	 ,(select Individualnye from ZapretSkidokTov where Nomenklatura=n.[_IDRRef]					\n"//
 				+ "				and Period=(select max(Period) from ZapretSkidokTov		\n"//
 				+ "					where Nomenklatura=n.[_IDRRef] and date(period)<=date(parameters.dataOtgruzki)))	\n"//
@@ -715,7 +830,9 @@ public class Demo extends Activity {
 		}
 		queryStr = queryStr + "\n group by n._IDRref";
 		queryStr = queryStr + "\n order by n.[Naimenovanie] ";
-		queryStr = queryStr + "\n limit " + dataPageSize + " offset " + dataPageSize * page + ";";
+		queryStr = queryStr + "\n limit " + dataPageSize + " offset " + currentOffsetHistory + ";";
+		//dataPageSize * page + ";";
+		//System.out.println("queryStr: " + queryStr);
 		return queryStr;
 	}
 	@Override

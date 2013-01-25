@@ -21,9 +21,9 @@ public abstract class SheetColumn {
 	public ItProperty<SheetColumn, Task> afterHeaderTap = new ItProperty<SheetColumn, Task>(this);
 	//public ItProperty<SheetColumn, Task> afterCellTap = new ItProperty<SheetColumn, Task>(this);
 	//public NoteProperty<SheetColumn> labelText = new NoteProperty<SheetColumn>(this);
-	abstract void afterTap(int row);
-	abstract void unbind();
-	abstract void clear();
+	public 	abstract void afterTap(int row);
+	public abstract void unbind();
+	public abstract void clear();
 	abstract public Sketch cell(int row);
 	abstract public int count();
 	//public int width();

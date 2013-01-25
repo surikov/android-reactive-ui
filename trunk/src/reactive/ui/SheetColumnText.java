@@ -65,6 +65,13 @@ public class SheetColumnText extends SheetColumn {
 		item(s,null,null);
 		return this;
 	}
+	public String item(int n) {
+		if(items.size()>n){
+			return items.get(n);
+		}else{
+		return null;}
+	}
+	
 	public SheetColumnText item(String s,Task t) {
 		item(s,null,t);
 		return this;
@@ -85,14 +92,14 @@ public class SheetColumnText extends SheetColumn {
 		return header;
 	}
 	@Override
-	 void unbind(){
+	public  void unbind(){
 		textSize.property.unbind();
 		title.property.unbind();
 		headerBackground.property.unbind();
 		clear();
 	}
 	@Override
-	 void clear(){
+	public  void clear(){
 		taps.removeAllElements();
 		
 		items.removeAllElements();
@@ -100,7 +107,7 @@ public class SheetColumnText extends SheetColumn {
 		
 	}
 	@Override
-	void afterTap(int row) {
+	public void afterTap(int row) {
 		//System.out.println(this.title.property.value());
 		if(row>-1 && row <taps.size()){
 			Task t=taps.get(row);

@@ -31,9 +31,12 @@ public class Sheet extends SubLayoutless {
 	private Decor selection;
 	private SheetColumn[] columns;
 	public NumericProperty<Sheet> rowHeight;
+	public NumericProperty<Sheet> scroll;
 	public NumericProperty<Sheet> maxRowHeight;
 	public NumericProperty<Sheet> headerHeight;
 	public NumericProperty<Sheet> selectedRow;
+	public ToggleProperty<Sheet> noHead;
+	public ItProperty<Sheet, Task> afterScroll = new ItProperty<Sheet, Task>(this);
 	Numeric rowCount;
 	Numeric columnCount;
 
@@ -155,6 +158,7 @@ public class Sheet extends SubLayoutless {
 	public void reset() {
 		this.clear();
 		this.fill();
+		//resetYScroll();
 	}
 	@Override
 	protected void init() {
@@ -163,11 +167,13 @@ public class Sheet extends SubLayoutless {
 			initialized = true;
 			rowCount = new Numeric();
 			columnCount = new Numeric();
+			noHead = new ToggleProperty<Sheet>(this);
 			selection = new Decor(this.getContext()).background.is(0x66999999);
 			selection.setVisibility(INVISIBLE);
 			selectedRow = new NumericProperty<Sheet>(this);
 			selectedRow.is(-1);
 			rowHeight = new NumericProperty<Sheet>(this);
+			scroll = new NumericProperty<Sheet>(this);
 			maxRowHeight = new NumericProperty<Sheet>(this);
 			headerHeight = new NumericProperty<Sheet>(this);
 			rowHeight.is(Layoutless.tapSize);
@@ -260,6 +266,7 @@ public class Sheet extends SubLayoutless {
 					}
 				}
 			});
+			//noHead
 			body.maxZoom.is(maxRowHeight.property);
 			body.afterZoom.is(new Task() {
 				@Override
@@ -269,7 +276,53 @@ public class Sheet extends SubLayoutless {
 			});
 			data.height().is(rowHeight.property.multiply(rowCount));
 			body.innerHeight.is(rowHeight.property.multiply(rowCount));
+			noHead.property.afterChange(new Task() {
+				@Override
+				public void doTask() {
+					if (noHead.property.value()) {
+						header.setVisibility(View.INVISIBLE);
+						body.top().property.unbind();
+						body.height().property.unbind();
+						body.top().is(0);
+						body.height().is(Sheet.this.height().property);
+					}
+					else {
+						header.setVisibility(View.VISIBLE);
+						body.top().property.unbind();
+						body.height().property.unbind();
+						body.top().is(headerHeight.property);
+						body.height().is(Sheet.this.height().property.minus(headerHeight.property));
+					}
+				}
+			});
 		}
+		body.afterShift.is(new Task() {
+			@Override
+			public void doTask() {
+				double rowH = rowHeight.property.value();
+				if (rowH < 1) {
+					rowH = 1.0;
+				}
+				
+				double step = (body.lastShiftY.property.value() - body.shiftY.property.value()) / rowH;
+				//System.out.println(rowH+": "+step+" / "+Math.round(step)+", "+body.lastShiftY.property.value() +"/"+ body.shiftY.property.value());
+				//if(step>0){
+				//	step--;
+				//}
+				scroll.property.value((double)Math.round(step));
+				if (afterScroll.property.value() == null) {
+					body.shiftY.property.value(body.lastShiftY.property.value());
+				}
+				else {
+					afterScroll.property.value().start();
+				}
+				//body.shiftY.property.value(body.lastShiftY.property.value());
+				body.shiftX.property.value(body.lastShiftX.property.value());
+			}
+		});
+	}
+	public void resetYScroll() {
+		body.shiftY.property.value(body.lastShiftY.property.value());
 	}
 	void setZoom() {
 		if (maxRowHeight.property.value() > body.zoom.property.value() && body.zoom.property.value() >= 0) {

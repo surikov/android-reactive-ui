@@ -46,6 +46,8 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public NumericProperty<Layoutless> innerHeight = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> shiftX = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> shiftY = new NumericProperty<Layoutless>(this);
+	public NumericProperty<Layoutless> lastShiftX = new NumericProperty<Layoutless>(this);
+	public NumericProperty<Layoutless> lastShiftY = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> zoom = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> maxZoom = new NumericProperty<Layoutless>(this);
 	public NumericProperty<Layoutless> tapX = new NumericProperty<Layoutless>(this);
@@ -53,6 +55,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public ToggleProperty<Layoutless> solid = new ToggleProperty<Layoutless>(this);
 	public ItProperty<Layoutless, Task> afterTap = new ItProperty<Layoutless, Task>(this);
 	public ItProperty<Layoutless, Task> afterShift = new ItProperty<Layoutless, Task>(this);
+	//public ItProperty<Layoutless, Task> afterScroll = new ItProperty<Layoutless, Task>(this);
 	public ItProperty<Layoutless, Task> afterZoom = new ItProperty<Layoutless, Task>(this);
 	//public ItProperty<Layoutless, Task> afterPress = new ItProperty<Layoutless, Task>(this);
 	//public NumericProperty<Layoutless> mode = new NumericProperty<Layoutless>(this);
@@ -65,7 +68,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	//private Vector<Decor> fogs = new Vector<Decor>();
 	//private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
 	private boolean measured = false;
-	
+
 	public void fillBaseColors() {
 		if (colorTest == null) {
 			colorTest = new Decor(getContext());
@@ -92,7 +95,6 @@ public class Layoutless extends RelativeLayout implements Rake {
 			tapSize = 60.0 * density;
 			solid.is(true);
 			fillBaseColors();
-			
 		}
 	}
 	public Layoutless(Context context) {
@@ -271,6 +273,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 		}*/
 		shiftX.property.value(newShiftX);
 		shiftY.property.value(newShiftY);
+		//System.out.println(newShiftX+"x"+newShiftY);
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
@@ -279,6 +282,8 @@ public class Layoutless extends RelativeLayout implements Rake {
 			finishTap(x, y);
 		}
 		else {
+			// lastShiftX.is( shiftX.property.value());
+			//lastShiftY.is(shiftY.property.value());
 			double newShiftX = shiftX.property.value();
 			double newShiftY = shiftY.property.value();
 			if (innerWidth.property.value() > width.property.value()) {
@@ -303,10 +308,14 @@ public class Layoutless extends RelativeLayout implements Rake {
 			if (newShiftY > 0) {
 				newShiftY = 0;
 			}
-			shiftX.property.value(newShiftX);
-			shiftY.property.value(newShiftY);
 			if (afterShift.property.value() != null) {
+				lastShiftX.property.value(newShiftX);
+				lastShiftY.property.value(newShiftY);
 				afterShift.property.value().start();
+			}
+			else {
+				shiftX.property.value(newShiftX);
+				shiftY.property.value(newShiftY);
 			}
 		}
 		mode = NONE;

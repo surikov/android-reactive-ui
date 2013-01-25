@@ -84,14 +84,14 @@ public class SheetColumnBitmap  extends SheetColumn{
 		return header;
 	}
 	@Override
-	 void unbind(){
+	public  void unbind(){
 		//textSize.property.unbind();
 		title.property.unbind();
 		headerBackground.property.unbind();
 		clear();
 	}
 	@Override
-	 void clear(){
+	public  void clear(){
 		taps.removeAllElements();
 		//for(//int i=0;i<)
 		items.removeAllElements();
@@ -99,7 +99,7 @@ public class SheetColumnBitmap  extends SheetColumn{
 		
 	}
 	@Override
-	void afterTap(int row) {
+	public 	void afterTap(int row) {
 		//System.out.println(this.title.property.value());
 		if(row>-1 && row <taps.size()){
 			Task t=taps.get(row);

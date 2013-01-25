@@ -45,7 +45,7 @@ public class SplitLeftRight extends SubLayoutless {
 		//System.out.println("onSizeChanged " + w + "x" + h + " <- " + oldw + "x" + oldh);
 		if(firstOnSizeChanged){
 			firstOnSizeChanged=false;
-			split.property.value(this.width().property.value()-Layoutless.tapSize*0.5);
+			//split.property.value(this.width().property.value()-Layoutless.tapSize*0.5);
 		}
 	}
 	/*@Override
