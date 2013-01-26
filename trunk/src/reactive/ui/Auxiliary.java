@@ -74,7 +74,10 @@ public static void hideSoftKeyboard(Activity activity){
 		}
 		return false;
 	}
-	public static SQLiteDatabase connectSQLiteDatabase(String path, Context c, int version) {
+	//public static SQLiteDatabase connectSQLiteDatabase(String path, Context c//
+		//	, int mode//Context.MODE_WORLD_WRITEABLE
+			//) {
+		/*
 		SQLiteOpenHelper openHelper = new SQLiteOpenHelper(c, path, null, version) {
 			@Override
 			public void onCreate(SQLiteDatabase db) {
@@ -90,8 +93,12 @@ public static void hideSoftKeyboard(Activity activity){
 			}
 		};
 		SQLiteDatabase r = openHelper.getWritableDatabase();
-		return r;
-	}
+		*/
+		
+		//SQLiteDatabase	db = c.openOrCreateDatabase(path, mode, null);
+		
+		//return db;
+	//}
 	public static byte[] string2Hex(String hexString) {
 		int length = hexString.length();
 		if ((length & 0x01) != 0) {

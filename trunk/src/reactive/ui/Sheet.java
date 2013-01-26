@@ -333,5 +333,6 @@ public class Sheet extends SubLayoutless {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
+		this.clear();
 	}
 }
