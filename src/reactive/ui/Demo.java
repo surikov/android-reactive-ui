@@ -62,8 +62,9 @@ interface ISklady {
 public class Demo extends Activity {
 	Layoutless layoutless;
 	SQLiteDatabase cacheSQLiteDatabase = null;
+	//Sheet gridHistory;
 	Sheet gridHistory;
-	public static int dataPageSize = 10;
+	public static int dataPageSize = 7;
 	//Numeric historySplit=new Numeric();
 	//OpenGL2 glView;
 	Note seekStringHistory = new Note();
@@ -150,6 +151,7 @@ public class Demo extends Activity {
 		historyMinCena;
 		historyMaxCena;
 		*/
+		//gridHistory = new Sheet(this).noHead.is(false);
 		gridHistory = new Sheet(this).noHead.is(false);
 		/*layoutless.child(new Decor(this)//
 				.background.is(0x9999ff99)//
@@ -242,6 +244,7 @@ public class Demo extends Activity {
 								.left().is(0.1 * Layoutless.tapSize)//
 								.top().is(0.1 * Layoutless.tapSize)//
 						)//
+						/*
 						.child(new KnobImage(this)//
 						//.labelText.is("Пред.")
 						.bitmap.is(BitmapFactory.decodeResource(getResources(), R.drawable.goprev)).tap.is(new Task() {
@@ -309,7 +312,7 @@ public class Demo extends Activity {
 								.left().is(5.0 * Layoutless.tapSize)//
 								.top().is(0.1 * Layoutless.tapSize)//
 						)//
-						
+						*/
 						.child(new Decor(this)//
 						.labelText.is("Период с").labelAlignRightCenter()//
 								.width().is(2 * Layoutless.tapSize)//
@@ -394,7 +397,7 @@ public class Demo extends Activity {
 			}
 		}.execute();
 		System.out.println("4");*/
-		/*gridHistory.afterScroll.is(new Task() {
+		gridHistory.afterScroll.is(new Task() {
 			@Override
 			public void doTask() {
 				//System.out.println("scroll " + gridHistory.scroll.property.value());
@@ -422,7 +425,8 @@ public class Demo extends Activity {
 				}
 				gridHistory.resetYScroll();
 			}
-		});*/
+		});
+		System.out.println("done onCreate");
 	}
 	/*
 		//void startRefreshHistoryGrid() {
@@ -465,9 +469,17 @@ public class Demo extends Activity {
 		historyMaxCena.clear();
 		historyPhoto.clear();
 		historyHasMoreData = false;
-		String[] mDateFormatStrings = new String[] { "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
+		String[] mDateFormatStrings = new String[] { "yyyy-MM-dd'T'HH:mm:ss"
+				, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd"
+				,
 				//				"yyyy-MM-dd hh:mm:ss",
-				"yyyy-MM-dd hh:mm", "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm:ss.sss", "yyyy-MM-dd'T'hh:mm", "yyyy-MM-dd'T'hh:mm:ss", "yyyy-MM-dd'T'hh:mm:ss.sss", "hh:mm",
+				"yyyy-MM-dd hh:mm"
+				, "yyyy-MM-dd hh:mm:ss"
+				, "yyyy-MM-dd hh:mm:ss.sss"
+				, "yyyy-MM-dd'T'hh:mm"
+				, "yyyy-MM-dd'T'hh:mm:ss"
+				, "yyyy-MM-dd'T'hh:mm:ss.sss"
+				, "hh:mm",
 				"hh:mm:ss", "hh:mm:ss.sss", "yyyyMMdd'T'hh:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" };
 		for (int i = 0; i < b.children.size(); i++) {
 			//hasData=true;
@@ -605,9 +617,10 @@ public class Demo extends Activity {
 	}*/
 	SQLiteDatabase db() {
 		if (cacheSQLiteDatabase == null || (!cacheSQLiteDatabase.isOpen())) {
-			cacheSQLiteDatabase = Auxiliary.connectSQLiteDatabase("/sdcard/horeca/swlife_database", this, 2);
+			//cacheSQLiteDatabase = Auxiliary.connectSQLiteDatabase("/sdcard/horeca/swlife_database", this);
+			cacheSQLiteDatabase=this.openOrCreateDatabase("/sdcard/horeca/swlife_database", Context.MODE_WORLD_WRITEABLE, null);
 		}
-		cacheSQLiteDatabase.setVersion(2);
+		//cacheSQLiteDatabase.setVersion(2);
 		return cacheSQLiteDatabase;
 	}
 	public static String uslovieSkladaPodrazdeleniaNeTraphik(Date dataOtgruzki, String skladPodrazdelenia) {
@@ -830,7 +843,7 @@ public class Demo extends Activity {
 		}
 		queryStr = queryStr + "\n group by n._IDRref";
 		queryStr = queryStr + "\n order by n.[Naimenovanie] ";
-		queryStr = queryStr + "\n limit " + dataPageSize + " offset " + currentOffsetHistory + ";";
+		queryStr = queryStr + "\n limit 999;";// + dataPageSize + " offset " + currentOffsetHistory + ";";
 		//dataPageSize * page + ";";
 		//System.out.println("queryStr: " + queryStr);
 		return queryStr;
@@ -853,6 +866,12 @@ public class Demo extends Activity {
 	protected void onPause() {
 		//System.out.println("onPause");
 		Preferences.save();
+		if (cacheSQLiteDatabase != null ) {
+			if (cacheSQLiteDatabase.isOpen()) {
+				cacheSQLiteDatabase.close();
+			}
+		}
+		cacheSQLiteDatabase=null;
 		super.onPause();
 		//glView.onPause();
 	}
