@@ -473,10 +473,10 @@ public class Demo extends Activity {
 				+ "\n 					and skladHoreca.baza=x'AAFFF658AE67DCE94696B419219D8E1C' "// 
 				//+ "\n 					and Traphik=x'00' "//
 				//+ "\n 					) "//	
-				//+ "\n where ( n.[UpperName] like '%бла%')"// and n._id>=2193"// 
+				+ "\n where ( n.[UpperName] like '%бла%')"// and n._id>=2193"// 
 				//+ "\n group by n.[_idrref] "//  
 				//+ "\n ORDER BY n.[_id] "//  
-				+ "\n limit 112  "//offset 100; "//
+				+ "\n limit 300  "//offset 100; "//
 		;
 		//sql="select _id,Naimenovanie from nomenklatura limit 1000";
 		//System.out.println("sql: " + sql);
