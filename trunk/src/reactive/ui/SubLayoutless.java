@@ -22,6 +22,7 @@ import java.text.*;
 public class SubLayoutless extends Layoutless {
 	private boolean initialized = false;
 	Task reFit;
+
 	/*
 	= new Task() {
 		@Override
@@ -36,7 +37,6 @@ public class SubLayoutless extends Layoutless {
 			System.out.println(this.getClass().getCanonicalName() + " done reFit " + getLeft() + "x" + getTop() + "/" + getWidth() + "x" + getHeight());
 		}
 	};*/
-
 	public SubLayoutless(Context context) {
 		super(context);
 	}
@@ -82,13 +82,15 @@ public class SubLayoutless extends Layoutless {
 					//System.out.println("done reFit " + getLeft() + "x" + getTop() + "/" + getWidth() + "x" + getHeight());
 				}
 			};*/
-			reFit= new Task() {
+			reFit = new Task() {
 				@Override
 				public void doTask() {
 					int w = width().property.value().intValue();
 					int h = height().property.value().intValue();
-					if(w<=0)w=100;
-					if(h<=0)h=100;
+					if (w <= 0)
+						w = 100;
+					if (h <= 0)
+						h = 100;
 					//System.out.println(SubLayoutless.this.getClass().getCanonicalName() +" start reFit " + w + "x" + h +" <- "+ getWidth() + "x" + getHeight());
 					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(w, h);
 					params.leftMargin = left().property.value().intValue();
@@ -97,7 +99,6 @@ public class SubLayoutless extends Layoutless {
 					//System.out.println(SubLayoutless.this.getClass().getCanonicalName() + " done reFit " + getWidth() + "x" + getHeight());
 				}
 			};
-
 			left().property.afterChange(reFit);
 			top().property.afterChange(reFit);
 			width().property.afterChange(reFit);

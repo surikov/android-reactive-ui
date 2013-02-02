@@ -19,25 +19,22 @@ public class SketchLine extends Sketch {
 	//private Vector<Integer>xx=new Vector<Integer>();
 	//private Vector<Integer>yy=new Vector<Integer>();
 	@Override
-	 public void unbind(){
+	public void unbind() {
 		super.unbind();
 		strokeColor.property.unbind();
 		strokeWidth.property.unbind();
-		
-	 }
+	}
 	public SketchLine point(double x, double y) {
 		if (first) {
-			path.moveTo((float)x,(float) y);
-			first=false;
+			path.moveTo((float) x, (float) y);
+			first = false;
 			//System.out.println("moveTo "+x+"x"+y);
 		}
 		else {
-			
-			path.lineTo((float)x, (float)y);
+			path.lineTo((float) x, (float) y);
 			postInvalidate.start();
 			//System.out.println("lineTo "+x+"x"+y);
 		}
-		
 		//xx.add(x);
 		//yy.add(y);
 		return this;

@@ -22,7 +22,7 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class Knob extends Button  implements Rake {
+public class Knob extends Button implements Rake {
 	public NoteProperty<Knob> labelText = new NoteProperty<Knob>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -42,6 +42,7 @@ public class Knob extends Button  implements Rake {
 			Knob.this.setLayoutParams(params);
 		}
 	};
+
 	public Knob(Context context) {
 		super(context);
 		init();
@@ -55,9 +56,9 @@ public class Knob extends Button  implements Rake {
 		init();
 	}
 	void init() {
-		
-		if (initialized){
-			return;}
+		if (initialized) {
+			return;
+		}
 		initialized = true;
 		//this.context = c;
 		labelText.property.afterChange(new Task() {

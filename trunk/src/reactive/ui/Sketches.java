@@ -18,7 +18,7 @@ public class Sketches extends Sketch {
 	@Override
 	public void unbind() {
 		super.unbind();
-		for(int i=0;i<sketches.size();i++){
+		for (int i = 0; i < sketches.size(); i++) {
 			sketches.get(i).unbind();
 		}
 	}

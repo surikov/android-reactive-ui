@@ -42,18 +42,43 @@ public class Decor extends TextView implements Rake {
 	//Context context;
 	Paint paint = new Paint();
 	boolean initialized = false;
+	private boolean inTableRow=false;
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
-			//System.out.
+			//if(1==1)return;
 			
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
-					width.property.value().intValue()//
-					, height.property.value().intValue());
+			//RelativeLayout.LayoutParams
+			//TableRow.LayoutParams
+			//System.out.println("reFit: "+inTableRow);
+			ViewGroup.MarginLayoutParams params;
+			if(inTableRow){
+				params = new 
+						//RelativeLayout.LayoutParams
+								TableRow.LayoutParams
+						(//
+								width.property.value().intValue()//
+								, height.property.value().intValue());
+				
+			}else{
+				params = new 
+						RelativeLayout.LayoutParams
+						//		TableRow.LayoutParams
+						(//
+								width.property.value().intValue()//
+								, height.property.value().intValue());
+			}
+			
 			params.leftMargin = (int) (left.property.value() + dragX.property.value());
 			params.topMargin = (int) (top.property.value() + dragY.property.value());
 			Decor.this.setLayoutParams(params);
-			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
+			Decor.this.setWidth(width.property.value().intValue());
+			Decor.this.setHeight(height.property.value().intValue());
+			Decor.this.setMinWidth(width.property.value().intValue());
+			Decor.this.setMinHeight(height.property.value().intValue());
+			Decor.this.setMaxWidth(width.property.value().intValue());
+			Decor.this.setMaxHeight(height.property.value().intValue());
+			//System.out.println("reFit: " + width.property.value()+" * "+height.property.value());
 		}
 	};
 	Task postInvalidate = new Task() {
@@ -108,7 +133,6 @@ public class Decor extends TextView implements Rake {
 		setText(labelText.property.value(), BufferType.SPANNABLE);
 		return this;
 	}
-	
 	public Decor labelStyleSmallNormal() {
 		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Small);
 		return this;
@@ -132,6 +156,11 @@ public class Decor extends TextView implements Rake {
 	public Decor labelStyleLargeInverse() {
 		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Large_Inverse);
 		return this;
+	}
+	public Decor(Context context,boolean tableRowMode) {
+		super(context);
+		this.inTableRow=tableRowMode;
+		init();
 	}
 	public Decor(Context context) {
 		super(context);
@@ -255,7 +284,6 @@ public class Decor extends TextView implements Rake {
 			afterTap.property.value().start();
 		}
 	}
-	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (!(afterTap.property.value() != null || movableX.property.value() || movableY.property.value())) {
@@ -352,7 +380,6 @@ public class Decor extends TextView implements Rake {
 		bitmap.property.unbind();
 		afterTap.property.unbind();
 		afterDrag.property.unbind();
-		
-clear();
+		clear();
 	}
 }

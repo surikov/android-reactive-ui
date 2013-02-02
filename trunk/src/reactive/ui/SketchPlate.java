@@ -18,11 +18,10 @@ public class SketchPlate extends Sketch {
 	//public NumericProperty<SketchPlate> strokeWidth = new NumericProperty<SketchPlate>(this);
 	public NumericProperty<SketchPlate> arcX = new NumericProperty<SketchPlate>(this);
 	public NumericProperty<SketchPlate> arcY = new NumericProperty<SketchPlate>(this);
-	
 	private Tint paint = new Tint();
-	
+
 	@Override
-	 public void unbind(){
+	public void unbind() {
 		/*width.property.unbind();
 		height.property.unbind();
 		left.property.unbind();
@@ -31,7 +30,7 @@ public class SketchPlate extends Sketch {
 		arcX.property.unbind();
 		arcY.property.unbind();
 		paint.unbind();
-	 }
+	}
 	//Paint paint = new Paint();
 	public SketchPlate() {
 		//paint.property.value(new Paint());
@@ -48,14 +47,14 @@ public class SketchPlate extends Sketch {
 		height.property.afterChange(postInvalidate);
 		left.property.afterChange(postInvalidate);
 		top.property.afterChange(postInvalidate);
-		background.property.afterChange(new Task(){
-
+		background.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
 				// TODO Auto-generated method stub
 				paint.setColor(background.property.value().intValue());
 				postInvalidate.start();
-			}});
+			}
+		});
 		//strokeColor.property.afterChange(postInvalidate);
 		//strokeWidth.property.afterChange(postInvalidate);
 		arcX.property.afterChange(postInvalidate);
@@ -83,6 +82,5 @@ public class SketchPlate extends Sketch {
 				, arcX.property.value().floatValue()//
 				, arcY.property.value().floatValue()//
 				, paint);
-		
 	};
 }

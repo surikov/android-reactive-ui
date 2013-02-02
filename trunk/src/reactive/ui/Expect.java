@@ -6,11 +6,13 @@ import tee.binding.task.*;
 import android.app.*;
 import android.content.*;
 import android.content.DialogInterface.*;
-abstract class RealAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result>{
-	public void realPublishProgress(){
+
+abstract class RealAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+	public void realPublishProgress() {
 		publishProgress();
 	}
 }
+
 public class Expect //extends AsyncTask<Void, Void, Void>
 {
 	public ItProperty<Expect, Task> afterDone = new ItProperty<Expect, Task>(this);
@@ -21,11 +23,12 @@ public class Expect //extends AsyncTask<Void, Void, Void>
 	private AlertDialog dialog;
 	private boolean lock = false;
 	RealAsyncTask<Void, Void, Void> asyncTask;
+
 	public Expect() {
 		status.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				if (asyncTask!=null){
+				if (asyncTask != null) {
 					asyncTask.realPublishProgress();
 				}
 			}
@@ -63,7 +66,7 @@ public class Expect //extends AsyncTask<Void, Void, Void>
 		lock = false;
 	}*/
 	private void executeTask() {
-		 asyncTask = new RealAsyncTask<Void, Void, Void>() {
+		asyncTask = new RealAsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
 				if (task.property.value() != null) {

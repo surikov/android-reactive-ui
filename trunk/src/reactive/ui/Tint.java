@@ -1,4 +1,5 @@
 package reactive.ui;
+
 import reactive.ui.*;
 
 import android.content.*;
@@ -11,9 +12,13 @@ import android.widget.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
-public   class Tint extends Paint {
+
+public class Tint extends Paint {
 	public Sketch forUpdate;
-	 public void unbind(){}
+
+	public void unbind() {
+	}
+
 	public Task postInvalidate = new Task() {
 		@Override
 		public void doTask() {
@@ -21,6 +26,5 @@ public   class Tint extends Paint {
 				forUpdate.postInvalidate.start();
 			}
 		}
-	};	
-	
+	};
 }

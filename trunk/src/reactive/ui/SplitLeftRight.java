@@ -26,6 +26,7 @@ public class SplitLeftRight extends SubLayoutless {
 	private Rake rightSide;
 	private boolean initialized = false;
 	private boolean firstOnSizeChanged = true;
+
 	//private boolean lockAdjustSplit=false;
 	/*
 		public void debug() {
@@ -43,8 +44,8 @@ public class SplitLeftRight extends SubLayoutless {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		//System.out.println("onSizeChanged " + w + "x" + h + " <- " + oldw + "x" + oldh);
-		if(firstOnSizeChanged){
-			firstOnSizeChanged=false;
+		if (firstOnSizeChanged) {
+			firstOnSizeChanged = false;
 			//split.property.value(this.width().property.value()-Layoutless.tapSize*0.5);
 		}
 	}
@@ -215,6 +216,5 @@ public class SplitLeftRight extends SubLayoutless {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		
 	}
 }
