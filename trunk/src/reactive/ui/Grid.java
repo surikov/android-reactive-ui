@@ -85,7 +85,7 @@ public class Grid extends SubLayoutless {
 			lock = true;
 			scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
 			System.out.println("flip");
-			tableLayout.removeAllViews();
+			//tableLayout.removeAllViews();
 			for (int y = (int) (offset * pageSize.property.value()); y < data[0].count() && y < (offset + 1) * pageSize.property.value(); y++) {
 				TableRow tableRow = new TableRow(this.getContext());
 				for (int x = 0; x < data.length; x++) {
