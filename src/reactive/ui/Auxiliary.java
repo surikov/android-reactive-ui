@@ -56,11 +56,11 @@ public class Auxiliary {
 			DIGITS['a' + i] = (byte) (10 + i);
 		}
 	}
-public static void hideSoftKeyboard(Activity activity){
-	InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-	inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-	
-}
+
+	public static void hideSoftKeyboard(Activity activity) {
+		InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+		inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	}
 	public static boolean isOnline(Context c) {
 		try {
 			ConnectivityManager connectivityManager = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -75,29 +75,27 @@ public static void hideSoftKeyboard(Activity activity){
 		return false;
 	}
 	//public static SQLiteDatabase connectSQLiteDatabase(String path, Context c//
-		//	, int mode//Context.MODE_WORLD_WRITEABLE
-			//) {
-		/*
-		SQLiteOpenHelper openHelper = new SQLiteOpenHelper(c, path, null, version) {
-			@Override
-			public void onCreate(SQLiteDatabase db) {
-				//
-			}
-			@Override
-			public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-				//
-			}
-			@Override
-			public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-				//
-			}
-		};
-		SQLiteDatabase r = openHelper.getWritableDatabase();
-		*/
-		
-		//SQLiteDatabase	db = c.openOrCreateDatabase(path, mode, null);
-		
-		//return db;
+	//	, int mode//Context.MODE_WORLD_WRITEABLE
+	//) {
+	/*
+	SQLiteOpenHelper openHelper = new SQLiteOpenHelper(c, path, null, version) {
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			//
+		}
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			//
+		}
+		@Override
+		public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			//
+		}
+	};
+	SQLiteDatabase r = openHelper.getWritableDatabase();
+	*/
+	//SQLiteDatabase	db = c.openOrCreateDatabase(path, mode, null);
+	//return db;
 	//}
 	public static byte[] string2Hex(String hexString) {
 		int length = hexString.length();
@@ -142,18 +140,28 @@ public static void hideSoftKeyboard(Activity activity){
 		return out;
 	}
 	public static String hex2String(byte[] array) {
-		char[] cArray = new char[array.length * 2];
-		for (int i = 0, j = 0; i < array.length; i++) {
-			int index = array[i] & 0xFF;
-			cArray[j++] = FIRST_CHAR[index];
-			cArray[j++] = SECOND_CHAR[index];
+		try {
+			char[] cArray = new char[array.length * 2];
+			for (int i = 0, j = 0; i < array.length; i++) {
+				int index = array[i] & 0xFF;
+				cArray[j++] = FIRST_CHAR[index];
+				cArray[j++] = SECOND_CHAR[index];
+			}
+			return new String(cArray);
 		}
-		return new String(cArray);
+		catch (Throwable t) {
+			return "";
+		}
 	}
 	public static Bough fromCursor(Cursor cursor) {
+		boolean first = true;
 		Bough bough = new Bough().name.is("cursor");
 		//cursor.moveToFirst();
 		while (cursor.moveToNext()) {
+			if (first) {
+				first = false;
+				System.out.println("Auxiliary.fromCursor started");
+			}
 			Bough row = new Bough().name.is("row");
 			for (int i = 0; i < cursor.getColumnCount(); i++) {
 				String name = cursor.getColumnName(i);
@@ -172,6 +180,7 @@ public static void hideSoftKeyboard(Activity activity){
 			}
 			bough.child(row);
 		}
+		System.out.println("Auxiliary.fromCursor done");
 		return bough;
 	}
 	public static Bitmap loadBitmapFromURL(String url) {

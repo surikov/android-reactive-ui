@@ -303,13 +303,12 @@ public class Sheet extends SubLayoutless {
 				if (rowH < 1) {
 					rowH = 1.0;
 				}
-				
 				double step = (body.lastShiftY.property.value() - body.shiftY.property.value()) / rowH;
 				//System.out.println(rowH+": "+step+" / "+Math.round(step)+", "+body.lastShiftY.property.value() +"/"+ body.shiftY.property.value());
 				//if(step>0){
 				//	step--;
 				//}
-				scroll.property.value((double)Math.round(step));
+				scroll.property.value((double) Math.round(step));
 				if (afterScroll.property.value() == null) {
 					body.shiftY.property.value(body.lastShiftY.property.value());
 				}

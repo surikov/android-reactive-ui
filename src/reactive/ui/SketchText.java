@@ -24,7 +24,7 @@ public class SketchText extends Sketch {
 	Rect dest = null;
 	Paint bmPaint = new Paint();
 	boolean valid = false;
-	boolean released=false;
+	boolean released = false;
 	//private StaticLayout staticLayout;
 	Task reFit = new Task() {
 		@Override
@@ -93,8 +93,11 @@ public class SketchText extends Sketch {
 		text.property.unbind();
 		typeface.property.unbind();
 		size.property.unbind();
-		if(bm!=null){bm.recycle();bm=null;}
-		released=true;
+		if (bm != null) {
+			bm.recycle();
+			bm = null;
+		}
+		released = true;
 		//System.out.println("released");
 		/*width.property.unbind();
 		height.property.unbind();

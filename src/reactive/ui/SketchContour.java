@@ -6,7 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-public class SketchContour extends Sketch{
+public class SketchContour extends Sketch {
 	/*public NumericProperty<SketchContour> width = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> height = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> left = new NumericProperty<SketchContour>(this);
@@ -17,8 +17,9 @@ public class SketchContour extends Sketch{
 	public NumericProperty<SketchContour> arcX = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> arcY = new NumericProperty<SketchContour>(this);
 	private Paint paint = new Paint();
+
 	@Override
-	 public void unbind(){
+	public void unbind() {
 		/*width.property.unbind();
 		height.property.unbind();
 		left.property.unbind();
@@ -28,8 +29,7 @@ public class SketchContour extends Sketch{
 		strokeWidth.property.unbind();
 		arcX.property.unbind();
 		arcY.property.unbind();
-		
-	 }
+	}
 	//Paint paint = new Paint();
 	public SketchContour() {
 		//paint.property.value(new Paint());
@@ -47,27 +47,26 @@ public class SketchContour extends Sketch{
 		height.property.afterChange(postInvalidate);
 		top.property.afterChange(postInvalidate);
 		//background.property.afterChange(postInvalidate);
-		strokeColor.property.afterChange(new Task(){
-
+		strokeColor.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
 				// TODO Auto-generated method stub
 				paint.setColor(strokeColor.property.value().intValue());
 				postInvalidate.start();
-			}});
-		strokeWidth.property.afterChange(new Task(){
-
+			}
+		});
+		strokeWidth.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
 				// TODO Auto-generated method stub
 				paint.setStrokeWidth(strokeWidth.property.value().floatValue());
 				postInvalidate.start();
-			}});
+			}
+		});
 		arcX.property.afterChange(postInvalidate);
 		arcY.property.afterChange(postInvalidate);
 		//paint.property.afterChange(postInvalidate);
 	}
-	
 	public void draw(Canvas canvas) {
 		//System.out.println("draw "+paint.property.value().getColor());
 		int w = width.property.value().intValue();

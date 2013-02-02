@@ -24,10 +24,24 @@ import java.text.*;
 
 public class Grid extends SubLayoutless {
 	public ToggleProperty<Grid> noHead = new ToggleProperty<Grid>(this);
-	public NumericProperty<Grid> maxRowHeight = new NumericProperty<Grid>(this);
+	public NumericProperty<Grid> maxPageCount;
+	public NumericProperty<Grid> pageSize;
+	public NumericProperty<Grid> headerHeight;
+	public NumericProperty<Grid> rowHeight;
+	private boolean lock = false;
+	GridColumn[] data = null;
+	/*private CannyTask flip = new CannyTask() {
+		@Override
+		public void doTask() {
+			if (offset < maxPageCount.property.value()) {
+				offset++;
+				flip();
+			}
+		}
+	};*/
+	int offset = 0;
 	TableLayout tableLayout;
 	ScrollView scrollView;
-	//Button b;
 	private boolean initialized = false;
 
 	public Grid(Context context) {
@@ -44,26 +58,49 @@ public class Grid extends SubLayoutless {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		//this.clear();
 	}
-	public Grid data(SheetColumn[] data) {
-		System.out.println("data grid start");
-		//TableLayout.LayoutParams p=new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f);
-		for (int y = 0; y < 100; y++) {
-			TableRow tableRow = new TableRow(this.getContext());
-			for (int x = 0; x < 5; x++) {
-				TextView textView = new TextView(this.getContext());
-				//textView.setLayoutParams(p);
-				textView.setWidth(100);
-				textView.setHeight(50);
-				textView.setText("Cell for testing purpose: "+x + "x" + y + ";");
-				tableRow.addView(textView);
-			}
-			//tableRow
-			tableLayout.addView(tableRow);
+	public Grid setData(GridColumn[] indata) {
+		offset = 0;
+		tableLayout.removeAllViews();
+		data = indata;
+		if (data.length < 1) {
+			return this;
 		}
-		System.out.println("data grid done");
+		int left = 0;
+		for (int x = 0; x < data.length; x++) {
+			Rake r = data[x].header(getContext());
+			r.height().is(headerHeight.property.value());
+			r.width().is(data[x].width.property.value());
+			r.left().is(left);
+			left = left + data[x].width.property.value().intValue();
+			this.child(r);
+		}
 		return this;
+	}
+	public void flip() {
+		if (lock) {
+			return;
+		}
+		if (data.length > 0) {
+			lock = true;
+			scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
+			System.out.println("flip");
+			tableLayout.removeAllViews();
+			for (int y = (int) (offset * pageSize.property.value()); y < data[0].count() && y < (offset + 1) * pageSize.property.value(); y++) {
+				TableRow tableRow = new TableRow(this.getContext());
+				for (int x = 0; x < data.length; x++) {
+					Rake r = data[x].item(x, y, getContext());
+					Decor d = ((Decor) r.view());
+					r.height().is(rowHeight.property.value());
+					r.width().is(data[x].width.property.value());
+					tableRow.addView(r.view());
+				}
+				tableLayout.addView(tableRow);
+			}
+			System.out.println("done flip");
+			lock = false;
+			scrollView.setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
+		}
 	}
 	@Override
 	protected void init() {
@@ -73,29 +110,50 @@ public class Grid extends SubLayoutless {
 			Task reFit = new Task() {
 				@Override
 				public void doTask() {
-					//if (b != null) {
 					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
 							width().property.value().intValue()//
-							, height().property.value().intValue());
-					//params.leftMargin = left.property.value().intValue();
-					//params.topMargin = top.property.value().intValue();
-					//b.setLayoutParams(params);
+							, (int) (height().property.value() - headerHeight.property.value()));
+					params.topMargin = headerHeight.property.value().intValue();
 					if (scrollView != null) {
 						scrollView.setLayoutParams(params);
 					}
-					//}
-					//tableLayout.setLayoutParams(params);
 				}
 			};
+			pageSize = new NumericProperty<Grid>(this);
+			pageSize.is(20);
+			maxPageCount = new NumericProperty<Grid>(this);
+			maxPageCount.is(15);
+			headerHeight = new NumericProperty<Grid>(this);
+			headerHeight.is(Layoutless.tapSize);
+			rowHeight = new NumericProperty<Grid>(this);
+			rowHeight.is(Layoutless.tapSize);
 			tableLayout = new TableLayout(this.getContext());
-			scrollView = new ScrollView(this.getContext());
-			//this.addView(tableLayout);
-			//b = new Button(this.getContext());
-			//b.setText("Test");
-			//this.addView(b);
+			scrollView = new ScrollView(this.getContext()) {
+				@Override
+				protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+					super.onScrollChanged(l, t, oldl, oldt);
+					double scrollViewHeight=height().property.value()-headerHeight.property.value();
+					double contentHeight=rowHeight.property.value() *( offset+1) * pageSize.property.value();
+					double limit = contentHeight -scrollViewHeight ;
+					//System.out.println(t+"/"+limit+"/"+scrollViewHeight+"/"+contentHeight);
+					if (t > 0 && limit>0 && t >= limit) {
+						//if (t >= limit) {
+							//flip.start();
+							if (offset < maxPageCount.property.value()) {
+								offset++;
+								flip();
+							}
+						//}
+					}
+				}
+				/*
+				@Override
+				public void computeScroll() {
+					super.computeScroll();
+				}*/
+			};
 			scrollView.addView(tableLayout);
 			this.addView(scrollView);
-			//System.out.println(reFit);
 			new Numeric().bind(width().property).afterChange(reFit);
 			new Numeric().bind(height().property).afterChange(reFit);
 		}

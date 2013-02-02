@@ -116,7 +116,7 @@ public class RedactDate extends Button implements Rake {
 	}
 	void resetLabel() {
 		DateFormat to = new SimpleDateFormat(format.property.value());
-		Calendar c=Calendar.getInstance();
+		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(date.property.value().longValue());
 		setText(to.format(c.getTime()));
 	}

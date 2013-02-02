@@ -22,7 +22,7 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class KnobImage extends ImageButton  implements Rake {
+public class KnobImage extends ImageButton implements Rake {
 	//public NoteProperty<KnobImage> labelText = new NoteProperty<KnobImage>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -43,6 +43,7 @@ public class KnobImage extends ImageButton  implements Rake {
 			KnobImage.this.setLayoutParams(params);
 		}
 	};
+
 	public KnobImage(Context context) {
 		super(context);
 		init();
@@ -56,9 +57,9 @@ public class KnobImage extends ImageButton  implements Rake {
 		init();
 	}
 	void init() {
-		
-		if (initialized){
-			return;}
+		if (initialized) {
+			return;
+		}
 		initialized = true;
 		//this.context = c;
 		bitmap.property.afterChange(new Task() {

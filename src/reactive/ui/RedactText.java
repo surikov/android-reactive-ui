@@ -82,7 +82,6 @@ public class RedactText extends EditText implements Rake {
 		text.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				
 				if (!lock) {
 					lock = true;
 					setText(text.property.value());
@@ -93,7 +92,6 @@ public class RedactText extends EditText implements Rake {
 		singleLine.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				
 				setSingleLine(singleLine.property.value());
 			}
 		});

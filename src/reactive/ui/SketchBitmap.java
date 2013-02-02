@@ -16,14 +16,13 @@ public class SketchBitmap extends Sketch {
 	}
 	@Override
 	public void draw(Canvas canvas) {
-		
 		if (bitmap.property.value() != null) {
 			int w = bitmap.property.value().getWidth();
 			int h = bitmap.property.value().getHeight();
-			float l=(float)(this.left.property.value()+(this.width.property.value()-w)/2);
-			float t=(float)(this.top.property.value()+(this.height.property.value()-w)/2);
+			float l = (float) (this.left.property.value() + (this.width.property.value() - w) / 2);
+			float t = (float) (this.top.property.value() + (this.height.property.value() - w) / 2);
 			//System.out.println(l+"x"+t+"/"+
-					//bitmap.property.value().getWidth());
+			//bitmap.property.value().getWidth());
 			canvas.drawBitmap(bitmap.property.value(), l, t, paint);
 		}
 	}
@@ -31,8 +30,8 @@ public class SketchBitmap extends Sketch {
 	public void unbind() {
 		super.unbind();
 		bitmap.property.unbind();
-		if (bitmap.property.value() != null) {
+		/*if (bitmap.property.value() != null) {
 			bitmap.property.value().recycle();
-		}
+		}*/
 	}
 }

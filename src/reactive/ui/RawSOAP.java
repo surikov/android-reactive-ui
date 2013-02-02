@@ -59,12 +59,12 @@ public class RawSOAP {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... r) {
-				 startNow();
-				 return null;
+				startNow();
+				return null;
 			}
 			@Override
 			protected void onPostExecute(Void r) {
-				if (exception.property.value()==null) {
+				if (exception.property.value() == null) {
 					if (afterSuccess.property.value() != null) {
 						afterSuccess.property.value().start();
 					}

@@ -28,11 +28,12 @@ public class WebRender extends WebView implements Rake {
 	//public NoteProperty<WebView> active = new NoteProperty<WebView>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
-	int maxH=0;
+	int maxH = 0;
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
 	private boolean shouldOverrideUrlLoading = true;
-	Task reFit ;
+	Task reFit;
+
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged "+w+"/"+ h+" <- "+oldw+"/"+ oldh);
@@ -59,8 +60,6 @@ public class WebRender extends WebView implements Rake {
 		if (initialized) {
 			return;
 		}
-	
-		
 		//loadUrl("file://" + mReportFilePath);
 		//loadUrl("http://www.yandex.ru");
 		getSettings().setJavaScriptEnabled(true);
@@ -73,7 +72,7 @@ public class WebRender extends WebView implements Rake {
 			public boolean shouldOverrideUrlLoading(WebView view, String urlString) {
 				if (shouldOverrideUrlLoading) {
 					//System.out.println("true");
-					System.out.println("shouldOverrideUrlLoading "+urlString);
+					System.out.println("shouldOverrideUrlLoading " + urlString);
 					url.is(urlString);
 					if (afterLink.property.value() != null) {
 						afterLink.property.value().start();
@@ -88,7 +87,7 @@ public class WebRender extends WebView implements Rake {
 			}
 			@Override
 			public void onPageFinished(WebView view, String urlString) {
-				System.out.println("onPageFinished "+urlString);
+				System.out.println("onPageFinished " + urlString);
 				shouldOverrideUrlLoading = true;
 				setEnabled(true);
 			}
@@ -96,7 +95,7 @@ public class WebRender extends WebView implements Rake {
 		initialized = true;
 	}
 	public void go(String urlString) {
-		System.out.println("go "+urlString);
+		System.out.println("go " + urlString);
 		shouldOverrideUrlLoading = false;
 		this.setEnabled(false);
 		loadUrl(urlString);
@@ -126,17 +125,16 @@ public class WebRender extends WebView implements Rake {
 		super.onDetachedFromWindow();
 	}
 	@Override
-    protected void onAttachedToWindow() {
-		
+	protected void onAttachedToWindow() {
 		//System.out.println("onAttachedToWindow ");
 		super.onAttachedToWindow();
-		reFit= new Task() {
+		reFit = new Task() {
 			@Override
 			public void doTask() {
-				if(maxH>=height.property.value().intValue()){//hack for 01-03 11:04:39.918: W/webcore(1539): skip viewSizeChanged as w is 0
+				if (maxH >= height.property.value().intValue()) {//hack for 01-03 11:04:39.918: W/webcore(1539): skip viewSizeChanged as w is 0
 					return;
 				}
-				maxH=height.property.value().intValue();
+				maxH = height.property.value().intValue();
 				//System.out.println("reFit");
 				int ww = width.property.value().intValue();
 				if (ww <= 0) {
@@ -155,7 +153,6 @@ public class WebRender extends WebView implements Rake {
 				setLayoutParams(params);
 				//WebRender.this.setp
 				//System.out.println("reFit params: " + params.width + "x" + params.height + ", get size is " + getWidth() + "x" + getHeight());
-				
 			}
 		};
 		width.property.afterChange(reFit);
