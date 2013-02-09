@@ -160,7 +160,7 @@ public class Auxiliary {
 		while (cursor.moveToNext()) {
 			if (first) {
 				first = false;
-				System.out.println("Auxiliary.fromCursor started");
+				//System.out.println("Auxiliary.fromCursor started");
 			}
 			Bough row = new Bough().name.is("row");
 			for (int i = 0; i < cursor.getColumnCount(); i++) {
@@ -180,7 +180,7 @@ public class Auxiliary {
 			}
 			bough.child(row);
 		}
-		System.out.println("Auxiliary.fromCursor done");
+		//System.out.println("Auxiliary.fromCursor done");
 		return bough;
 	}
 	public static Bitmap loadBitmapFromURL(String url) {

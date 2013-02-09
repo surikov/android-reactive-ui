@@ -8,6 +8,7 @@ import android.graphics.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
 import android.util.*;
 import android.net.*;
 import android.widget.*;
@@ -43,39 +44,49 @@ public class Demo extends Activity {
 	Layoutless layoutless;
 	Grid testGrid;
 	Bough testData;
+	GridColumnText colArtikul = new GridColumnText();
+	GridColumnText colName = new GridColumnText();
+	GridColumnText colProizvoditel = new GridColumnText();
+	GridColumnText colMinKol = new GridColumnText();
+	GridColumnText colKolMest = new GridColumnText();
+	GridColumnText colEdizm = new GridColumnText();
+	GridColumnText colCena = new GridColumnText();
+	GridColumnText colRazmSkidki = new GridColumnText();
+	GridColumnText colVidSkidki = new GridColumnText();
+	GridColumnText colPoslCena = new GridColumnText();
+	GridColumnText colMinCena = new GridColumnText();
+	GridColumnText colMaxCena = new GridColumnText();
+	GridColumnText colPhoto = new GridColumnText();
 	static SQLiteDatabase cacheSQLiteDatabase = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		layoutless = new Layoutless(this);
-		
 		this.setContentView(layoutless);
 		layoutless//
-		.child(new Decor(this)//
-		.background.is(0x33ff0000).width().is(200).height().is(200)//
-		)//
-		.child(new Decor(this)//
-		.background.is(0x3300ff00).width().is(200).height().is(200).left().is(150).top().is(50)//
-		)//
-;
+				.child(new Decor(this)//
+				.background.is(0x33ff0000).width().is(200).height().is(200)//
+				)//
+				.child(new Decor(this)//
+				.background.is(0x3300ff00).width().is(200).height().is(200).left().is(150).top().is(50)//
+				)//
+		;
 		System.out.println("go----------------------------------");
 		//setupStrippedData(db());
 		//db().execSQL("analyze");
 		//System.out.println("old11111111111111111111111111111111111111111111");
 		//testReadOld();
 		//System.out.println("new222222222222222222222222222222222222222222");
-		
-		new CannyTask(){
-
+		new CannyTask() {
 			@Override
 			public void doTask() {
-				testReadNew();
-				addTestGrid();
-				
-				
-			}}.start(200);
-		
+				testReadNew(0);
+				resetData();
+				testGrid.flipData();
+			}
+		}.start(200);
+		addTestGrid();
 		/*CannyTask t=new CannyTask(){
 
 			@Override
@@ -86,34 +97,49 @@ public class Demo extends Activity {
 			t.start();
 			t.start();
 			t.start();*/
+		layoutless.child(new HTMLText(this)//
+				.html.is(Html.fromHtml("<h1>Test</h1>"))//
+				.width().is(200)//
+				.height().is(200)//
+				);
 		System.out.println("done onCreate");
 	}
-	void addTestGrid() {
-		
-		testGrid=new Grid(this);
-		layoutless.child(testGrid//
-				.width().is(900).height().is(500).left().is(100).top().is(100)//
-				)//
-		;
-		GridColumnText colArtikul= new GridColumnText();
-		GridColumnText colName= new GridColumnText();
-		GridColumnText colProizvoditel= new GridColumnText();
-		GridColumnText colMinKol= new GridColumnText();
-		GridColumnText colKolMest= new GridColumnText();
-		GridColumnText colEdizm= new GridColumnText();
-		GridColumnText colCena= new GridColumnText();
-		GridColumnText colRazmSkidki= new GridColumnText();
-		GridColumnText colVidSkidki= new GridColumnText();
-		GridColumnText colPoslCena= new GridColumnText();
-		GridColumnText colMinCena= new GridColumnText();
-		GridColumnText colMaxCena= new GridColumnText();
-		GridColumnText colPhoto= new GridColumnText();
-		System.out.println("fill columns");
-		for(int i=0;i<testData.children.size();i++){
-			Bough row=testData.children.get(i);
-			colArtikul.cell(row.child("Artikul").value.property.value());
-			colName.cell(row.child("Naimenovanie").value.property.value());
-			colProizvoditel.cell(row.child("ProizvoditelNaimenovanie").value.property.value());
+	void resetData() {
+		colArtikul.clear();
+		colName.clear();
+		colProizvoditel.clear();
+		colMinKol.clear();
+		colKolMest.clear();
+		colEdizm.clear();
+		colCena.clear();
+		colRazmSkidki.clear();
+		colVidSkidki.clear();
+		colPoslCena.clear();
+		colMinCena.clear();
+		colMaxCena.clear();
+		colPhoto.clear();
+		//System.out.println("fill columns");
+		for (int i = 0; i < testData.children.size(); i++) {
+			Bough row = testData.children.get(i);
+			final String s=row.child("Naimenovanie").value.property.value();
+			Task t=new Task(){
+
+				@Override
+				public void doTask() {
+					System.out.println("click "+s);
+					
+				}};
+			if (i == 3) {
+				colArtikul.cell((testGrid.dataOffset.property.value() + i) + ": " + row.child("Artikul").value.property.value());
+			}
+			else {
+				colArtikul.cell((testGrid.dataOffset.property.value() + i) + ": " + row.child("Artikul").value.property.value(), 0xff99ff99);
+			}
+			colName.cell(//
+					row.child("Naimenovanie").value.property.value()//
+					//,"№: "+row.child("_IDRRef").value.property.value()//
+					,t);
+			colProizvoditel.cell(row.child("ProizvoditelNaimenovanie").value.property.value(),t);
 			colMinKol.cell(row.child("1").value.property.value());
 			colKolMest.cell(row.child("2").value.property.value());
 			colEdizm.cell(row.child("st").value.property.value());
@@ -125,26 +151,52 @@ public class Demo extends Activity {
 			colMaxCena.cell(row.child("MaxCena").value.property.value());
 			colPhoto.cell(row.child("---").value.property.value());
 		}
-		System.out.println("fill grid");
-		testGrid.setData(new GridColumn[] {colArtikul.width.is(60).title.is("Артикул")//
-				,colName.width.is(250).title.is("Наименование")//
-				,colProizvoditel.width.is(100).title.is("Производитель")//
-				,colMinKol.width.is(40).title.is("Мин. кол.")//
-				,colKolMest.width.is(40).title.is("Кол. мест")//
-				,colEdizm.width.is(40).title.is("Ед. изм.")//
-				,colCena.width.is(70).title.is("Цена")//
-				,colRazmSkidki.width.is(60).title.is("Разм. скидки")//
-				,colVidSkidki.width.is(100).title.is("Вид скидки")//
-				,colPoslCena.width.is(70).title.is("Посл. цена")//
-				,colMinCena.width.is(70).title.is("Мин. цена")//
-				,colMaxCena.width.is(70).title.is("Макс. цена")//
-				,colPhoto.width.is(Layoutless.tapSize).title.is("Фото")//
-				});
-		System.out.println("done add columns");
-		testGrid.flip();
+		//System.out.println("fill grid");
+		//testGrid.flipData();
+	}
+	void addTestGrid() {
+		testGrid = new Grid(this).headerHeight.is(100);
+		testGrid//
+		.beforeNext.is(new Task() {
+			@Override
+			public void doTask() {
+				//System.out.println("next: " + testGrid.dataOffset.property.value());
+				testReadNew(testGrid.dataOffset.property.value().intValue());
+				resetData();
+				testGrid.flipData();
+				//System.exit(0);
+			}
+		})//
+		.beforePrevious.is(new Task() {
+			@Override
+			public void doTask() {
+				//System.out.println("prev: " + testGrid.dataOffset.property.value());
+				testReadNew(testGrid.dataOffset.property.value().intValue());
+				resetData();
+				testGrid.flipData();
+			}
+		})//
+		;
+		layoutless.child(testGrid//
+				.width().is(900).height().is(400).left().is(100).top().is(100)//
+				)//
+		;
+		testGrid.setData(new GridColumn[] { colArtikul.width.is(60).title.is("Артикул")//
+				, colName.width.is(250).title.is("Наименование")//
+				, colProizvoditel.width.is(100).title.is("Производитель")//
+				, colMinKol.width.is(40).title.is("Мин. кол.")//
+				, colKolMest.width.is(40).title.is("Кол. мест")//
+				, colEdizm.width.is(40).title.is("Ед. изм.")//
+				, colCena.width.is(70).title.is("Цена")//
+				, colRazmSkidki.width.is(60).title.is("Разм. скидки")//
+				, colVidSkidki.width.is(100).title.is("Вид скидки")//
+				, colPoslCena.width.is(70).title.is("Посл. цена")//
+				, colMinCena.width.is(70).title.is("Мин. цена")//
+				, colMaxCena.width.is(70).title.is("Макс. цена")//
+				, colPhoto.width.is(Layoutless.tapSize).title.is("Фото") //
+		});
 		//testGrid.data(new GridColumn[] {c1,c2});
-		System.out.println("done fill columns");
-		
+		//System.out.println("done fill columns");
 	}
 	void testReadOld() {
 		System.out.println("testReadOld");
@@ -305,7 +357,7 @@ public class Demo extends Activity {
 				+ "\n where ( n.[UpperName] like '%СЫР%') "// 
 				//+ "\n group by n.[_idrref] "//  
 				+ "\n ORDER BY n.[naimenovanie] "//  
-				+ "\n limit 1000 offset 100; "//
+				+ "\n limit 100 offset 0; "//
 		;
 		//System.out.println("sql: " + sql);
 		Cursor ex = db().rawQuery(sql, null);
@@ -317,13 +369,11 @@ public class Demo extends Activity {
 		//b.value.is("123");
 		//System.out.println(b.dumpXML());
 	}
-	void testReadNew() {
-		System.out.println("testReadNew");
+	void testReadNew(int offset) {
 		String sql = " select n._id "//					
-				//+ "\n 	,n.[_IDRRef] "//					
+				+ "\n 	,n.[_IDRRef] "//					
 				+ "\n 	,n.[Artikul] "//					
 				+ "\n 	,n.[Naimenovanie] "//	
-				
 				+ "\n 	,n.[OsnovnoyProizvoditel] "//					
 				+ "\n 	,p.Naimenovanie as ProizvoditelNaimenovanie "//
 				+ "\n 	,CenyNomenklaturySklada.Cena as Cena "//
@@ -356,26 +406,21 @@ public class Demo extends Activity {
 				+ "\n 	,Prodazhi.period as LastSell "// 
 				+ "\n 	,skladKazan.sklad as skladKazan "//
 				+ "\n 	,skladHoreca.sklad as skladHoreca "//
-				
 				+ "\n  	from Nomenklatura_sorted n "//	
-				+ "\n 	join Consts const "// 
-				+ "\n 	join (select "// 
+				+ "\n 	cross join Consts const "// 
+				+ "\n 	cross join (select "// 
 				+ "\n 			'2013-01-30' as dataOtgruzki "//
 				+ "\n 			,x'935B18A90562E07411E1BC64CF4E1505' as kontragent "//
 				+ "\n 			,x'B443002264FA89D811E02D3AF097290A' as polzovatel "//
 				+ "\n 		) parameters "//		
-				+ "\n 	join TekuschieCenyOstatkovPartiy_strip TekuschieCenyOstatkovPartiy on TekuschieCenyOstatkovPartiy.nomenklatura=n.[_IDRRef] "//
-				+ "\n 	join Polzovateli on Polzovateli._idrref=parameters.polzovatel "//
-				+ "\n 	join Podrazdeleniya p1 on p1._idrref=Polzovateli.podrazdelenie "//
-				+ "\n 	join EdinicyIzmereniya_strip eho on n.EdinicaKhraneniyaOstatkov = eho._IDRRef "//			
-				+ "\n 	join kontragenty on kontragenty._idrref=parameters.kontragent "//		
-				+ "\n 	join EdinicyIzmereniya_strip ei on n.EdinicaDlyaOtchetov = ei._IDRRef "//	
-				+ "\n 	join CenyNomenklaturySklada_last CenyNomenklaturySklada on CenyNomenklaturySklada.nomenklatura=n.[_IDRRef] "// 
-				//+ "\n 		and CenyNomenklaturySklada.Period=(select max(Period) from CenyNomenklaturySklada "//			
-				//+ "\n 				where nomenklatura=n.[_IDRRef] "// 
-				//+ "\n 					and date(period)<=date(parameters.dataOtgruzki) "//
-				//+ "\n 				) "//	
-				+ "\n 	join DogovoryKontragentov on DogovoryKontragentov.vladelec=parameters.kontragent "//
+				+ "\n 	cross join TekuschieCenyOstatkovPartiy_strip TekuschieCenyOstatkovPartiy on TekuschieCenyOstatkovPartiy.nomenklatura=n.[_IDRRef] "//
+				+ "\n 	cross join Polzovateli on Polzovateli._idrref=parameters.polzovatel "//
+				+ "\n 	cross join Podrazdeleniya p1 on p1._idrref=Polzovateli.podrazdelenie "//
+				+ "\n 	cross join EdinicyIzmereniya_strip eho on n.EdinicaKhraneniyaOstatkov = eho._IDRRef "//			
+				+ "\n 	cross join kontragenty on kontragenty._idrref=parameters.kontragent "//		
+				+ "\n 	cross join EdinicyIzmereniya_strip ei on n.EdinicaDlyaOtchetov = ei._IDRRef "//	
+				+ "\n 	cross join CenyNomenklaturySklada_last CenyNomenklaturySklada on CenyNomenklaturySklada.nomenklatura=n.[_IDRRef] "// 
+				+ "\n 	cross join DogovoryKontragentov on DogovoryKontragentov.vladelec=parameters.kontragent "//
 				+ "\n 	left join NacenkiKontr nk1 on nk1.PoluchatelSkidki=parameters.kontragent "// 
 				+ "\n 			and nk1.Period=(select max(Period) from NacenkiKontr "// 
 				+ "\n 				where PoluchatelSkidki=parameters.kontragent "// 
@@ -458,33 +503,23 @@ public class Demo extends Activity {
 				+ "\n 					where PoluchatelSkidki=parameters.kontragent "// 
 				+ "\n 					and date(period)<=date(parameters.dataOtgruzki) "//
 				+ "\n 					) "//	
-				+ "\n 	left join Prodazhi on Prodazhi.DogovorKontragenta=DogovoryKontragentov._IDRref "// 
+				+ "\n 	left join Prodazhi_last Prodazhi on Prodazhi.DogovorKontragenta=DogovoryKontragentov._IDRref "// 
 				+ "\n 				and Prodazhi.nomenklatura=n.[_IDRRef] "// 
 				+ "\n 				and Prodazhi.period=(select max(period) from prodazhi where nomenklatura=n.[_IDRRef]) "//	
-				+ "\n 	 join AdresaPoSkladam_last skladKazan on skladKazan.nomenklatura=n._idrref and skladKazan.Traphik=x'00' "//
-				//+ "\n  				and skladKazan.period=(select max(period) from adresaposkladam "// 
-				//+ "\n  					where nomenklatura=n._idrref "// 
+				+ "\n 	left join AdresaPoSkladam_last skladKazan on skladKazan.nomenklatura=n._idrref and skladKazan.Traphik=x'00' "//
 				+ "\n 					and skladKazan.baza=x'A756BEA77AB71E2F45CD824C4AB4178F'  "//
-				//+ "\n 					and Traphik=x'00' "//
-				//+ "\n 					) "//
 				+ "\n 	left join AdresaPoSkladam_last skladHoreca on skladHoreca.nomenklatura=n._idrref and skladHoreca.Traphik=x'00' "//
-				//+ "\n  				and skladHoreca.period=(select max(period) from adresaposkladam "// 
-				//+ "\n  					where nomenklatura=n._idrref "// 
 				+ "\n 					and skladHoreca.baza=x'AAFFF658AE67DCE94696B419219D8E1C' "// 
-				//+ "\n 					and Traphik=x'00' "//
-				//+ "\n 					) "//	
 				+ "\n where ( n.[UpperName] like '%СЫР%')"// and n._id>=2193"// 
-				//+ "\n group by n.[_idrref] "//  
-				//+ "\n ORDER BY n.[_id] "//  
-				+ "\n limit 300  "//offset 100; "//
+				+ "\n limit 99  offset " + offset + "; "//
 		;
 		//sql="select _id,Naimenovanie from nomenklatura limit 1000";
 		//System.out.println("sql: " + sql);
 		Cursor ex = db().rawQuery(sql, null);
-		System.out.println("read");
-		 testData = //new Bough();
+		//System.out.println("read");
+		testData = //new Bough();
 		Auxiliary.fromCursor(ex);
-		System.out.println("rows: " + testData.children.size());
+		//System.out.println("rows from :" + offset + ": " + testData.children.size());
 		//b.child("test").child("test").value.is("123");
 		//b.value.is("123");
 		//System.out.println(b.dumpXML());
