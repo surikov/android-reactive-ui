@@ -156,6 +156,7 @@ public class Demo extends Activity {
 	}
 	void addTestGrid() {
 		testGrid = new Grid(this).headerHeight.is(100);
+		/*
 		testGrid//
 		.beforeNext.is(new Task() {
 			@Override
@@ -175,8 +176,9 @@ public class Demo extends Activity {
 				resetData();
 				testGrid.flipData();
 			}
-		})//
+		})//		
 		;
+		*/
 		layoutless.child(testGrid//
 				.width().is(900).height().is(400).left().is(100).top().is(100)//
 				)//
