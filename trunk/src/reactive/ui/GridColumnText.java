@@ -3,15 +3,22 @@ package reactive.ui;
 import android.content.*;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Rect;
 
 import java.util.*;
 
 import tee.binding.it.Numeric;
+import tee.binding.task.*;
 
 public class GridColumnText extends GridColumn {
-	private Vector<String> strings = new Vector<String>();
-	Paint linePaint = new Paint();
+	protected Vector<String> strings = new Vector<String>();
+	protected Vector<Task> tasks = new Vector<Task>();
+	protected Vector<Decor> cells = new Vector<Decor>();
+	protected Vector<Integer> backgrounds = new Vector<Integer>();
+	protected Paint linePaint = new Paint();
+	protected Rect sz;
+	int presell = -1;
 
 	@Override
 	public Rake item(final int column, int row, Context context) {
@@ -20,40 +27,52 @@ public class GridColumnText extends GridColumn {
 			@Override
 			protected void onDraw(Canvas canvas) {
 				super.onDraw(canvas);
-				if (column > 0) {
-					//canvas.drawLine(0, 0, 0, height().property.value().floatValue(), linePaint);
-					canvas.drawRect(new Rect(//left
-							0//
-							, 0//
-							, 1//
-							, height().property.value().intValue()//
-							), linePaint);
+				if (sz == null) {
+					sz = new Rect();
 				}
-				//canvas.drawLine(0, height().property.value().floatValue() - 1, width().property.value().floatValue(), height().property.value().floatValue() - 1, linePaint);
-				canvas.drawRect(new Rect(//under
-						0//
-						, height().property.value().intValue() - 1//
-						, width().property.value().intValue()//
-						, height().property.value().intValue() //
-						), linePaint);
+				//linePaint.setStrokeWidth(11);
+				//linePaint.setColor(0xff6600ff);
+				if (column > 0) {
+					sz.left = 0;
+					sz.top = 0;
+					sz.right = 1;
+					sz.bottom = height().property.value().intValue();
+					canvas.drawRect(sz, linePaint);//left
+				}
+				sz.left = 0;
+				sz.top = height().property.value().intValue() - 1;
+				sz.right = width().property.value().intValue();
+				sz.bottom = height().property.value().intValue();
+				canvas.drawRect(sz, linePaint);//under
 			}
 		};
+		if (row > -1 && row < backgrounds.size()) {
+			if (backgrounds.get(row) != null) {
+				cell.background.is(backgrounds.get(row));
+			}
+		}
 		cell.setPadding(3, 0, 3, 0);
 		cell.labelStyleMediumNormal();
-		/*Numeric w=new Numeric().bind(c.width().property);
-		Numeric h=new Numeric().bind(c.height().property);
-		c.sketch(new SketchLine().point(10, 10).point(20,20));*/
-		//c.inTableRow=true;
 		if (row > -1 && row < strings.size()) {
 			cell.labelText.is(strings.get(row));
-			//System.out.println("label "+strings.get(row));
 		}
-		//System.out.println("item "+c.inTableRow);
+		cells.add(cell);
 		return cell;
 	}
-	public GridColumnText cell(String s) {
+	public GridColumnText cell(String s, Integer background, Task tap) {
 		strings.add(s);
+		tasks.add(tap);
+		backgrounds.add(background);
 		return this;
+	}
+	public GridColumnText cell(String s) {
+		return cell(s, null, null);
+	}
+	public GridColumnText cell(String s, Task tap) {
+		return cell(s, null, tap);
+	}
+	public GridColumnText cell(String s, Integer background) {
+		return cell(s, background, null);
 	}
 	@Override
 	public int count() {
@@ -65,10 +84,12 @@ public class GridColumnText extends GridColumn {
 		linePaint.setAntiAlias(true);
 		linePaint.setFilterBitmap(true);
 		linePaint.setDither(true);
-		//linePaint.setStrokeWidth(1);
+		//linePaint.setStrokeWidth(0);
+		//linePaint.setst
+		//linePaint.setStyle(Style.STROKE);
 	}
 	@Override
-	public Rake header( Context context) {
+	public Rake header(Context context) {
 		//Knob k = new Knob(context).labelText.is(title.property.value());
 		Decor header = new Decor(context) {
 			//
@@ -88,5 +109,39 @@ public class GridColumnText extends GridColumn {
 		header.labelAlignCenterBottom();
 		header.labelText.is(title.property.value());
 		return header;
+	}
+	@Override
+	public void clear() {
+		strings.removeAllElements();
+		backgrounds.removeAllElements();
+		tasks.removeAllElements();
+		cells.removeAllElements();
+	}
+	@Override
+	public void afterTap(int row) {
+		if (row > -1 && row < tasks.size()) {
+			if (tasks.get(row) != null) {
+				tasks.get(row).start();
+			}
+			//System.out.println("label "+strings.get(row));
+		}
+	}
+	@Override
+	public void highlight(int row) {
+		if (presell >= 0 && presell < cells.size()) {
+			//System.out.println(cells.get(presell));
+			//int b=backgrounds.get(presell);
+			//System.out.println(backgrounds.get(presell));
+			//System.out.println(backgrounds.get(presell));
+			if(backgrounds.get(presell)!=null){
+			cells.get(presell).background.is(backgrounds.get(presell));
+			}else{
+				cells.get(presell).background.is(0);
+			}
+		}
+		if (row >= 0 && row < cells.size()) {
+			presell = row;
+			cells.get(row).background.is(0x11000000);
+		}
 	}
 }

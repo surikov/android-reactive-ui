@@ -38,10 +38,12 @@ import java.io.*;
 import java.text.*;
 public abstract class GridColumn {
 	public NumericProperty<GridColumn> width = new NumericProperty<GridColumn>(this);
-	
+	public abstract void afterTap(int row);
 	public NoteProperty<GridColumn> title = new NoteProperty<GridColumn>(this);
 	public abstract Rake item(int column,int row, Context context);
 	public abstract Rake header( Context context);
 	public abstract int count();
+	public abstract void clear( );
+	public abstract void highlight(int row );
 	
 }

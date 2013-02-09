@@ -20,8 +20,8 @@ public class Decor extends TextView implements Rake {
 	private float startEventY = 0;
 	private float initialShiftX = 0;
 	private float initialShiftY = 0;
-	private float initialSpacing;
-	private float currentSpacing;
+	//private float initialSpacing;
+	//private float currentSpacing;
 	public NumericProperty<Decor> dragX = new NumericProperty<Decor>(this);
 	public NumericProperty<Decor> dragY = new NumericProperty<Decor>(this);
 	public NoteProperty<Decor> labelText = new NoteProperty<Decor>(this);
