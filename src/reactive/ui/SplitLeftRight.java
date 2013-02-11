@@ -117,11 +117,20 @@ public class SplitLeftRight extends SubLayoutless {
 			Task adjustSplit = new Task() {
 				@Override
 				public void doTask() {
-					if (split.property.value() < 0.5 * Layoutless.tapSize) {
-						split.is(0.5 * Layoutless.tapSize);
+					if (split.property.value() < 0
+							//0.5 * Layoutless.tapSize
+							) {
+						split.is(
+								//0.5 * Layoutless.tapSize
+								0
+								);
 					}
-					if (split.property.value() > width().property.value() - 0.5 * Layoutless.tapSize - 4) {
-						split.is(width().property.value() - 0.5 * Layoutless.tapSize - 4);
+					if (split.property.value() > width().property.value() 
+							//- 0.5 * Layoutless.tapSize - 4
+							) {
+						split.is(width().property.value() 
+								//- 0.5 * Layoutless.tapSize - 4
+								);
 					}
 				}
 			};

@@ -45,7 +45,7 @@ public class Demo extends Activity {
 	Grid testGrid;
 	Bough testData;
 	GridColumnText colArtikul = new GridColumnText();
-	GridColumnText colName = new GridColumnText();
+	GridColumnDescription colName = new GridColumnDescription();
 	GridColumnText colProizvoditel = new GridColumnText();
 	GridColumnText colMinKol = new GridColumnText();
 	GridColumnText colKolMest = new GridColumnText();
@@ -137,8 +137,9 @@ public class Demo extends Activity {
 			}
 			colName.cell(//
 					row.child("Naimenovanie").value.property.value()//
-					//,"№: "+row.child("_IDRRef").value.property.value()//
-					,t);
+					,t//
+					,"№:"+row.child("_IDRRef").value.property.value()//
+					);
 			colProizvoditel.cell(row.child("ProizvoditelNaimenovanie").value.property.value(),t);
 			colMinKol.cell(row.child("1").value.property.value());
 			colKolMest.cell(row.child("2").value.property.value());
@@ -156,34 +157,36 @@ public class Demo extends Activity {
 	}
 	void addTestGrid() {
 		testGrid = new Grid(this).headerHeight.is(100);
-		/*
+		
 		testGrid//
-		.beforeNext.is(new Task() {
+		.beforeFlip.is(new Task() {
 			@Override
 			public void doTask() {
 				//System.out.println("next: " + testGrid.dataOffset.property.value());
 				testReadNew(testGrid.dataOffset.property.value().intValue());
 				resetData();
-				testGrid.flipData();
+				//testGrid.flipData();
 				//System.exit(0);
 			}
 		})//
+		/*
 		.beforePrevious.is(new Task() {
 			@Override
 			public void doTask() {
 				//System.out.println("prev: " + testGrid.dataOffset.property.value());
 				testReadNew(testGrid.dataOffset.property.value().intValue());
 				resetData();
-				testGrid.flipData();
+				//testGrid.flipData();
 			}
-		})//		
-		;
+		})//
 		*/
+		;
+		
 		layoutless.child(testGrid//
 				.width().is(900).height().is(400).left().is(100).top().is(100)//
 				)//
 		;
-		testGrid.setData(new GridColumn[] { colArtikul.width.is(60).title.is("Артикул")//
+		testGrid.setColumns(new GridColumn[] { colArtikul.width.is(60).title.is("Артикул")//
 				, colName.width.is(250).title.is("Наименование")//
 				, colProizvoditel.width.is(100).title.is("Производитель")//
 				, colMinKol.width.is(40).title.is("Мин. кол.")//

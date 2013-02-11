@@ -7,6 +7,7 @@ import android.view.*;
 import android.app.*;
 import android.content.*;
 import android.graphics.*;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.*;
 import android.view.*;
@@ -25,30 +26,16 @@ import java.text.*;
 
 public class Grid extends SubLayoutless {
 	public ToggleProperty<Grid> noHead = new ToggleProperty<Grid>(this);
-	//public NumericProperty<Grid> maxPageCount;
 	static final int maxPageCount = 3;
 	public NumericProperty<Grid> pageSize;
 	public NumericProperty<Grid> dataOffset;
 	public NumericProperty<Grid> headerHeight;
-	//public NumericProperty<Grid> selectedRow;
 	private Decor selection;
 	public NumericProperty<Grid> rowHeight;
-	public ItProperty<Grid, Task> beforeNext = new ItProperty<Grid, Task>(this);
-	public ItProperty<Grid, Task> beforePrevious = new ItProperty<Grid, Task>(this);
+	public ItProperty<Grid, Task> beforeFlip = new ItProperty<Grid, Task>(this);
 	private boolean lockAppend = false;
-	//private boolean lockScroll = false;
 	GridColumn[] data = null;
 	ProgressBar progressBar;
-	//boolean test=false;
-	/*private CannyTask flip = new CannyTask() {
-		@Override
-		public void doTask() {
-			if (offset < maxPageCount.property.value()) {
-				offset++;
-				flip();
-			}
-		}
-	};*/
 	private int currentPage = 0;
 	TableLayout tableLayout;
 	ScrollView scrollView;
@@ -69,8 +56,7 @@ public class Grid extends SubLayoutless {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
-	public Grid setData(GridColumn[] indata) {
-		//System.out.println("setData");
+	public Grid setColumns(GridColumn[] indata) {
 		currentPage = 0;
 		tableLayout.removeAllViews();
 		data = indata;
@@ -86,12 +72,12 @@ public class Grid extends SubLayoutless {
 			left = left + data[x].width.property.value().intValue();
 			this.child(r);
 		}
-		//System.out.println("done add columns");
 		append();
 		return this;
 	}
 	public void flipData() {
-		//System.out.println("flipData");
+		System.out.println("flipData");
+		currentPage = 0;
 		tableLayout.removeAllViews();
 		append();
 	}
@@ -102,9 +88,6 @@ public class Grid extends SubLayoutless {
 		if (data.length > 0) {
 			lockAppend = true;
 			scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
-			//System.out.println("append");
-			//tableLayout.removeAllViews();
-			//tableLayout.removeAllViews();
 			for (int y = (int) (currentPage * pageSize.property.value()); y < data[0].count() && y < (currentPage + 1) * pageSize.property.value(); y++) {
 				TableRow tableRow = new TableRow(this.getContext());
 				for (int x = 0; x < data.length; x++) {
@@ -116,26 +99,15 @@ public class Grid extends SubLayoutless {
 				}
 				tableLayout.addView(tableRow);
 			}
-			//scrollView.scrollTo(0, 0);
-			/*
-			new Handler().post(new Runnable() {
-			    @Override
-			    public void run() {
-			    	scrollView.scrollTo(0, 0);
-			    }
-			});*/
-			//System.out.println("done append");
 			lockAppend = false;
 			scrollView.setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
 		}
 	}
-	void tapRow(int row,int column){
-		//System.out.println(column);
+	void tapRow(int row, int column) {
 		for (int x = 0; x < data.length; x++) {
 			data[x].highlight(row);
 		}
-		if(column< data.length){
-			
+		if (column < data.length) {
 			data[column].afterTap(row);
 		}
 	}
@@ -156,14 +128,10 @@ public class Grid extends SubLayoutless {
 					}
 				}
 			};
-			//selectedRow = new NumericProperty<Grid>(this);
-			//selectedRow.is(-1);
 			pageSize = new NumericProperty<Grid>(this);
 			pageSize.is(33);
 			dataOffset = new NumericProperty<Grid>(this);
 			dataOffset.is(0);
-			//maxPageCount = new NumericProperty<Grid>(this);
-			//maxPageCount.is(3);
 			headerHeight = new NumericProperty<Grid>(this);
 			headerHeight.is(Layoutless.tapSize);
 			rowHeight = new NumericProperty<Grid>(this);
@@ -175,7 +143,6 @@ public class Grid extends SubLayoutless {
 
 				@Override
 				public boolean onTouchEvent(MotionEvent event) {
-					//
 					if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
 						initialX = event.getX();
 						initialY = event.getY();
@@ -186,19 +153,15 @@ public class Grid extends SubLayoutless {
 							float aY = event.getY();
 							float diff = 4;
 							if (Math.abs(initialX - aX) < diff && Math.abs(initialY - aY) < diff) {
-								//int nn = (int) (dataOffset.property.value() + (this.getScrollY() + aY) / rowHeight.property.value());
 								int nn = (int) ((this.getScrollY() + aY) / rowHeight.property.value());
-								//System.out.println("tap " + aX);
-								double xx=0;
-								for(int i=0;i<data.length;i++){
-									xx=xx+data[i].width.property.value();
-									//System.out.println("yy " + xx);
-									if(xx>aX){
-										tapRow(nn,i);
+								double xx = 0;
+								for (int i = 0; i < data.length; i++) {
+									xx = xx + data[i].width.property.value();
+									if (xx > aX) {
+										tapRow(nn, i);
 										break;
 									}
 								}
-								
 							}
 						}
 					}
@@ -208,115 +171,106 @@ public class Grid extends SubLayoutless {
 				protected void onScrollChanged(int left, int top, int oldLeft, int oldTop) {
 					super.onScrollChanged(left, top, oldLeft, oldTop);
 					if (progressBar.getVisibility() == View.VISIBLE) {
-						//System.out.println("scroll locked");
 						return;
 					}
-					//lockScroll = true;
 					progressBar.setVisibility(View.VISIBLE);
 					progressBar.postInvalidate();
 					double scrollViewHeight = height().property.value() - headerHeight.property.value();
 					double contentHeight = rowHeight.property.value() * (currentPage + 1) * pageSize.property.value();
 					double limit = contentHeight - scrollViewHeight;
-					//System.out.println(top+"/"+limit+"/"+scrollViewHeight+"/"+contentHeight+" /"+dataOffset.property.value()+"/"+currentPage);
 					if (top > 0 && limit > 0 && top >= limit) {
-						//if (t >= limit) {
-						//flip.start();
 						if (currentPage < maxPageCount - 1) {
 							currentPage++;
-							//System.out.println("scroll " + currentPage);
 							append();
-							//lockScroll = false;
 							progressBar.setVisibility(View.INVISIBLE);
 						}
 						else {
-							//System.out.println("next start");
-							//if(test)return;
-							//test=true;
 							double off = dataOffset.property.value() + pageSize.property.value() * (maxPageCount - 1);
 							dataOffset.is(off);
-							//next();
-							if (beforeNext.property.value() != null) {
-								currentPage = 0;
-								beforeNext.property.value().start();
-								//System.out.println("scroll after next");
-								//scrollView.scrollTo(0, 1);
-								new Handler().post(new Runnable() {
+							if (beforeFlip.property.value() != null) {
+								new AsyncTask<Void, Void, Void>() {
 									@Override
-									public void run() {
-										scrollView.scrollTo(0, (int) (pageSize.property.value() * rowHeight.property.value() - headerHeight.property.value()));
-										//lockScroll = false;
-										progressBar.setVisibility(View.INVISIBLE);
+									protected Void doInBackground(Void... params) {
+										try {
+											Thread.sleep(5000);
+											beforeFlip.property.value().start();
+										}
+										catch (Throwable t) {
+											//
+										}
+										return null;
 									}
-								});
+									@Override
+									protected void onPostExecute(Void v) {
+										currentPage = 0;
+										flipData();
+										new Handler().post(new Runnable() {
+											@Override
+											public void run() {
+												scrollView.scrollTo(0, (int) (pageSize.property.value() * rowHeight.property.value() - headerHeight.property.value()));
+												progressBar.setVisibility(View.INVISIBLE);
+											}
+										});
+									}
+								}.execute();
 							}
 							else {
-								//lockScroll = false;
 								progressBar.setVisibility(View.INVISIBLE);
 							}
-							//System.out.println("next done");							
 						}
-						//}
 					}
 					else {
 						if (top <= 0) {
 							if (dataOffset.property.value() > 0) {
-								//System.out.println("prev start "+top);
-								//System.out.println(top+"/"+limit+"/"+scrollViewHeight+"/"+contentHeight);
 								double off = dataOffset.property.value() - pageSize.property.value() * (maxPageCount - 1);
 								if (off < 0) {
 									off = 0;
 								}
 								dataOffset.is(off);
-								//prev();
-								if (beforePrevious.property.value() != null) {
-									currentPage = 0;
-									beforePrevious.property.value().start();
-									//System.out.println("beforePrevious done");
-									//currentPage = 1;
-									currentPage++;
-									append();
-									currentPage++;
-									append();
-									new Handler().post(new Runnable() {
+								if (beforeFlip.property.value() != null) {
+									new AsyncTask<Void, Void, Void>() {
 										@Override
-										public void run() {
-											int nn = (int) (2 * pageSize.property.value() * rowHeight.property.value()
-											//160
-											//140-1200 
-											//154.5 - 2400
-											//154.5 - 3600
-											//- headerHeight.property.value()
-											//+height().property.value()
-											);
-											//nn=1;
-											scrollView.scrollTo(0, nn);
-											//System.out.println("scroll after prev "+nn);
-											//lockScroll = false;
-											progressBar.setVisibility(View.INVISIBLE);
+										protected Void doInBackground(Void... params) {
+											try {
+												beforeFlip.property.value().start();
+											}
+											catch (Throwable t) {
+												//
+											}
+											return null;
 										}
-									});
+										@Override
+										protected void onPostExecute(Void v) {
+											currentPage = 0;
+											flipData();
+											currentPage++;
+											append();
+											currentPage++;
+											append();
+											new Handler().post(new Runnable() {
+												@Override
+												public void run() {
+													int nn = (int) (2 * pageSize.property.value() * rowHeight.property.value());
+													scrollView.scrollTo(0, nn);
+													progressBar.setVisibility(View.INVISIBLE);
+												}
+											});
+										}
+									}.execute();
 								}
 								else {
-									//lockScroll = false;
 									progressBar.setVisibility(View.INVISIBLE);
 								}
 							}
 							else {
-								//lockScroll = false;
 								progressBar.setVisibility(View.INVISIBLE);
 							}
 						}
 						else {
-							//lockScroll = false;
 							progressBar.setVisibility(View.INVISIBLE);
 						}
 					}
 				}
-				/*
-				@Override
-				public void computeScroll() {
-					super.computeScroll();
-				}*/
 			};
 			scrollView.addView(tableLayout);
 			this.addView(scrollView);
@@ -329,17 +283,4 @@ public class Grid extends SubLayoutless {
 			progressBar.setVisibility(View.INVISIBLE);
 		}
 	}
-	/*
-	void next() {
-		System.out.println("next: " + dataOffset.property.value());
-		if(this.beforeNext.property.value()!=null){
-			this.beforeNext.property.value().start();
-		}
-	}
-	void prev() {
-		System.out.println("prev: " + dataOffset.property.value());
-		if(this.beforePrevious.property.value()!=null){
-			this.beforePrevious.property.value().start();
-		}
-	}*/
 }
