@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import java.util.*;
 
 import tee.binding.it.Numeric;
+import tee.binding.properties.NumericProperty;
 import tee.binding.task.*;
 
 public class GridColumnText extends GridColumn {
@@ -19,7 +20,7 @@ public class GridColumnText extends GridColumn {
 	protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
-
+	public NumericProperty<GridColumnText> headerBackground = new NumericProperty<GridColumnText>(this);
 	@Override
 	public Rake item(final int column, int row, Context context) {
 		Decor cell = new Decor(context, true) {
