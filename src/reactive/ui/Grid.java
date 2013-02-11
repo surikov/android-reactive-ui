@@ -192,7 +192,7 @@ public class Grid extends SubLayoutless {
 									@Override
 									protected Void doInBackground(Void... params) {
 										try {
-											Thread.sleep(5000);
+											//Thread.sleep(5000);
 											beforeFlip.property.value().start();
 										}
 										catch (Throwable t) {
