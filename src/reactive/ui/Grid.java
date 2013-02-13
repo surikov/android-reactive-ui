@@ -25,6 +25,10 @@ import java.io.*;
 import java.text.*;
 
 public class Grid extends SubLayoutless {
+	//create & fill columns
+	//Grid.setColumns(
+	//Grid.flipData
+	//beforeFlip: refill columns from Grid.dataOffset
 	public ToggleProperty<Grid> noHead = new ToggleProperty<Grid>(this);
 	static final int maxPageCount = 3;
 	public NumericProperty<Grid> pageSize;
