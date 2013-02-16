@@ -29,7 +29,7 @@ public class Grid extends SubLayoutless {
 	//Grid.setColumns(
 	//Grid.flipData
 	//beforeFlip: refill columns from Grid.dataOffset
-	public ToggleProperty<Grid> noHead = new ToggleProperty<Grid>(this);
+	public ToggleProperty<Grid> noHead ;
 	static final int maxPageCount = 3;
 	public NumericProperty<Grid> pageSize;
 	public NumericProperty<Grid> dataOffset;
@@ -60,27 +60,30 @@ public class Grid extends SubLayoutless {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
-	public Grid setColumns(GridColumn[] indata) {
-		currentPage = 0;
-		tableLayout.removeAllViews();
+	public Grid columns(GridColumn[] indata) {
+		//currentPage = 0;
+		//tableLayout.removeAllViews();
 		data = indata;
 		if (data.length < 1) {
 			return this;
 		}
-		int left = 0;
-		for (int x = 0; x < data.length; x++) {
-			Rake r = data[x].header(getContext());
-			r.height().is(headerHeight.property.value());
-			r.width().is(data[x].width.property.value());
-			r.left().is(left);
-			left = left + data[x].width.property.value().intValue();
-			this.child(r);
+		if (!noHead.property.value()) {
+			int left = 0;
+			for (int x = 0; x < data.length; x++) {
+				Rake r = data[x].header(getContext());
+				r.height().is(headerHeight.property.value());
+				r.width().is(data[x].width.property.value());
+				r.left().is(left);
+				left = left + data[x].width.property.value().intValue();
+				this.child(r);
+			}
 		}
-		append();
+		//append();
+		flipData();
 		return this;
 	}
 	public void flipData() {
-		System.out.println("flipData");
+		//System.out.println("flipData");
 		currentPage = 0;
 		tableLayout.removeAllViews();
 		append();
@@ -96,7 +99,7 @@ public class Grid extends SubLayoutless {
 				TableRow tableRow = new TableRow(this.getContext());
 				for (int x = 0; x < data.length; x++) {
 					Rake r = data[x].item(x, y, getContext());
-					View d = r.view();
+					//View d = r.view();
 					r.height().is(rowHeight.property.value());
 					r.width().is(data[x].width.property.value());
 					tableRow.addView(r.view());
@@ -120,13 +123,18 @@ public class Grid extends SubLayoutless {
 		super.init();
 		if (!initialized) {
 			initialized = true;
+			noHead = new ToggleProperty<Grid>(this);
 			Task reFit = new Task() {
 				@Override
 				public void doTask() {
+					double hh = headerHeight.property.value();
+					if (noHead.property.value()) {
+						hh = 0;
+					}
 					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
 							width().property.value().intValue()//
-							, (int) (height().property.value() - headerHeight.property.value()));
-					params.topMargin = headerHeight.property.value().intValue();
+							, (int) (height().property.value() - hh));
+					params.topMargin = (int) hh;
 					if (scrollView != null) {
 						scrollView.setLayoutParams(params);
 					}
@@ -180,6 +188,9 @@ public class Grid extends SubLayoutless {
 					progressBar.setVisibility(View.VISIBLE);
 					progressBar.postInvalidate();
 					double scrollViewHeight = height().property.value() - headerHeight.property.value();
+					if (noHead.property.value()) {
+						scrollViewHeight = height().property.value();
+					}
 					double contentHeight = rowHeight.property.value() * (currentPage + 1) * pageSize.property.value();
 					double limit = contentHeight - scrollViewHeight;
 					if (top > 0 && limit > 0 && top >= limit) {
@@ -211,7 +222,13 @@ public class Grid extends SubLayoutless {
 										new Handler().post(new Runnable() {
 											@Override
 											public void run() {
-												scrollView.scrollTo(0, (int) (pageSize.property.value() * rowHeight.property.value() - headerHeight.property.value()));
+												double hh = headerHeight.property.value();
+												if (noHead.property.value()) {
+													hh = 0;
+												}
+												scrollView.scrollTo(0, (int) (//
+														pageSize.property.value() * rowHeight.property.value() - hh//
+														));
 												progressBar.setVisibility(View.INVISIBLE);
 											}
 										});

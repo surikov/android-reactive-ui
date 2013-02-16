@@ -46,6 +46,7 @@ public class Decor extends TextView implements Rake {
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
+			//System.out.println("reFit: " + width.property.value()+" * "+height.property.value());
 			//if(1==1)return;
 			
 			//RelativeLayout.LayoutParams
@@ -78,7 +79,7 @@ public class Decor extends TextView implements Rake {
 			Decor.this.setMinHeight(height.property.value().intValue());
 			Decor.this.setMaxWidth(width.property.value().intValue());
 			Decor.this.setMaxHeight(height.property.value().intValue());
-			//System.out.println("reFit: " + width.property.value()+" * "+height.property.value());
+			
 		}
 	};
 	Task postInvalidate = new Task() {

@@ -11,6 +11,7 @@ import android.view.*;
 import android.widget.*;
 
 import java.util.*;
+
 import reactive.ui.*;
 
 import android.content.res.*;
@@ -477,6 +478,50 @@ public class Auxiliary {
 		final AlertDialog d = dialogBuilder.create();
 		d.show();
 	}
+	public static Vector<String> readTextFromFile(File aFile) {
+		Vector<String> result = new Vector<String>();
+		try {
+			BufferedReader input = new BufferedReader(new FileReader(aFile));
+			try {
+				String line = null; //not declared within while loop
+				while ((line = input.readLine()) != null) {
+					result.add(line);
+					//contents.append(System.getProperty("line.separator"));
+				}
+			}
+			finally {
+				input.close();
+			}
+		}
+		catch (Throwable t) {
+			System.out.println(t.getMessage());
+		}
+		return result;
+	}
+	public static boolean writeTextToFile(File aFile, String aContents) {
+		try {
+			Writer output = new BufferedWriter(new FileWriter(aFile));
+			output.write(aContents);
+			output.flush();
+			output.close();
+		}
+		catch (Throwable t) {
+			System.out.println(t.getMessage());
+		}
+		return false;
+	}
+	public static boolean writeTextToFile(File aFile, String aContents, String charset) {
+		try {
+			FileOutputStream fos = new FileOutputStream(aFile);
+			fos.write(aContents.getBytes(charset));
+			fos.flush();
+			fos.close();
+		}
+		catch (Throwable t) {
+			System.out.println(t.getMessage());
+		}
+		return false;
+	}
 	/*
 		public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -489,4 +534,12 @@ public class Auxiliary {
 			});
 			builder.create().show();
 		}*/
+	public static void startFile(Activity activity,String action,String mime,File file){
+		Intent intent = new Intent();
+		intent.setAction(action);//android.content.Intent.ACTION_VIEW
+		intent.setDataAndType(android.net.Uri.fromFile(file),mime);//"text/html"
+		//startActivity(intent);
+		Intent chooser = Intent.createChooser(intent, file.getAbsolutePath());
+		activity.startActivity(chooser);
+	}
 }

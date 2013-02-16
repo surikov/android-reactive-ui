@@ -43,7 +43,7 @@ import java.text.*;
 public class Demo extends Activity {
 	Layoutless layoutless;
 	
-
+public static String version(){return "1.1.1";}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
