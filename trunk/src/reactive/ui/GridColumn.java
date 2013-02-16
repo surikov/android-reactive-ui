@@ -38,6 +38,8 @@ import java.io.*;
 import java.text.*;
 public abstract class GridColumn {
 	public NumericProperty<GridColumn> width = new NumericProperty<GridColumn>(this);
+	public ToggleProperty<GridColumn> noVerticalBorder = new ToggleProperty<GridColumn>(this);
+	public ToggleProperty<GridColumn> noHorizontalBorder = new ToggleProperty<GridColumn>(this);
 	public abstract void afterTap(int row);
 	public NoteProperty<GridColumn> title = new NoteProperty<GridColumn>(this);
 	public abstract Rake item(int column,int row, Context context);

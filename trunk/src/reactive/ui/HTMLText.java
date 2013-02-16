@@ -15,6 +15,7 @@ import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
 import android.widget.TextView;
+
 /*
 http://commonsware.com/blog/Android/2010/05/26/html-tags-supported-by-textview.html
 <a href="...">
@@ -46,16 +47,13 @@ http://commonsware.com/blog/Android/2010/05/26/html-tags-supported-by-textview.h
 */
 public class HTMLText extends TextView implements Rake {
 	//private int mode = Layoutless.NONE;
-	
-
 	public ItProperty<HTMLText, Spanned> html = new ItProperty<HTMLText, Spanned>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
-	
+	public ItProperty<HTMLText, Task> afterTap = new ItProperty<HTMLText, Task>(this);
 	public NumericProperty<HTMLText> background = new NumericProperty<HTMLText>(this);
-
 	Paint paint = new Paint();
 	boolean initialized = false;
 	private boolean inTableRow = false;
@@ -81,8 +79,8 @@ public class HTMLText extends TextView implements Rake {
 						width.property.value().intValue()//
 						, height.property.value().intValue());
 			}
-			params.leftMargin = left.property.value() .intValue();
-			params.topMargin =top.property.value() .intValue();
+			params.leftMargin = left.property.value().intValue();
+			params.topMargin = top.property.value().intValue();
 			HTMLText.this.setLayoutParams(params);
 			/*
 			RichText.this.setWidth(width.property.value().intValue());
@@ -130,7 +128,6 @@ public class HTMLText extends TextView implements Rake {
 			return;
 		}
 		initialized = true;
-	
 		paint.setColor(0xff000000);
 		paint.setAntiAlias(true);
 		paint.setFilterBitmap(true);
@@ -145,9 +142,7 @@ public class HTMLText extends TextView implements Rake {
 		height.property.afterChange(reFit).value(100);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
-	
 	}
-	
 	@Override
 	public void draw(Canvas canvas) {
 		super.draw(canvas);
@@ -179,12 +174,45 @@ public class HTMLText extends TextView implements Rake {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-	
 		width.property.unbind();
 		height.property.unbind();
 		left.property.unbind();
 		top.property.unbind();
 		background.property.unbind();
-	
+	}
+	public HTMLText labelStyleSmallNormal() {
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Small);
+		return this;
+	}
+	public HTMLText labelStyleMediumNormal() {
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Medium);
+		return this;
+	}
+	public HTMLText labelStyleLargeNormal() {
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Large);
+		return this;
+	}
+	public HTMLText labelStyleSmallInverse() {
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Small_Inverse);
+		return this;
+	}
+	public HTMLText labelStyleMediumInverse() {
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Medium_Inverse);
+		return this;
+	}
+	public HTMLText labelStyleLargeInverse() {
+		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Large_Inverse);
+		return this;
+	}
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		//System.out.println(event);
+		if (afterTap.property.value() != null) {
+			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+				afterTap.property.value().start();
+			}
+			return true;
+		}
+		return false;
 	}
 }

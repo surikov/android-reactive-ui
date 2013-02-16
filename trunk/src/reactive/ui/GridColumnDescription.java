@@ -13,7 +13,7 @@ import tee.binding.it.Numeric;
 import tee.binding.properties.NumericProperty;
 import tee.binding.task.*;
 
-public class GridColumnDescription extends GridColumnText {
+public class GridColumnDescription extends GridColumn {
 	protected Vector<String> descriptions = new Vector<String>();
 	//cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
 	protected Vector<String> strings = new Vector<String>();
@@ -23,9 +23,13 @@ public class GridColumnDescription extends GridColumnText {
 	protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
-	public NumericProperty<GridColumnText> headerBackground = new NumericProperty<GridColumnText>(this);
+	public NumericProperty<GridColumnDescription> headerBackground = new NumericProperty<GridColumnDescription>(this);
+
 	@Override
 	public Rake item(final int column, int row, Context context) {
+		linePaint.setColor((int) (Layoutless
+		//.themeForegroundColor));
+				.themeBlurColor));
 		HTMLText cell = new HTMLText(context, true) {
 			//
 			@Override
@@ -37,17 +41,21 @@ public class GridColumnDescription extends GridColumnText {
 				//linePaint.setStrokeWidth(11);
 				//linePaint.setColor(0xff6600ff);
 				if (column > 0) {
-					sz.left = 0;
-					sz.top = 0;
-					sz.right = 1;
-					sz.bottom = height().property.value().intValue();
-					canvas.drawRect(sz, linePaint);//left
+					if (!noVerticalBorder.property.value()) {
+						sz.left = 0;
+						sz.top = 0;
+						sz.right = 1;
+						sz.bottom = height().property.value().intValue();
+						canvas.drawRect(sz, linePaint);//left
+					}
 				}
-				sz.left = 0;
-				sz.top = height().property.value().intValue() - 1;
-				sz.right = width().property.value().intValue();
-				sz.bottom = height().property.value().intValue();
-				canvas.drawRect(sz, linePaint);//under
+				if (!noHorizontalBorder.property.value()) {
+					sz.left = 0;
+					sz.top = height().property.value().intValue() - 1;
+					sz.right = width().property.value().intValue();
+					sz.bottom = height().property.value().intValue();
+					canvas.drawRect(sz, linePaint);//under
+				}
 			}
 		};
 		if (row > -1 && row < backgrounds.size()) {
@@ -57,7 +65,8 @@ public class GridColumnDescription extends GridColumnText {
 		}
 		cell.setPadding(3, 0, 3, 0);
 		//cell.labelStyleMediumNormal();
-		cell.setTextAppearance(context, android.R.style.TextAppearance_Medium);
+		//cell.setTextAppearance(context, android.R.style.TextAppearance_Medium);
+		cell.labelStyleMediumNormal();
 		if (row > -1 && row < strings.size()) {
 			cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
 			//cell.labelText.is(strings.get(row));
@@ -65,7 +74,7 @@ public class GridColumnDescription extends GridColumnText {
 		cells.add(cell);
 		return cell;
 	}
-	public GridColumnDescription cell(String s, Integer background, Task tap,String description) {
+	public GridColumnDescription cell(String s, Integer background, Task tap, String description) {
 		strings.add(s);
 		tasks.add(tap);
 		backgrounds.add(background);
@@ -73,22 +82,22 @@ public class GridColumnDescription extends GridColumnText {
 		return this;
 	}
 	public GridColumnDescription cell(String s) {
-		return cell(s, null, null,null);
+		return cell(s, null, null, null);
 	}
-	public GridColumnDescription cell(String s,String description) {
-		return cell(s, null, null,description);
+	public GridColumnDescription cell(String s, String description) {
+		return cell(s, null, null, description);
 	}
 	public GridColumnDescription cell(String s, Task tap) {
-		return cell(s, null, tap,null);
+		return cell(s, null, tap, null);
 	}
-	public GridColumnDescription cell(String s, Task tap,String description) {
-		return cell(s, null, tap,description);
+	public GridColumnDescription cell(String s, Task tap, String description) {
+		return cell(s, null, tap, description);
 	}
 	public GridColumnDescription cell(String s, Integer background) {
-		return cell(s, background, null,null);
+		return cell(s, background, null, null);
 	}
-	public GridColumnDescription cell(String s, Integer background,String description) {
-		return cell(s, background, null,description);
+	public GridColumnDescription cell(String s, Integer background, String description) {
+		return cell(s, background, null, description);
 	}
 	@Override
 	public int count() {
@@ -149,15 +158,16 @@ public class GridColumnDescription extends GridColumnText {
 			//int b=backgrounds.get(presell);
 			//System.out.println(backgrounds.get(presell));
 			//System.out.println(backgrounds.get(presell));
-			if(backgrounds.get(presell)!=null){
-			cells.get(presell).background.is(backgrounds.get(presell));
-			}else{
+			if (backgrounds.get(presell) != null) {
+				cells.get(presell).background.is(backgrounds.get(presell));
+			}
+			else {
 				cells.get(presell).background.is(0);
 			}
 		}
 		if (row >= 0 && row < cells.size()) {
 			presell = row;
-			cells.get(row).background.is(0x11000000);
+			cells.get(row).background.is(Layoutless.themeBlurColor);
 		}
 	}
 }
