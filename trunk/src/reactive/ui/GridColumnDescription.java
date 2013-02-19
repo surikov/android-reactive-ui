@@ -24,7 +24,26 @@ public class GridColumnDescription extends GridColumn {
 	protected Rect sz;
 	int presell = -1;
 	public NumericProperty<GridColumnDescription> headerBackground = new NumericProperty<GridColumnDescription>(this);
-
+	@Override
+	public void update(int row) {
+		if (row >= 0 && row < cells.size()) {
+			HTMLText cell = cells.get(row);
+			if (row > -1 && row < backgrounds.size()) {
+				if (backgrounds.get(row) != null) {
+					cell.background.is(backgrounds.get(row));
+				}
+				else {
+					cell.background.is(null);
+				}
+			}
+			if (row > -1 && row < strings.size()) {
+				cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
+			}
+			else {
+				cell.html.is(Html.fromHtml("<p> <br/><small> </small></p>"));
+			}
+		}
+	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
 		linePaint.setColor((int) (Layoutless
@@ -140,7 +159,7 @@ public class GridColumnDescription extends GridColumn {
 		strings.removeAllElements();
 		backgrounds.removeAllElements();
 		tasks.removeAllElements();
-		cells.removeAllElements();
+		//cells.removeAllElements();
 	}
 	@Override
 	public void afterTap(int row) {

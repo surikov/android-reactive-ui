@@ -23,9 +23,29 @@ public class GridColumnText extends GridColumn {
 	public NumericProperty<GridColumnText> headerBackground = new NumericProperty<GridColumnText>(this);
 
 	@Override
+	public void update(int row) {
+		if (row >= 0 && row < cells.size()) {
+			Decor cell = cells.get(row);
+			if (row > -1 && row < backgrounds.size()) {
+				if (backgrounds.get(row) != null) {
+					cell.background.is(backgrounds.get(row));
+				}
+				else {
+					cell.background.is(null);
+				}
+			}
+			if (row > -1 && row < strings.size()) {
+				cell.labelText.is(strings.get(row));
+			}
+			else {
+				cell.labelText.is("");
+			}
+		}
+	}
+	@Override
 	public Rake item(final int column, int row, Context context) {
 		linePaint.setColor((int) (Layoutless
-				//.themeForegroundColor));
+		//.themeForegroundColor));
 				.themeBlurColor));
 		Decor cell = new Decor(context, true) {
 			//
@@ -38,19 +58,20 @@ public class GridColumnText extends GridColumn {
 				//linePaint.setStrokeWidth(11);
 				//linePaint.setColor(0xff6600ff);
 				if (!noVerticalBorder.property.value()) {
-				if (column > 0) {
-					sz.left = 0;
-					sz.top = 0;
-					sz.right = 1;
-					sz.bottom = height().property.value().intValue();
-					canvas.drawRect(sz, linePaint);//left
-				}}
+					if (column > 0) {
+						sz.left = 0;
+						sz.top = 0;
+						sz.right = 1;
+						sz.bottom = height().property.value().intValue();
+						canvas.drawRect(sz, linePaint);//left
+					}
+				}
 				if (!noHorizontalBorder.property.value()) {
-				sz.left = 0;
-				sz.top = height().property.value().intValue() - 1;
-				sz.right = width().property.value().intValue();
-				sz.bottom = height().property.value().intValue();
-				canvas.drawRect(sz, linePaint);//under
+					sz.left = 0;
+					sz.top = height().property.value().intValue() - 1;
+					sz.right = width().property.value().intValue();
+					sz.bottom = height().property.value().intValue();
+					canvas.drawRect(sz, linePaint);//under
 				}
 			}
 		};
@@ -96,7 +117,6 @@ public class GridColumnText extends GridColumn {
 		transp=0x33000000;
 		int pure=c1 & 0x00ffffff;
 		c1=transp+pure;*/
-		
 		linePaint.setAntiAlias(true);
 		linePaint.setFilterBitmap(true);
 		linePaint.setDither(true);
@@ -131,7 +151,7 @@ public class GridColumnText extends GridColumn {
 		strings.removeAllElements();
 		backgrounds.removeAllElements();
 		tasks.removeAllElements();
-		cells.removeAllElements();
+		//cells.removeAllElements();
 	}
 	@Override
 	public void afterTap(int row) {

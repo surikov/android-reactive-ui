@@ -29,7 +29,7 @@ public class Grid extends SubLayoutless {
 	//Grid.setColumns(
 	//Grid.flipData
 	//beforeFlip: refill columns from Grid.dataOffset
-	public ToggleProperty<Grid> noHead ;
+	public ToggleProperty<Grid> noHead;
 	static final int maxPageCount = 3;
 	public NumericProperty<Grid> pageSize;
 	public NumericProperty<Grid> dataOffset;
@@ -43,6 +43,7 @@ public class Grid extends SubLayoutless {
 	private int currentPage = 0;
 	TableLayout tableLayout;
 	ScrollView scrollView;
+	Vector<TableRow> rows = new Vector<TableRow>();
 	private boolean initialized = false;
 
 	public Grid(Context context) {
@@ -55,12 +56,19 @@ public class Grid extends SubLayoutless {
 		super(context, attrs, defStyle);
 	}
 	public void reset() {
+		System.out.println(this.getClass().getCanonicalName() + ".reset");
+		for (int i = 0; i < rows.size(); i++) {
+			rows.get(i).removeAllViews();
+		}
+		tableLayout.removeAllViews();
+		rows.removeAllElements();
 	}
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
 	public Grid columns(GridColumn[] indata) {
+		System.out.println(this.getClass().getCanonicalName() + ".columns");
 		//currentPage = 0;
 		//tableLayout.removeAllViews();
 		data = indata;
@@ -70,45 +78,89 @@ public class Grid extends SubLayoutless {
 		if (!noHead.property.value()) {
 			int left = 0;
 			for (int x = 0; x < data.length; x++) {
-				Rake r = data[x].header(getContext());
-				r.height().is(headerHeight.property.value());
-				r.width().is(data[x].width.property.value());
-				r.left().is(left);
+				Rake headerCell = data[x].header(getContext());
+				headerCell.height().is(headerHeight.property.value());
+				headerCell.width().is(data[x].width.property.value());
+				headerCell.left().is(left);
 				left = left + data[x].width.property.value().intValue();
-				this.child(r);
+				this.child(headerCell);
 			}
 		}
 		//append();
-		flipData();
+		reset();
+		flip();
 		return this;
 	}
-	public void flipData() {
-		//System.out.println("flipData");
+	public void flip() {
+		System.out.println(this.getClass().getCanonicalName() + ".flipData");
 		currentPage = 0;
-		tableLayout.removeAllViews();
 		append();
 	}
 	private void append() {
+		System.out.println(this.getClass().getCanonicalName() + ".append start");
 		if (lockAppend) {
 			return;
 		}
 		if (data.length > 0) {
 			lockAppend = true;
 			scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
-			for (int y = (int) (currentPage * pageSize.property.value()); y < data[0].count() && y < (currentPage + 1) * pageSize.property.value(); y++) {
-				TableRow tableRow = new TableRow(this.getContext());
-				for (int x = 0; x < data.length; x++) {
-					Rake r = data[x].item(x, y, getContext());
-					//View d = r.view();
-					r.height().is(rowHeight.property.value());
-					r.width().is(data[x].width.property.value());
-					tableRow.addView(r.view());
+			int start=(int) (currentPage * pageSize.property.value());
+			for (int y = start; y < data[0].count() && y < (currentPage + 1) * pageSize.property.value(); y++) {
+				TableRow tableRow;
+				if (y < rows.size()) {
+					tableRow = rows.get(y);
+					//tableRow.removeAllViews();
+					//System.out.println("get row " + (y));
+					tableRow.setVisibility(View.VISIBLE);
+					for (int x = 0; x < data.length; x++) {
+						//Rake r = data[x].item(x, y, getContext());
+						//View d = r.view();
+						//r.height().is(rowHeight.property.value());
+						//r.width().is(data[x].width.property.value());
+						//tableRow.addView(r.view());
+						this.data[x].update(y);
+					}
 				}
-				tableLayout.addView(tableRow);
+				else {
+					tableRow = new TableRow(this.getContext());
+					rows.add(tableRow);
+					tableLayout.addView(tableRow);
+					//System.out.println("add row " + (y));
+					//tableRow.setVisibility(View.VISIBLE);
+					for (int x = 0; x < data.length; x++) {
+						Rake r = data[x].item(x, y, getContext());
+						//View d = r.view();
+						r.height().is(rowHeight.property.value());
+						r.width().is(data[x].width.property.value());
+						tableRow.addView(r.view());
+					}
+				}
+				
+			}
+			int lastDataRow = data[0].count();
+			int lastPageRow = (int) ((currentPage + 1) * pageSize.property.value());
+			int lastFilled = 0;
+			if (lastDataRow < lastPageRow) {
+				lastFilled = lastDataRow;
+			}
+			else {
+				lastFilled = lastPageRow;
+			}
+			
+			int rowSize = rows.size();
+			//System.out.println("hide lines " + lastFilled + " - " + rowSize);
+			/*for (int i = lastFilled; i < rowSize; i++) {
+				rows.get(i).removeAllViews();
+				tableLayout.removeView(rows.get(i));
+			}*/
+			for (int i = lastFilled; i < rowSize; i++) {
+				//rows.remove(lastFilled);
+				rows.get(i).setVisibility(View.GONE);
 			}
 			lockAppend = false;
 			scrollView.setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
 		}
+		System.out.println(this.getClass().getCanonicalName() + ".append done");
 	}
 	void tapRow(int row, int column) {
 		for (int x = 0; x < data.length; x++) {
@@ -218,7 +270,7 @@ public class Grid extends SubLayoutless {
 									@Override
 									protected void onPostExecute(Void v) {
 										currentPage = 0;
-										flipData();
+										flip();
 										new Handler().post(new Runnable() {
 											@Override
 											public void run() {
@@ -263,7 +315,7 @@ public class Grid extends SubLayoutless {
 										@Override
 										protected void onPostExecute(Void v) {
 											currentPage = 0;
-											flipData();
+											flip();
 											currentPage++;
 											append();
 											currentPage++;
