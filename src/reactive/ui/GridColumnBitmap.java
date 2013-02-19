@@ -19,6 +19,26 @@ public class GridColumnBitmap extends GridColumn {
 	int presell = -1;
 
 	@Override
+	public void update(int row) {
+		if (row >= 0 && row < cells.size()) {
+			Decor cell = cells.get(row);
+			if (row > -1 && row < backgrounds.size()) {
+				if (backgrounds.get(row) != null) {
+					cell.background.is(backgrounds.get(row));
+				}
+				else {
+					cell.background.is(null);
+				}
+			}
+			if (row > -1 && row < bitmaps.size()) {
+				cell.bitmap.is(bitmaps.get(row));
+			}
+			else {
+				cell.bitmap.property.value(null);
+			}
+		}
+	}
+	@Override
 	public void afterTap(int row) {
 		if (row > -1 && row < tasks.size()) {
 			if (tasks.get(row) != null) {
@@ -109,7 +129,7 @@ public class GridColumnBitmap extends GridColumn {
 		bitmaps.removeAllElements();
 		backgrounds.removeAllElements();
 		tasks.removeAllElements();
-		cells.removeAllElements();
+		//cells.removeAllElements();
 	}
 	@Override
 	public void highlight(int row) {

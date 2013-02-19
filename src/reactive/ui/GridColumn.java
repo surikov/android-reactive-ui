@@ -43,6 +43,7 @@ public abstract class GridColumn {
 	public abstract void afterTap(int row);
 	public NoteProperty<GridColumn> title = new NoteProperty<GridColumn>(this);
 	public abstract Rake item(int column,int row, Context context);
+	public abstract void update(int row);
 	public abstract Rake header( Context context);
 	public abstract int count();
 	public abstract void clear( );
