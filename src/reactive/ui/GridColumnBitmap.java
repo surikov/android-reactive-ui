@@ -57,7 +57,7 @@ public class GridColumnBitmap extends GridColumn {
 	@Override
 	public Rake item(final int column, int row, Context context) {
 		linePaint.setColor((int) (Layoutless
-				//.themeForegroundColor));
+		//.themeForegroundColor));
 				.themeBlurColor));
 		Decor cell = new Decor(context, true) {
 			//
@@ -70,19 +70,20 @@ public class GridColumnBitmap extends GridColumn {
 				//linePaint.setStrokeWidth(11);
 				//linePaint.setColor(0xff6600ff);
 				if (!noVerticalBorder.property.value()) {
-				if (column > 0) {
-					sz.left = 0;
-					sz.top = 0;
-					sz.right = 1;
-					sz.bottom = height().property.value().intValue();
-					canvas.drawRect(sz, linePaint);//left
-				}}
+					if (column > 0) {
+						sz.left = 0;
+						sz.top = 0;
+						sz.right = 1;
+						sz.bottom = height().property.value().intValue();
+						canvas.drawRect(sz, linePaint);//left
+					}
+				}
 				if (!noHorizontalBorder.property.value()) {
-				sz.left = 0;
-				sz.top = height().property.value().intValue() - 1;
-				sz.right = width().property.value().intValue();
-				sz.bottom = height().property.value().intValue();
-				canvas.drawRect(sz, linePaint);//under
+					sz.left = 0;
+					sz.top = height().property.value().intValue() - 1;
+					sz.right = width().property.value().intValue();
+					sz.bottom = height().property.value().intValue();
+					canvas.drawRect(sz, linePaint);//under
 				}
 			}
 		};
@@ -134,11 +135,13 @@ public class GridColumnBitmap extends GridColumn {
 	@Override
 	public void highlight(int row) {
 		if (presell >= 0 && presell < cells.size()) {
-			if (backgrounds.get(presell) != null) {
-				cells.get(presell).background.is(backgrounds.get(presell));
-			}
-			else {
-				cells.get(presell).background.is(0);
+			if (presell >= 0 && presell < backgrounds.size()) {
+				if (backgrounds.get(presell) != null) {
+					cells.get(presell).background.is(backgrounds.get(presell));
+				}
+				else {
+					cells.get(presell).background.is(0);
+				}
 			}
 		}
 		if (row >= 0 && row < cells.size()) {
