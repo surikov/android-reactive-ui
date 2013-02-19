@@ -24,6 +24,7 @@ public class GridColumnDescription extends GridColumn {
 	protected Rect sz;
 	int presell = -1;
 	public NumericProperty<GridColumnDescription> headerBackground = new NumericProperty<GridColumnDescription>(this);
+
 	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {
@@ -173,15 +174,17 @@ public class GridColumnDescription extends GridColumn {
 	@Override
 	public void highlight(int row) {
 		if (presell >= 0 && presell < cells.size()) {
-			//System.out.println(cells.get(presell));
-			//int b=backgrounds.get(presell);
-			//System.out.println(backgrounds.get(presell));
-			//System.out.println(backgrounds.get(presell));
-			if (backgrounds.get(presell) != null) {
-				cells.get(presell).background.is(backgrounds.get(presell));
-			}
-			else {
-				cells.get(presell).background.is(0);
+			if (presell >= 0 && presell < backgrounds.size()) {
+				//System.out.println(cells.get(presell));
+				//int b=backgrounds.get(presell);
+				//System.out.println(backgrounds.get(presell));
+				//System.out.println(backgrounds.get(presell));
+				if (backgrounds.get(presell) != null) {
+					cells.get(presell).background.is(backgrounds.get(presell));
+				}
+				else {
+					cells.get(presell).background.is(0);
+				}
 			}
 		}
 		if (row >= 0 && row < cells.size()) {
