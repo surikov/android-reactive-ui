@@ -14,9 +14,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class RedactChoice extends Button implements Rake {
-	public NumericProperty<RedactChoice> selection = new NumericProperty<RedactChoice>(this);
-	public NoteProperty<RedactChoice> textLabel = new NoteProperty<RedactChoice>(this);
+public class RedactSingleChoice extends Button implements Rake {
+	public NumericProperty<RedactSingleChoice> selection = new NumericProperty<RedactSingleChoice>(this);
+	public NoteProperty<RedactSingleChoice> textLabel = new NoteProperty<RedactSingleChoice>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
@@ -35,26 +35,26 @@ public class RedactChoice extends Button implements Rake {
 			params.topMargin = top.property.value().intValue();
 			params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 			params.alignWithParent = true;
-			RedactChoice.this.setLayoutParams(params);
-			RedactChoice.this.setWidth(width.property.value().intValue());
-			RedactChoice.this.setHeight(height.property.value().intValue());
-			RedactChoice.this.setMaxWidth(width.property.value().intValue());
-			RedactChoice.this.setMaxHeight(height.property.value().intValue());
-			RedactChoice.this.setMinWidth(width.property.value().intValue());
-			RedactChoice.this.setMinHeight(height.property.value().intValue());
+			RedactSingleChoice.this.setLayoutParams(params);
+			RedactSingleChoice.this.setWidth(width.property.value().intValue());
+			RedactSingleChoice.this.setHeight(height.property.value().intValue());
+			RedactSingleChoice.this.setMaxWidth(width.property.value().intValue());
+			RedactSingleChoice.this.setMaxHeight(height.property.value().intValue());
+			RedactSingleChoice.this.setMinWidth(width.property.value().intValue());
+			RedactSingleChoice.this.setMinHeight(height.property.value().intValue());
 			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
 		}
 	};
 
-	public RedactChoice(Context context) {
+	public RedactSingleChoice(Context context) {
 		super(context);
 		init();
 	}
-	public RedactChoice(Context context, AttributeSet attrs) {
+	public RedactSingleChoice(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
-	public RedactChoice(Context context, AttributeSet attrs, int defStyle) {
+	public RedactSingleChoice(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -76,7 +76,7 @@ public class RedactChoice extends Button implements Rake {
 					for (int i = 0; i < items.size(); i++) {
 						strings[i] = items.get(i);
 					}
-					Auxiliary.pickSingleChoice(RedactChoice.this.getContext(), strings, selection.property);
+					Auxiliary.pickSingleChoice(RedactSingleChoice.this.getContext(), strings, selection.property);
 				}
 			}
 		});
@@ -88,7 +88,7 @@ public class RedactChoice extends Button implements Rake {
 		});
 		//selection.is(-1);
 	}
-	public RedactChoice item(String s) {
+	public RedactSingleChoice item(String s) {
 		this.items.add(s);
 		resetLabel();
 		return this;
