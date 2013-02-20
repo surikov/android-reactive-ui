@@ -218,7 +218,9 @@ public class Auxiliary {
 		builder.setMessage(s);
 		builder.create().show();
 	}
-	public static void pick(Context context, String title, final Note text//
+	public static void pickText(Context context//
+			, String title//
+			, final Note text//
 			, String positiveButtonTitle//
 			, final Task callbackPositiveBtn) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -234,9 +236,13 @@ public class Auxiliary {
 		});
 		builder.create().show();
 	}
-	public static void pick(Context context, String title, final Numeric num//
-			, String positiveButtonTitle, final Task callbackPositiveBtn//
-			, String neutralButtonTitle, final Task callbackNeutralBtn//
+	public static void pickNumber(Context context//
+			, String title//
+			, final Numeric num//
+			, String positiveButtonTitle//
+			, final Task callbackPositiveBtn//
+			, String neutralButtonTitle//
+			, final Task callbackNeutralBtn//
 	) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
@@ -268,12 +274,13 @@ public class Auxiliary {
 		}
 		builder.create().show();
 	}
-	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection) {
-		pick(context, items, defaultSelection, null, null, null, null, null, null);
+	public static void pickSingleChoice(Context context, CharSequence[] items, final Numeric defaultSelection) {
+		pickSingleChoice(context, items, defaultSelection, null, null, null, null, null, null);
 	}
-	public static void pick(Context context, CharSequence[] items, final Numeric defaultSelection//
+	public static void pickSingleChoice(Context context, CharSequence[] items, final Numeric defaultSelection//
 			, String title//
-			, final Task afterSelect, String positiveButtonTitle//
+			, final Task afterSelect//
+			, String positiveButtonTitle//
 			, final Task callbackPositiveBtn//
 			, String neutralButtonTitle//
 			, final Task callbackNeutralBtn//
@@ -314,7 +321,7 @@ public class Auxiliary {
 		}
 		builder.create().show();
 	}
-	public static void pick(Context context, CharSequence[] items, final They<Integer> defaultSelection//
+	public static void pickMultiChoice(Context context, CharSequence[] items, final They<Integer> defaultSelection//
 	) {
 		if (items.length > 0) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -353,7 +360,7 @@ public class Auxiliary {
 			builder.create().show();
 		}
 	}
-	public static void pick(Context context//
+	public static void pick3Choice(Context context//
 			, String title//
 			, String message//
 			, String positiveButtonTitle//
@@ -534,10 +541,10 @@ public class Auxiliary {
 			});
 			builder.create().show();
 		}*/
-	public static void startFile(Activity activity,String action,String mime,File file){
+	public static void startFile(Activity activity, String action, String mime, File file) {
 		Intent intent = new Intent();
 		intent.setAction(action);//android.content.Intent.ACTION_VIEW
-		intent.setDataAndType(android.net.Uri.fromFile(file),mime);//"text/html"
+		intent.setDataAndType(android.net.Uri.fromFile(file), mime);//"text/html"
 		//startActivity(intent);
 		Intent chooser = Intent.createChooser(intent, file.getAbsolutePath());
 		activity.startActivity(chooser);

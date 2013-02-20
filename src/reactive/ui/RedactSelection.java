@@ -65,7 +65,7 @@ public class RedactSelection extends EditText implements Rake {
 			for (int i = 0; i < items.size(); i++) {
 				strings[i] = items.get(i);
 			}
-			Auxiliary.pick(this.getContext(), strings, selection);
+			Auxiliary.pickMultiChoice(this.getContext(), strings, selection);
 		}
 	}
 	void init() {

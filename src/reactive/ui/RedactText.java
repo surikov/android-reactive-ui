@@ -2,10 +2,10 @@ package reactive.ui;
 
 import android.text.*;
 import tee.binding.properties.*;
-import tee.binding.properties.NumericProperty;
 import tee.binding.task.Task;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
 
@@ -95,6 +95,7 @@ public class RedactText extends EditText implements Rake {
 				setSingleLine(singleLine.property.value());
 			}
 		});
+		this.setGravity(Gravity.TOP);
 	}
 	@Override
 	public NumericProperty<Rake> left() {
