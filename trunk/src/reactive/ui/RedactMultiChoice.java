@@ -14,7 +14,7 @@ import android.view.*;
 import android.widget.*;
 import android.widget.TextView.BufferType;
 
-public class RedactSelection extends EditText implements Rake {
+public class RedactMultiChoice extends EditText implements Rake {
 	//public NoteProperty<RedactSelection> text = new NoteProperty<RedactSelection>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -36,26 +36,26 @@ public class RedactSelection extends EditText implements Rake {
 			params.topMargin = top.property.value().intValue();
 			params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 			params.alignWithParent = true;
-			RedactSelection.this.setLayoutParams(params);
-			RedactSelection.this.setWidth(width.property.value().intValue());
-			RedactSelection.this.setHeight(height.property.value().intValue());
-			RedactSelection.this.setMaxWidth(width.property.value().intValue());
-			RedactSelection.this.setMaxHeight(height.property.value().intValue());
-			RedactSelection.this.setMinWidth(width.property.value().intValue());
-			RedactSelection.this.setMinHeight(height.property.value().intValue());
+			RedactMultiChoice.this.setLayoutParams(params);
+			RedactMultiChoice.this.setWidth(width.property.value().intValue());
+			RedactMultiChoice.this.setHeight(height.property.value().intValue());
+			RedactMultiChoice.this.setMaxWidth(width.property.value().intValue());
+			RedactMultiChoice.this.setMaxHeight(height.property.value().intValue());
+			RedactMultiChoice.this.setMinWidth(width.property.value().intValue());
+			RedactMultiChoice.this.setMinHeight(height.property.value().intValue());
 			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
 		}
 	};
 
-	public RedactSelection(Context context) {
+	public RedactMultiChoice(Context context) {
 		super(context);
 		init();
 	}
-	public RedactSelection(Context context, AttributeSet attrs) {
+	public RedactMultiChoice(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
-	public RedactSelection(Context context, AttributeSet attrs, int defStyle) {
+	public RedactMultiChoice(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -147,11 +147,11 @@ public class RedactSelection extends EditText implements Rake {
 					}
 					s = s + values.get(i);
 				}
-				RedactSelection.this.setText(s);
+				RedactMultiChoice.this.setText(s);
 			}
 		});
 	}
-	public RedactSelection item(String s) {
+	public RedactMultiChoice item(String s) {
 		this.items.add(s);
 		return this;
 	}
