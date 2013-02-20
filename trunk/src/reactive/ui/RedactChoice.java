@@ -76,7 +76,7 @@ public class RedactChoice extends Button implements Rake {
 					for (int i = 0; i < items.size(); i++) {
 						strings[i] = items.get(i);
 					}
-					Auxiliary.pick(RedactChoice.this.getContext(), strings, selection.property);
+					Auxiliary.pickSingleChoice(RedactChoice.this.getContext(), strings, selection.property);
 				}
 			}
 		});
