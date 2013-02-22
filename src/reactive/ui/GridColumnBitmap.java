@@ -10,10 +10,10 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class GridColumnBitmap extends GridColumn {
-	protected Vector<Task> tasks = new Vector<Task>();
-	protected Vector<Decor> cells = new Vector<Decor>();
-	protected Vector<Bitmap> bitmaps = new Vector<Bitmap>();
-	protected Vector<Integer> backgrounds = new Vector<Integer>();
+	public Vector<Task> tasks = new Vector<Task>();
+	public Vector<Decor> cells = new Vector<Decor>();
+	public Vector<Bitmap> bitmaps = new Vector<Bitmap>();
+	public Vector<Integer> backgrounds = new Vector<Integer>();
 	protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;

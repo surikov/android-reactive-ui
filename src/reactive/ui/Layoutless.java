@@ -37,7 +37,9 @@ public class Layoutless extends RelativeLayout implements Rake {
 	private float initialShiftY = 0;
 	private float initialSpacing;
 	private float currentSpacing;
+	
 	//
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
@@ -60,7 +62,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	//public ItProperty<Layoutless, Task> afterPress = new ItProperty<Layoutless, Task>(this);
 	//public NumericProperty<Layoutless> mode = new NumericProperty<Layoutless>(this);
 	public static int themeForegroundColor = 0xffff0000;
-	public static int themeBlurColor = 0xff666666;
+	public static int themeBlurColor = 0xff330000;
 	//public static int themeBlurColor66 = 0xff666666;
 	//public static int themeBlurColor99 = 0xff666666;
 	//public static int themeFocusColor = 0xff669966;
@@ -77,12 +79,16 @@ public class Layoutless extends RelativeLayout implements Rake {
 			colorTest = new Decor(c);
 			themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
 			//int c1=colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-			themeBlurColor = (themeForegroundColor & 0x00ffffff)+0x66000000;
+			if ((themeForegroundColor & 0x00ffffff) > 0x00666666) {
+				themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x33000000;
+			}
+			else {
+				themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x11000000;
+			}
 			//themeBlurColor66 = (themeForegroundColor & 0x00ffffff)+0x66000000;
 			//themeBlurColor99 = (themeForegroundColor & 0x00ffffff)+0x99000000;
-					//colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
+			//colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
 			//themeFocusColor = (themeForegroundColor & 0x00ffffff)+0x22000000;
-			
 			themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
 			//ColorStateList colorStateList=colorTest.getTextColors();
 			//colorStateList.
@@ -95,16 +101,36 @@ public class Layoutless extends RelativeLayout implements Rake {
 			//getContext().getTheme().resolveAttribute(android.R.attr.background, tv, true);
 			//themeBlurColor = getResources().getColor(tv.resourceId);
 			//System.out.println();
+			density = c.getResources().getDisplayMetrics().density;
+			tapSize = 60.0 * density;
+			
+			
 		}
 	}
+	
 	protected void init() {
 		if (!initialized) {
 			initialized = true;
-			density = this.getContext().getResources().getDisplayMetrics().density;
-			tapSize = 60.0 * density;
 			solid.is(true);
 			fillBaseColors(getContext());
+			setFocusable(true);
+			setFocusableInTouchMode(true);
+			hidden.property.afterChange(new Task() {
+				@Override
+				public void doTask() {
+					if (hidden.property.value()) {
+						setVisibility(View.INVISIBLE);
+					}
+					else {
+						setVisibility(View.VISIBLE);
+					}
+				}
+			});
 		}
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	public Layoutless(Context context) {
 		super(context);

@@ -47,6 +47,7 @@ http://commonsware.com/blog/Android/2010/05/26/html-tags-supported-by-textview.h
 */
 public class HTMLText extends TextView implements Rake {
 	//private int mode = Layoutless.NONE;
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public ItProperty<HTMLText, Spanned> html = new ItProperty<HTMLText, Spanned>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -97,8 +98,23 @@ public class HTMLText extends TextView implements Rake {
 					setText(html.property.value(), BufferType.SPANNABLE);
 				}
 			});
+			hidden.property.afterChange(new Task() {
+				@Override
+				public void doTask() {
+					if (hidden.property.value()) {
+						setVisibility(View.INVISIBLE);
+					}
+					else {
+						setVisibility(View.VISIBLE);
+					}
+				}
+			});
 		}
 	};
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
+	}
 	Task postInvalidate = new Task() {
 		@Override
 		public void doTask() {

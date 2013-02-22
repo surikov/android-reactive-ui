@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.*;
 
 public class RedactNumber extends EditText implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NumericProperty<RedactNumber> number = new NumericProperty<RedactNumber>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -91,6 +92,21 @@ public class RedactNumber extends EditText implements Rake {
 				}
 			}
 		});
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	@Override
 	public NumericProperty<Rake> left() {

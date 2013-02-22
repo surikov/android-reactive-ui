@@ -59,8 +59,13 @@ public class Auxiliary {
 	}
 
 	public static void hideSoftKeyboard(Activity activity) {
-		InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		try {
+			InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
 	}
 	public static boolean isOnline(Context c) {
 		try {
@@ -548,5 +553,29 @@ public class Auxiliary {
 		//startActivity(intent);
 		Intent chooser = Intent.createChooser(intent, file.getAbsolutePath());
 		activity.startActivity(chooser);
+	}
+	public static int screenWidth(Activity activity) {
+		int w = 0;
+		try {
+			DisplayMetrics dm = new DisplayMetrics();
+			activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+			w = dm.widthPixels;
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return w;
+	}
+	public static int screenHeight(Activity activity) {
+		int h = 0;
+		try {
+			DisplayMetrics dm = new DisplayMetrics();
+			activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+			h = dm.heightPixels;
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return h;
 	}
 }
