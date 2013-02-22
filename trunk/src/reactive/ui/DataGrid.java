@@ -92,12 +92,12 @@ public class DataGrid extends SubLayoutless {
 		return this;
 	}
 	public void flip() {
-		System.out.println(this.getClass().getCanonicalName() + ".flipData");
+		//System.out.println(this.getClass().getCanonicalName() + ".flipData");
 		currentPage = 0;
 		append();
 	}
 	private void append() {
-		System.out.println(this.getClass().getCanonicalName() + ".append start");
+		//System.out.println(this.getClass().getCanonicalName() + ".append start");
 		if (lockAppend) {
 			return;
 		}
@@ -160,7 +160,7 @@ public class DataGrid extends SubLayoutless {
 			lockAppend = false;
 			scrollView.setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
 		}
-		System.out.println(this.getClass().getCanonicalName() + ".append done");
+		//System.out.println(this.getClass().getCanonicalName() + ".append done");
 	}
 	void tapRow(int row, int column) {
 		for (int x = 0; x < columnsArray.length; x++) {
