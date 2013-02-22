@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.*;
 
 public class RedactToggle extends CheckBox implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NoteProperty<RedactToggle> labelText = new NoteProperty<RedactToggle>(this);
 	public ToggleProperty<RedactToggle> yes = new ToggleProperty<RedactToggle>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
@@ -86,6 +87,21 @@ public class RedactToggle extends CheckBox implements Rake {
 				}
 			}
 		});
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	@Override
 	public NumericProperty<Rake> left() {

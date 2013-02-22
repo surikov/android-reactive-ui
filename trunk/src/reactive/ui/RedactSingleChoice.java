@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class RedactSingleChoice extends Button implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NumericProperty<RedactSingleChoice> selection = new NumericProperty<RedactSingleChoice>(this);
 	public NoteProperty<RedactSingleChoice> textLabel = new NoteProperty<RedactSingleChoice>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
@@ -87,6 +88,21 @@ public class RedactSingleChoice extends Button implements Rake {
 			}
 		});
 		//selection.is(-1);
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	public RedactSingleChoice item(String s) {
 		this.items.add(s);

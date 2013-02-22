@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class RedactDate extends Button implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NumericProperty<RedactDate> date = new NumericProperty<RedactDate>(this);
 	public NoteProperty<RedactDate> format = new NoteProperty<RedactDate>(this);//dd.MM.yyyy, yyyy-MM-dd
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
@@ -113,6 +114,21 @@ public class RedactDate extends Button implements Rake {
 				resetLabel();
 			}
 		});
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	void resetLabel() {
 		DateFormat to = new SimpleDateFormat(format.property.value());

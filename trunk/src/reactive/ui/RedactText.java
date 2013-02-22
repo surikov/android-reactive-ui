@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.*;
 
 public class RedactText extends EditText implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NoteProperty<RedactText> text = new NoteProperty<RedactText>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -96,6 +97,21 @@ public class RedactText extends EditText implements Rake {
 			}
 		});
 		this.setGravity(Gravity.TOP);
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	@Override
 	public NumericProperty<Rake> left() {

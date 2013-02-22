@@ -24,6 +24,7 @@ import java.text.*;
 
 public class KnobImage extends ImageButton implements Rake {
 	//public NoteProperty<KnobImage> labelText = new NoteProperty<KnobImage>(this);
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
@@ -81,6 +82,21 @@ public class KnobImage extends ImageButton implements Rake {
 				}
 			}
 		});
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	@Override
 	public NumericProperty<Rake> left() {

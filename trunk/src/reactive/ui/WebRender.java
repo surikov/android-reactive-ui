@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 
 public class WebRender extends WebView implements Rake {
 	boolean initialized = false;
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NoteProperty<WebView> url = new NoteProperty<WebView>(this);
 	public ItProperty<WebRender, Task> afterLink = new ItProperty<WebRender, Task>(this);
 	//public NoteProperty<WebView> active = new NoteProperty<WebView>(this);
@@ -92,6 +93,17 @@ public class WebRender extends WebView implements Rake {
 				setEnabled(true);
 			}
 		});
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
 		initialized = true;
 	}
 	public void go(String urlString) {
@@ -99,6 +111,10 @@ public class WebRender extends WebView implements Rake {
 		shouldOverrideUrlLoading = false;
 		this.setEnabled(false);
 		loadUrl(urlString);
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	@Override
 	public NumericProperty<Rake> left() {

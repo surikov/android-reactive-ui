@@ -38,38 +38,35 @@ public class Decor extends TextView implements Rake {
 	public ItProperty<Decor, Bitmap> bitmap = new ItProperty<Decor, Bitmap>(this);//Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rocket),200,100,true);
 	public ItProperty<Decor, Task> afterTap = new ItProperty<Decor, Task>(this);
 	public ItProperty<Decor, Task> afterDrag = new ItProperty<Decor, Task>(this);
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	Vector<Sketch> sketches = new Vector<Sketch>();
 	//Context context;
 	Paint paint = new Paint();
 	boolean initialized = false;
-	private boolean inTableRow=false;
+	private boolean inTableRow = false;
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
 			//System.out.println("reFit: " + width.property.value()+" * "+height.property.value());
 			//if(1==1)return;
-			
 			//RelativeLayout.LayoutParams
 			//TableRow.LayoutParams
 			//System.out.println("reFit: "+inTableRow);
 			ViewGroup.MarginLayoutParams params;
-			if(inTableRow){
-				params = new 
-						//RelativeLayout.LayoutParams
-								TableRow.LayoutParams
-						(//
-								width.property.value().intValue()//
-								, height.property.value().intValue());
-				
-			}else{
-				params = new 
-						RelativeLayout.LayoutParams
-						//		TableRow.LayoutParams
-						(//
-								width.property.value().intValue()//
-								, height.property.value().intValue());
+			if (inTableRow) {
+				params = new
+				//RelativeLayout.LayoutParams
+				TableRow.LayoutParams(//
+						width.property.value().intValue()//
+						, height.property.value().intValue());
 			}
-			
+			else {
+				params = new RelativeLayout.LayoutParams
+				//		TableRow.LayoutParams
+				(//
+						width.property.value().intValue()//
+						, height.property.value().intValue());
+			}
 			params.leftMargin = (int) (left.property.value() + dragX.property.value());
 			params.topMargin = (int) (top.property.value() + dragY.property.value());
 			Decor.this.setLayoutParams(params);
@@ -79,7 +76,6 @@ public class Decor extends TextView implements Rake {
 			Decor.this.setMinHeight(height.property.value().intValue());
 			Decor.this.setMaxWidth(width.property.value().intValue());
 			Decor.this.setMaxHeight(height.property.value().intValue());
-			
 		}
 	};
 	Task postInvalidate = new Task() {
@@ -158,9 +154,9 @@ public class Decor extends TextView implements Rake {
 		setTextAppearance(this.getContext(), android.R.style.TextAppearance_Large_Inverse);
 		return this;
 	}
-	public Decor(Context context,boolean tableRowMode) {
+	public Decor(Context context, boolean tableRowMode) {
 		super(context);
-		this.inTableRow=tableRowMode;
+		this.inTableRow = tableRowMode;
 		init();
 	}
 	public Decor(Context context) {
@@ -229,6 +225,17 @@ public class Decor extends TextView implements Rake {
 		top.property.afterChange(reFit);
 		dragY.property.afterChange(reFit);
 		dragX.property.afterChange(reFit);
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
 	}
 	public Decor sketch(Sketch f) {
 		this.sketches.add(f);
@@ -333,7 +340,6 @@ public class Decor extends TextView implements Rake {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		
 		if (bitmap.property.value() != null) {
 			canvas.drawBitmap(bitmap.property.value(), 0, 0, paint);
 		}
@@ -354,6 +360,10 @@ public class Decor extends TextView implements Rake {
 		return width;
 	}
 	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
+	}
+	@Override
 	public NumericProperty<Rake> height() {
 		return height;
 	}
@@ -361,6 +371,7 @@ public class Decor extends TextView implements Rake {
 	public View view() {
 		return this;
 	}
+	
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();

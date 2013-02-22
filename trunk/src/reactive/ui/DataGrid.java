@@ -24,21 +24,21 @@ import tee.binding.it.*;
 import java.io.*;
 import java.text.*;
 
-public class Grid extends SubLayoutless {
+public class DataGrid extends SubLayoutless {
 	//create & fill columns
 	//Grid.setColumns(
 	//Grid.flipData
 	//beforeFlip: refill columns from Grid.dataOffset
-	public ToggleProperty<Grid> noHead;
+	public ToggleProperty<DataGrid> noHead;
 	static final int maxPageCount = 3;
-	public NumericProperty<Grid> pageSize;
-	public NumericProperty<Grid> dataOffset;
-	public NumericProperty<Grid> headerHeight;
-	private Decor selection;
-	public NumericProperty<Grid> rowHeight;
-	public ItProperty<Grid, Task> beforeFlip = new ItProperty<Grid, Task>(this);
+	public NumericProperty<DataGrid> pageSize;
+	public NumericProperty<DataGrid> dataOffset;
+	public NumericProperty<DataGrid> headerHeight;
+	//private Decor selection;
+	public NumericProperty<DataGrid> rowHeight;
+	public ItProperty<DataGrid, Task> beforeFlip = new ItProperty<DataGrid, Task>(this);
 	private boolean lockAppend = false;
-	GridColumn[] data = null;
+	GridColumn[] columnsArray = null;
 	ProgressBar progressBar;
 	private int currentPage = 0;
 	TableLayout tableLayout;
@@ -46,13 +46,13 @@ public class Grid extends SubLayoutless {
 	Vector<TableRow> rows = new Vector<TableRow>();
 	private boolean initialized = false;
 
-	public Grid(Context context) {
+	public DataGrid(Context context) {
 		super(context);
 	}
-	public Grid(Context context, AttributeSet attrs) {
+	public DataGrid(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
-	public Grid(Context context, AttributeSet attrs, int defStyle) {
+	public DataGrid(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 	public void reset() {
@@ -67,22 +67,22 @@ public class Grid extends SubLayoutless {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
-	public Grid columns(GridColumn[] indata) {
+	public DataGrid columns(GridColumn[] indata) {
 		System.out.println(this.getClass().getCanonicalName() + ".columns");
 		//currentPage = 0;
 		//tableLayout.removeAllViews();
-		data = indata;
-		if (data.length < 1) {
+		columnsArray = indata;
+		if (columnsArray.length < 1) {
 			return this;
 		}
 		if (!noHead.property.value()) {
 			int left = 0;
-			for (int x = 0; x < data.length; x++) {
-				Rake headerCell = data[x].header(getContext());
+			for (int x = 0; x < columnsArray.length; x++) {
+				Rake headerCell = columnsArray[x].header(getContext());
 				headerCell.height().is(headerHeight.property.value());
-				headerCell.width().is(data[x].width.property.value());
+				headerCell.width().is(columnsArray[x].width.property.value());
 				headerCell.left().is(left);
-				left = left + data[x].width.property.value().intValue();
+				left = left + columnsArray[x].width.property.value().intValue();
 				this.child(headerCell);
 			}
 		}
@@ -101,24 +101,24 @@ public class Grid extends SubLayoutless {
 		if (lockAppend) {
 			return;
 		}
-		if (data.length > 0) {
+		if (columnsArray.length > 0) {
 			lockAppend = true;
 			scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
 			int start=(int) (currentPage * pageSize.property.value());
-			for (int y = start; y < data[0].count() && y < (currentPage + 1) * pageSize.property.value(); y++) {
+			for (int y = start; y < columnsArray[0].count() && y < (currentPage + 1) * pageSize.property.value(); y++) {
 				TableRow tableRow;
 				if (y < rows.size()) {
 					tableRow = rows.get(y);
 					//tableRow.removeAllViews();
 					//System.out.println("get row " + (y));
 					tableRow.setVisibility(View.VISIBLE);
-					for (int x = 0; x < data.length; x++) {
+					for (int x = 0; x < columnsArray.length; x++) {
 						//Rake r = data[x].item(x, y, getContext());
 						//View d = r.view();
 						//r.height().is(rowHeight.property.value());
 						//r.width().is(data[x].width.property.value());
 						//tableRow.addView(r.view());
-						this.data[x].update(y);
+						this.columnsArray[x].update(y);
 					}
 				}
 				else {
@@ -127,17 +127,17 @@ public class Grid extends SubLayoutless {
 					tableLayout.addView(tableRow);
 					//System.out.println("add row " + (y));
 					//tableRow.setVisibility(View.VISIBLE);
-					for (int x = 0; x < data.length; x++) {
-						Rake r = data[x].item(x, y, getContext());
+					for (int x = 0; x < columnsArray.length; x++) {
+						Rake r = columnsArray[x].item(x, y, getContext());
 						//View d = r.view();
 						r.height().is(rowHeight.property.value());
-						r.width().is(data[x].width.property.value());
+						r.width().is(columnsArray[x].width.property.value());
 						tableRow.addView(r.view());
 					}
 				}
 				
 			}
-			int lastDataRow = data[0].count();
+			int lastDataRow = columnsArray[0].count();
 			int lastPageRow = (int) ((currentPage + 1) * pageSize.property.value());
 			int lastFilled = 0;
 			if (lastDataRow < lastPageRow) {
@@ -163,11 +163,11 @@ public class Grid extends SubLayoutless {
 		System.out.println(this.getClass().getCanonicalName() + ".append done");
 	}
 	void tapRow(int row, int column) {
-		for (int x = 0; x < data.length; x++) {
-			data[x].highlight(row);
+		for (int x = 0; x < columnsArray.length; x++) {
+			columnsArray[x].highlight(row);
 		}
-		if (column < data.length) {
-			data[column].afterTap(row);
+		if (column < columnsArray.length) {
+			columnsArray[column].afterTap(row);
 		}
 	}
 	@Override
@@ -175,7 +175,7 @@ public class Grid extends SubLayoutless {
 		super.init();
 		if (!initialized) {
 			initialized = true;
-			noHead = new ToggleProperty<Grid>(this);
+			noHead = new ToggleProperty<DataGrid>(this);
 			Task reFit = new Task() {
 				@Override
 				public void doTask() {
@@ -192,13 +192,13 @@ public class Grid extends SubLayoutless {
 					}
 				}
 			};
-			pageSize = new NumericProperty<Grid>(this);
+			pageSize = new NumericProperty<DataGrid>(this);
 			pageSize.is(33);
-			dataOffset = new NumericProperty<Grid>(this);
+			dataOffset = new NumericProperty<DataGrid>(this);
 			dataOffset.is(0);
-			headerHeight = new NumericProperty<Grid>(this);
+			headerHeight = new NumericProperty<DataGrid>(this);
 			headerHeight.is(Layoutless.tapSize);
-			rowHeight = new NumericProperty<Grid>(this);
+			rowHeight = new NumericProperty<DataGrid>(this);
 			rowHeight.is(Layoutless.tapSize);
 			tableLayout = new TableLayout(this.getContext());
 			scrollView = new ScrollView(this.getContext()) {
@@ -207,6 +207,9 @@ public class Grid extends SubLayoutless {
 
 				@Override
 				public boolean onTouchEvent(MotionEvent event) {
+					if(columnsArray==null){
+						return false;
+					}
 					if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
 						initialX = event.getX();
 						initialY = event.getY();
@@ -219,8 +222,8 @@ public class Grid extends SubLayoutless {
 							if (Math.abs(initialX - aX) < diff && Math.abs(initialY - aY) < diff) {
 								int nn = (int) ((this.getScrollY() + aY) / rowHeight.property.value());
 								double xx = 0;
-								for (int i = 0; i < data.length; i++) {
-									xx = xx + data[i].width.property.value();
+								for (int i = 0; i < columnsArray.length; i++) {
+									xx = xx + columnsArray[i].width.property.value();
 									if (xx > aX) {
 										tapRow(nn, i);
 										break;

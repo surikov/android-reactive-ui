@@ -28,7 +28,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 	private static float angleCube = 0; // Rotational angle in degree for cube (NEW)
 	private static float speedPyramid = 2.0f; // Rotational speed for pyramid (NEW)
 	private static float speedCube = -1.5f; // Rotational speed for cube (NEW)
-
+	
 	// Constructor
 	public MyGLRenderer(Context context) {
 		// Set up the buffers for these shapes
@@ -201,6 +201,7 @@ class Pyramid {
 }
 
 public class OpenGL2 extends GLSurfaceView implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	boolean initialized = false;
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -239,6 +240,21 @@ public class OpenGL2 extends GLSurfaceView implements Rake {
 		//glView.setRenderer(new MyGLRenderer(this.getContext())); // Use a custom renderer
 		//reFit.start();
 		setRenderer(new MyGLRenderer(this.getContext()));
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	public OpenGL2(Context context) {
 		super(context);

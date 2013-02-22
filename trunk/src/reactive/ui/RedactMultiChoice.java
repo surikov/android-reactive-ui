@@ -15,6 +15,7 @@ import android.widget.*;
 import android.widget.TextView.BufferType;
 
 public class RedactMultiChoice extends EditText implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	//public NoteProperty<RedactSelection> text = new NoteProperty<RedactSelection>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -150,6 +151,21 @@ public class RedactMultiChoice extends EditText implements Rake {
 				RedactMultiChoice.this.setText(s);
 			}
 		});
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	public RedactMultiChoice item(String s) {
 		this.items.add(s);

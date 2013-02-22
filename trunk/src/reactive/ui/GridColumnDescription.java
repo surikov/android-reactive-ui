@@ -14,12 +14,12 @@ import tee.binding.properties.NumericProperty;
 import tee.binding.task.*;
 
 public class GridColumnDescription extends GridColumn {
-	protected Vector<String> descriptions = new Vector<String>();
+	public Vector<String> descriptions = new Vector<String>();
 	//cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
-	protected Vector<String> strings = new Vector<String>();
-	protected Vector<Task> tasks = new Vector<Task>();
-	protected Vector<HTMLText> cells = new Vector<HTMLText>();
-	protected Vector<Integer> backgrounds = new Vector<Integer>();
+	public Vector<String> strings = new Vector<String>();
+	public Vector<Task> tasks = new Vector<Task>();
+	public Vector<HTMLText> cells = new Vector<HTMLText>();
+	public Vector<Integer> backgrounds = new Vector<Integer>();
 	protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;

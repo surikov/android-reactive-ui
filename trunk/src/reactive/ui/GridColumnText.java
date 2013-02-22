@@ -13,10 +13,10 @@ import tee.binding.properties.NumericProperty;
 import tee.binding.task.*;
 
 public class GridColumnText extends GridColumn {
-	protected Vector<String> strings = new Vector<String>();
-	protected Vector<Task> tasks = new Vector<Task>();
-	protected Vector<Decor> cells = new Vector<Decor>();
-	protected Vector<Integer> backgrounds = new Vector<Integer>();
+	public  Vector<String> strings = new Vector<String>();
+	public Vector<Task> tasks = new Vector<Task>();
+	public Vector<Decor> cells = new Vector<Decor>();
+	public Vector<Integer> backgrounds = new Vector<Integer>();
 	protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;

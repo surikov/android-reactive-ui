@@ -23,12 +23,13 @@ import java.io.*;
 import java.text.*;
 
 public class Knob extends Button implements Rake {
+	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NoteProperty<Knob> labelText = new NoteProperty<Knob>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
-	public ItProperty<Knob, Task> tap = new ItProperty<Knob, Task>(this);
+	public ItProperty<Knob, Task> afterTap = new ItProperty<Knob, Task>(this);
 	boolean initialized = false;
 	//Context context;
 	Task reFit = new Task() {
@@ -74,11 +75,26 @@ public class Knob extends Button implements Rake {
 		setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (tap.property.value() != null) {
-					tap.property.value().doTask();
+				if (afterTap.property.value() != null) {
+					afterTap.property.value().doTask();
 				}
 			}
 		});
+		hidden.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				if (hidden.property.value()) {
+					setVisibility(View.INVISIBLE);
+				}
+				else {
+					setVisibility(View.VISIBLE);
+				}
+			}
+		});
+	}
+	@Override
+	public ToggleProperty<Rake> hidden() {
+		return hidden;
 	}
 	@Override
 	public NumericProperty<Rake> left() {
