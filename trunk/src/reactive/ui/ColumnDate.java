@@ -36,7 +36,7 @@ public class ColumnDate extends Column {
 				}
 			}
 			if (row > -1 && row < mills.size()) {
-				Date d=new Date();
+				Date d = new Date();
 				d.setTime(mills.get(row));
 				cell.labelText.is(formater.format(d));
 			}
@@ -83,7 +83,7 @@ public class ColumnDate extends Column {
 		cell.labelStyleMediumNormal();
 		if (row > -1 && row < mills.size()) {
 			//cell.labelText.is(formater.format(numbers.get(row)));
-			Date d=new Date();
+			Date d = new Date();
 			d.setTime(mills.get(row));
 			cell.labelText.is(formater.format(d));
 		}
