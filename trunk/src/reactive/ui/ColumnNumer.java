@@ -1,34 +1,31 @@
 package reactive.ui;
 
-import android.content.*;
+import java.util.Vector;
+
+import tee.binding.properties.*;
+import tee.binding.task.Task;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Paint.Style;
-import android.text.Html;
+import java.text.*;
 
-import java.util.*;
-
-import tee.binding.it.Numeric;
-import tee.binding.properties.NumericProperty;
-import tee.binding.task.*;
-
-public class GridColumnDescription extends GridColumn {
-	public Vector<String> descriptions = new Vector<String>();
-	//cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
-	public Vector<String> strings = new Vector<String>();
+public class ColumnNumer extends Column {
+	private DecimalFormat formater = new DecimalFormat();
+	public Vector<Double> numbers = new Vector<Double>();
 	public Vector<Task> tasks = new Vector<Task>();
-	public Vector<HTMLText> cells = new Vector<HTMLText>();
+	public Vector<Decor> cells = new Vector<Decor>();
 	public Vector<Integer> backgrounds = new Vector<Integer>();
 	protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
-	public NumericProperty<GridColumnDescription> headerBackground = new NumericProperty<GridColumnDescription>(this);
+	public NumericProperty<ColumnNumer> headerBackground = new NumericProperty<ColumnNumer>(this);
+	public NoteProperty<ColumnNumer> format = new NoteProperty<ColumnNumer>(this);//http://docs.oracle.com/javase/1.4.2/docs/api/java/text/DecimalFormat.html
 
 	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {
-			HTMLText cell = cells.get(row);
+			Decor cell = cells.get(row);
 			if (row > -1 && row < backgrounds.size()) {
 				if (backgrounds.get(row) != null) {
 					cell.background.is(backgrounds.get(row));
@@ -37,20 +34,18 @@ public class GridColumnDescription extends GridColumn {
 					cell.background.is(null);
 				}
 			}
-			if (row > -1 && row < strings.size()) {
-				cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
+			if (row > -1 && row < numbers.size()) {
+				cell.labelText.is(formater.format(numbers.get(row)));
 			}
 			else {
-				cell.html.is(Html.fromHtml("<p> <br/><small> </small></p>"));
+				cell.labelText.is("");
 			}
 		}
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
-		linePaint.setColor((int) (Layoutless
-		//.themeForegroundColor));
-				.themeBlurColor));
-		HTMLText cell = new HTMLText(context, true) {
+		linePaint.setColor((int) (Layoutless.themeBlurColor));
+		Decor cell = new Decor(context, true) {
 			//
 			@Override
 			protected void onDraw(Canvas canvas) {
@@ -58,10 +53,8 @@ public class GridColumnDescription extends GridColumn {
 				if (sz == null) {
 					sz = new Rect();
 				}
-				//linePaint.setStrokeWidth(11);
-				//linePaint.setColor(0xff6600ff);
-				if (column > 0) {
-					if (!noVerticalBorder.property.value()) {
+				if (!noVerticalBorder.property.value()) {
+					if (column > 0) {
 						sz.left = 0;
 						sz.top = 0;
 						sz.right = 1;
@@ -84,60 +77,52 @@ public class GridColumnDescription extends GridColumn {
 			}
 		}
 		cell.setPadding(3, 0, 3, 0);
-		//cell.labelStyleMediumNormal();
-		//cell.setTextAppearance(context, android.R.style.TextAppearance_Medium);
 		cell.labelStyleMediumNormal();
-		if (row > -1 && row < strings.size()) {
-			cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
-			//cell.labelText.is(strings.get(row));
+		if (row > -1 && row < numbers.size()) {
+			cell.labelText.is(formater.format(numbers.get(row)));
 		}
 		cells.add(cell);
 		return cell;
 	}
-	public GridColumnDescription cell(String s, Integer background, Task tap, String description) {
-		strings.add(s);
+	public ColumnNumer cell(double s, Integer background, Task tap) {
+		numbers.add(s);
 		tasks.add(tap);
 		backgrounds.add(background);
-		descriptions.add(description);
 		return this;
 	}
-	public GridColumnDescription cell(String s) {
-		return cell(s, null, null, null);
+	public ColumnNumer cell(double s) {
+		return cell(s, null, null);
 	}
-	public GridColumnDescription cell(String s, String description) {
-		return cell(s, null, null, description);
+	public ColumnNumer cell(double s, Task tap) {
+		return cell(s, null, tap);
 	}
-	public GridColumnDescription cell(String s, Task tap) {
-		return cell(s, null, tap, null);
-	}
-	public GridColumnDescription cell(String s, Task tap, String description) {
-		return cell(s, null, tap, description);
-	}
-	public GridColumnDescription cell(String s, Integer background) {
-		return cell(s, background, null, null);
-	}
-	public GridColumnDescription cell(String s, Integer background, String description) {
-		return cell(s, background, null, description);
+	public ColumnNumer cell(double s, Integer background) {
+		return cell(s, background, null);
 	}
 	@Override
 	public int count() {
-		return strings.size();
+		return numbers.size();
 	}
-	public GridColumnDescription() {
+	public ColumnNumer() {
 		this.width.is(150);
-		linePaint.setColor(0x33666666);
 		linePaint.setAntiAlias(true);
 		linePaint.setFilterBitmap(true);
 		linePaint.setDither(true);
-		//linePaint.setStrokeWidth(0);
-		//linePaint.setst
-		//linePaint.setStyle(Style.STROKE);
+		format.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				try {
+					formater = new DecimalFormat(format.property.value());
+				}
+				catch (Throwable t) {
+					t.printStackTrace();
+				}
+			}
+		});
 	}
 	@Override
 	public Rake header(Context context) {
-		//Knob k = new Knob(context).labelText.is(title.property.value());
 		Decor header = new Decor(context) {
-			//
 			@Override
 			protected void onDraw(Canvas canvas) {
 				super.onDraw(canvas);
@@ -157,10 +142,9 @@ public class GridColumnDescription extends GridColumn {
 	}
 	@Override
 	public void clear() {
-		strings.removeAllElements();
+		numbers.removeAllElements();
 		backgrounds.removeAllElements();
 		tasks.removeAllElements();
-		//cells.removeAllElements();
 	}
 	@Override
 	public void afterTap(int row) {
@@ -168,17 +152,12 @@ public class GridColumnDescription extends GridColumn {
 			if (tasks.get(row) != null) {
 				tasks.get(row).start();
 			}
-			//System.out.println("label "+strings.get(row));
 		}
 	}
 	@Override
 	public void highlight(int row) {
 		if (presell >= 0 && presell < cells.size()) {
 			if (presell >= 0 && presell < backgrounds.size()) {
-				//System.out.println(cells.get(presell));
-				//int b=backgrounds.get(presell);
-				//System.out.println(backgrounds.get(presell));
-				//System.out.println(backgrounds.get(presell));
 				if (backgrounds.get(presell) != null) {
 					cells.get(presell).background.is(backgrounds.get(presell));
 				}

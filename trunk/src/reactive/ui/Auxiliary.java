@@ -579,7 +579,7 @@ public class Auxiliary {
 		return h;
 	}
 	public static Bitmap scaledBitmapFromResource(Context context, int id, int width, int height) {
-		Bitmap b=null;
+		Bitmap b = null;
 		try {
 			b = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), id), width, height, true);
 		}
@@ -589,7 +589,7 @@ public class Auxiliary {
 		return b;
 	}
 	public static Bitmap bitmapFromResource(Context context, int id) {
-		Bitmap b=null;
+		Bitmap b = null;
 		try {
 			b = BitmapFactory.decodeResource(context.getResources(), id);
 		}
@@ -597,5 +597,29 @@ public class Auxiliary {
 			t.printStackTrace();
 		}
 		return b;
+	}
+	public static void exportResource(Context context, String path, int id) {
+		if (!(new File(path )).exists()) {
+			try {
+				/*if (!(new File(path)).exists()) {
+				System.out.println(	path+": "+new File(path+name).mkdirs());
+				}*/
+				byte[] buffer = null;
+				InputStream fIn = context.getResources().openRawResource(id);
+				int size = 0;
+				size = fIn.available();
+				buffer = new byte[size];
+				fIn.read(buffer);
+				fIn.close();
+				FileOutputStream save;
+				save = new FileOutputStream(path);
+				save.write(buffer);
+				save.flush();
+				save.close();
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 }

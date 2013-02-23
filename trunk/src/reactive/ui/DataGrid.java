@@ -38,7 +38,7 @@ public class DataGrid extends SubLayoutless {
 	public NumericProperty<DataGrid> rowHeight;
 	public ItProperty<DataGrid, Task> beforeFlip = new ItProperty<DataGrid, Task>(this);
 	private boolean lockAppend = false;
-	GridColumn[] columnsArray = null;
+	Column[] columnsArray = null;
 	ProgressBar progressBar;
 	private int currentPage = 0;
 	TableLayout tableLayout;
@@ -68,7 +68,7 @@ public class DataGrid extends SubLayoutless {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
-	public DataGrid columns(GridColumn[] indata) {
+	public DataGrid columns(Column[] indata) {
 		//System.out.println(this.getClass().getCanonicalName() + ".columns");
 		//currentPage = 0;
 		//tableLayout.removeAllViews();

@@ -11,7 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-public class GridColumnDate extends GridColumn {
+public class ColumnDate extends Column {
 	private SimpleDateFormat formater = new SimpleDateFormat();
 	public Vector<Long> mills = new Vector<Long>();
 	public Vector<Task> tasks = new Vector<Task>();
@@ -20,8 +20,8 @@ public class GridColumnDate extends GridColumn {
 	protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
-	public NumericProperty<GridColumnDate> headerBackground = new NumericProperty<GridColumnDate>(this);
-	public NoteProperty<GridColumnDate> format = new NoteProperty<GridColumnDate>(this);//http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
+	public NumericProperty<ColumnDate> headerBackground = new NumericProperty<ColumnDate>(this);
+	public NoteProperty<ColumnDate> format = new NoteProperty<ColumnDate>(this);//http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
 
 	@Override
 	public void update(int row) {
@@ -90,26 +90,26 @@ public class GridColumnDate extends GridColumn {
 		cells.add(cell);
 		return cell;
 	}
-	public GridColumnDate cell(long s, Integer background, Task tap) {
+	public ColumnDate cell(long s, Integer background, Task tap) {
 		mills.add(s);
 		tasks.add(tap);
 		backgrounds.add(background);
 		return this;
 	}
-	public GridColumnDate cell(long s) {
+	public ColumnDate cell(long s) {
 		return cell(s, null, null);
 	}
-	public GridColumnDate cell(long s, Task tap) {
+	public ColumnDate cell(long s, Task tap) {
 		return cell(s, null, tap);
 	}
-	public GridColumnDate cell(long s, Integer background) {
+	public ColumnDate cell(long s, Integer background) {
 		return cell(s, background, null);
 	}
 	@Override
 	public int count() {
 		return mills.size();
 	}
-	public GridColumnDate() {
+	public ColumnDate() {
 		this.width.is(150);
 		linePaint.setAntiAlias(true);
 		linePaint.setFilterBitmap(true);
