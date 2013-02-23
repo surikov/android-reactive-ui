@@ -171,7 +171,7 @@ public class Auxiliary {
 			Bough row = new Bough().name.is("row");
 			for (int i = 0; i < cursor.getColumnCount(); i++) {
 				String name = cursor.getColumnName(i);
-				String value = "";
+				String value = null;
 				try {
 					value = cursor.getString(i);
 				}
