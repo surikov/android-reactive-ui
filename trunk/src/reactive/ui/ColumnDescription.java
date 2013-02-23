@@ -160,6 +160,7 @@ public class ColumnDescription extends Column {
 		strings.removeAllElements();
 		backgrounds.removeAllElements();
 		tasks.removeAllElements();
+		descriptions.removeAllElements();
 		//cells.removeAllElements();
 	}
 	@Override
