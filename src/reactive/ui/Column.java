@@ -36,12 +36,12 @@ import tee.binding.it.*;
 import tee.binding.*;
 import java.io.*;
 import java.text.*;
-public abstract class GridColumn {
-	public NumericProperty<GridColumn> width = new NumericProperty<GridColumn>(this);
-	public ToggleProperty<GridColumn> noVerticalBorder = new ToggleProperty<GridColumn>(this);
-	public ToggleProperty<GridColumn> noHorizontalBorder = new ToggleProperty<GridColumn>(this);
+public abstract class Column {
+	public NumericProperty<Column> width = new NumericProperty<Column>(this);
+	public ToggleProperty<Column> noVerticalBorder = new ToggleProperty<Column>(this);
+	public ToggleProperty<Column> noHorizontalBorder = new ToggleProperty<Column>(this);
 	public abstract void afterTap(int row);
-	public NoteProperty<GridColumn> title = new NoteProperty<GridColumn>(this);
+	public NoteProperty<Column> title = new NoteProperty<Column>(this);
 	public abstract Rake item(int column,int row, Context context);
 	public abstract void update(int row);
 	public abstract Rake header( Context context);
