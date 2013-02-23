@@ -45,6 +45,7 @@ public class DataGrid extends SubLayoutless {
 	ScrollView scrollView;
 	Vector<TableRow> rows = new Vector<TableRow>();
 	private boolean initialized = false;
+	private SubLayoutless header;
 
 	public DataGrid(Context context) {
 		super(context);
@@ -56,7 +57,7 @@ public class DataGrid extends SubLayoutless {
 		super(context, attrs, defStyle);
 	}
 	public void reset() {
-		System.out.println(this.getClass().getCanonicalName() + ".reset");
+		//System.out.println(this.getClass().getCanonicalName() + ".reset");
 		for (int i = 0; i < rows.size(); i++) {
 			rows.get(i).removeAllViews();
 		}
@@ -68,25 +69,28 @@ public class DataGrid extends SubLayoutless {
 		super.onDetachedFromWindow();
 	}
 	public DataGrid columns(GridColumn[] indata) {
-		System.out.println(this.getClass().getCanonicalName() + ".columns");
+		//System.out.println(this.getClass().getCanonicalName() + ".columns");
 		//currentPage = 0;
 		//tableLayout.removeAllViews();
 		columnsArray = indata;
 		if (columnsArray.length < 1) {
 			return this;
 		}
+		int left = 0;
 		if (!noHead.property.value()) {
-			int left = 0;
+			
 			for (int x = 0; x < columnsArray.length; x++) {
 				Rake headerCell = columnsArray[x].header(getContext());
 				headerCell.height().is(headerHeight.property.value());
 				headerCell.width().is(columnsArray[x].width.property.value());
-				headerCell.left().is(left);
+				headerCell.left().is(header.shiftX.property.plus(
+						left));
 				left = left + columnsArray[x].width.property.value().intValue();
-				this.child(headerCell);
+				header.child(headerCell);
 			}
 		}
 		//append();
+		header.innerWidth.is(left);
 		reset();
 		flip();
 		return this;
@@ -104,7 +108,7 @@ public class DataGrid extends SubLayoutless {
 		if (columnsArray.length > 0) {
 			lockAppend = true;
 			scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
-			int start=(int) (currentPage * pageSize.property.value());
+			int start = (int) (currentPage * pageSize.property.value());
 			for (int y = start; y < columnsArray[0].count() && y < (currentPage + 1) * pageSize.property.value(); y++) {
 				TableRow tableRow;
 				if (y < rows.size()) {
@@ -135,7 +139,6 @@ public class DataGrid extends SubLayoutless {
 						tableRow.addView(r.view());
 					}
 				}
-				
 			}
 			int lastDataRow = columnsArray[0].count();
 			int lastPageRow = (int) ((currentPage + 1) * pageSize.property.value());
@@ -146,7 +149,6 @@ public class DataGrid extends SubLayoutless {
 			else {
 				lastFilled = lastPageRow;
 			}
-			
 			int rowSize = rows.size();
 			//System.out.println("hide lines " + lastFilled + " - " + rowSize);
 			/*for (int i = lastFilled; i < rowSize; i++) {
@@ -187,17 +189,27 @@ public class DataGrid extends SubLayoutless {
 							width().property.value().intValue()//
 							, (int) (height().property.value() - hh));
 					params.topMargin = (int) hh;
+					params.leftMargin=header.shiftX.property.value().intValue();
+					
 					if (scrollView != null) {
 						scrollView.setLayoutParams(params);
 					}
 				}
 			};
+			
 			pageSize = new NumericProperty<DataGrid>(this);
 			pageSize.is(33);
 			dataOffset = new NumericProperty<DataGrid>(this);
 			dataOffset.is(0);
 			headerHeight = new NumericProperty<DataGrid>(this);
 			headerHeight.is(Layoutless.tapSize);
+			header = new SubLayoutless(this.getContext());
+			header.width().is(width().property);
+			header.height().is(headerHeight.property);
+			
+			
+			//header.left().is(-200);
+			this.child(header);
 			rowHeight = new NumericProperty<DataGrid>(this);
 			rowHeight.is(Layoutless.tapSize);
 			tableLayout = new TableLayout(this.getContext());
@@ -207,7 +219,7 @@ public class DataGrid extends SubLayoutless {
 
 				@Override
 				public boolean onTouchEvent(MotionEvent event) {
-					if(columnsArray==null){
+					if (columnsArray == null) {
 						return false;
 					}
 					if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
@@ -357,6 +369,7 @@ public class DataGrid extends SubLayoutless {
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (0.5 * Layoutless.tapSize), (int) (0.5 * Layoutless.tapSize));
 			progressBar.setLayoutParams(params);
 			progressBar.setVisibility(View.INVISIBLE);
+			new Numeric().bind(header.shiftX.property).afterChange(reFit);
 		}
 	}
 }
