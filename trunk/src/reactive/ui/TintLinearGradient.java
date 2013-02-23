@@ -42,7 +42,7 @@ public class TintLinearGradient extends Tint {
 					, toY.property.value().intValue()//
 					, fromColor.property.value().intValue()//
 					, toColor.property.value().intValue()//
-					, Shader.TileMode.MIRROR));
+					, Shader.TileMode.CLAMP));
 			//System.out.println("2");
 			if (forUpdate != null) {
 				//System.out.println("3");

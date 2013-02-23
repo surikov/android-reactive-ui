@@ -578,4 +578,24 @@ public class Auxiliary {
 		}
 		return h;
 	}
+	public static Bitmap scaledBitmapFromResource(Context context, int id, int width, int height) {
+		Bitmap b=null;
+		try {
+			b = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), id), width, height, true);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return b;
+	}
+	public static Bitmap bitmapFromResource(Context context, int id) {
+		Bitmap b=null;
+		try {
+			b = BitmapFactory.decodeResource(context.getResources(), id);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return b;
+	}
 }
