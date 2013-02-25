@@ -25,6 +25,7 @@ import android.net.*;
 import java.io.*;
 import java.net.URL;
 import java.text.*;
+
 import android.database.*;
 import android.database.sqlite.*;
 import tee.binding.Bough;
@@ -160,9 +161,23 @@ public class Auxiliary {
 		}
 	}
 	public static Bough fromCursor(Cursor cursor) {
+		return fromCursor(cursor, false);
+	}
+	public static Bough fromCursor(Cursor cursor,boolean parseDate) {
 		boolean first = true;
 		Bough bough = new Bough().name.is("cursor");
 		//cursor.moveToFirst();
+		/*SimpleDateFormat dateFormat = null;
+		if (datePattern != null) {
+			try {
+				dateFormat = new SimpleDateFormat(datePattern);
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}*/
+		SimpleDateFormat bigDate = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
+		SimpleDateFormat smallDate = new SimpleDateFormat("yyyy-MM-DD");
 		while (cursor.moveToNext()) {
 			if (first) {
 				first = false;
@@ -174,6 +189,22 @@ public class Auxiliary {
 				String value = null;
 				try {
 					value = cursor.getString(i);
+					if (parseDate) {
+					try {
+						java.util.Date d = null;
+						if (value.length() > 12) {
+							d = bigDate.parse(value);
+						}else{
+							d = smallDate.parse(value);
+						}
+						//value);
+						value = "" + d.getTime();
+						//System.out.println(name+": "+d);
+					}
+					catch (Throwable t) {
+						//System.out.println(name+": "+t.getMessage());
+					}
+					}
 				}
 				catch (Throwable t) {
 					byte[] b = cursor.getBlob(i);
@@ -599,7 +630,7 @@ public class Auxiliary {
 		return b;
 	}
 	public static void exportResource(Context context, String path, int id) {
-		if (!(new File(path )).exists()) {
+		if (!(new File(path)).exists()) {
 			try {
 				/*if (!(new File(path)).exists()) {
 				System.out.println(	path+": "+new File(path+name).mkdirs());
@@ -621,5 +652,16 @@ public class Auxiliary {
 				t.printStackTrace();
 			}
 		}
+	}
+	public static java.util.Date date(String mills) {
+		if (mills == null) {
+			return null;
+		}
+		if (mills.length() == 0) {
+			return null;
+		}
+		java.util.Date d = new java.util.Date();
+		d.setTime((long) Numeric.string2double(mills));
+		return d;
 	}
 }

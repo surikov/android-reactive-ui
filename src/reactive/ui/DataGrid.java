@@ -275,6 +275,7 @@ public class DataGrid extends SubLayoutless {
 									protected Void doInBackground(Void... params) {
 										try {
 											//Thread.sleep(5000);
+											for(int i=0;i<columnsArray.length;i++)columnsArray[i].clear();
 											beforeFlip.property.value().start();
 										}
 										catch (Throwable t) {
@@ -320,6 +321,7 @@ public class DataGrid extends SubLayoutless {
 										@Override
 										protected Void doInBackground(Void... params) {
 											try {
+												for(int i=0;i<columnsArray.length;i++)columnsArray[i].clear();
 												beforeFlip.property.value().start();
 											}
 											catch (Throwable t) {
