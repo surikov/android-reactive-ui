@@ -78,13 +78,11 @@ public class DataGrid extends SubLayoutless {
 		}
 		int left = 0;
 		if (!noHead.property.value()) {
-			
 			for (int x = 0; x < columnsArray.length; x++) {
 				Rake headerCell = columnsArray[x].header(getContext());
 				headerCell.height().is(headerHeight.property.value());
 				headerCell.width().is(columnsArray[x].width.property.value());
-				headerCell.left().is(header.shiftX.property.plus(
-						left));
+				headerCell.left().is(header.shiftX.property.plus(left));
 				left = left + columnsArray[x].width.property.value().intValue();
 				header.child(headerCell);
 			}
@@ -136,6 +134,7 @@ public class DataGrid extends SubLayoutless {
 						//View d = r.view();
 						r.height().is(rowHeight.property.value());
 						r.width().is(columnsArray[x].width.property.value());
+						//r.left().is(header.shiftX.property);
 						tableRow.addView(r.view());
 					}
 				}
@@ -185,18 +184,43 @@ public class DataGrid extends SubLayoutless {
 					if (noHead.property.value()) {
 						hh = 0;
 					}
-					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(//
-							width().property.value().intValue()//
-							, (int) (height().property.value() - hh));
-					params.topMargin = (int) hh;
-					params.leftMargin=header.shiftX.property.value().intValue();
-					
 					if (scrollView != null) {
+						int scrw = width().property.value().intValue();
+						int scrh = (int) (height().property.value() - hh);
+						int scrl=0;//header.shiftX.property.value().intValue();
+						int scrt=(int) hh;
+						RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(scrw, scrh);
+						params.topMargin = scrt;
+						params.leftMargin = scrl;
+						//System.out.println(scrl+"x"+scrt+" / "+scrw+"x"+scrh);
 						scrollView.setLayoutParams(params);
 					}
+					if(tableLayout!=null){
+						FrameLayout.LayoutParams p=(FrameLayout.LayoutParams)tableLayout.getLayoutParams();
+						p.leftMargin=header.shiftX.property.value().intValue();
+						tableLayout.setLayoutParams(p);
+						//System.out.println(p.width);
+					}
+					//if(rows!=null){
+					//for(int i=0;i<rows.size();i++){
+						//TableLayout.LayoutParams p=(TableLayout.LayoutParams )rows.get(i).getLayoutParams();
+						//p.width=10*i;
+						//rows.get(i).setLayoutParams(p);
+						//System.out.println(p.width);
+					//}}
+					//System.out.println(scrollView.getWidth());
+					//tableLayout
+					/*
+					if (tableLayout != null) {
+						FrameLayout.LayoutParams params =new FrameLayout.LayoutParams(width().property.value().intValue()//
+								, (int) (height().property.value() - hh));
+						params.topMargin = 0;
+						params.leftMargin = header.shiftX.property.value().intValue();
+						tableLayout.setLayoutParams(params);
+					}*/
+					//tableLayout.setw
 				}
 			};
-			
 			pageSize = new NumericProperty<DataGrid>(this);
 			pageSize.is(33);
 			dataOffset = new NumericProperty<DataGrid>(this);
@@ -206,8 +230,6 @@ public class DataGrid extends SubLayoutless {
 			header = new SubLayoutless(this.getContext());
 			header.width().is(width().property);
 			header.height().is(headerHeight.property);
-			
-			
 			//header.left().is(-200);
 			this.child(header);
 			rowHeight = new NumericProperty<DataGrid>(this);
@@ -216,7 +238,11 @@ public class DataGrid extends SubLayoutless {
 			scrollView = new ScrollView(this.getContext()) {
 				float initialX = -1000;
 				float initialY = -1000;
-
+				/*@Override
+			    public void draw(Canvas canvas) {
+					super.draw(canvas);
+					System.out.println("draw "+getWidth());
+				}*/
 				@Override
 				public boolean onTouchEvent(MotionEvent event) {
 					if (columnsArray == null) {
@@ -275,7 +301,8 @@ public class DataGrid extends SubLayoutless {
 									protected Void doInBackground(Void... params) {
 										try {
 											//Thread.sleep(5000);
-											for(int i=0;i<columnsArray.length;i++)columnsArray[i].clear();
+											for (int i = 0; i < columnsArray.length; i++)
+												columnsArray[i].clear();
 											beforeFlip.property.value().start();
 										}
 										catch (Throwable t) {
@@ -321,7 +348,8 @@ public class DataGrid extends SubLayoutless {
 										@Override
 										protected Void doInBackground(Void... params) {
 											try {
-												for(int i=0;i<columnsArray.length;i++)columnsArray[i].clear();
+												for (int i = 0; i < columnsArray.length; i++)
+													columnsArray[i].clear();
 												beforeFlip.property.value().start();
 											}
 											catch (Throwable t) {
