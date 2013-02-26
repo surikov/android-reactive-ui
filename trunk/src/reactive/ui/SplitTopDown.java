@@ -115,6 +115,17 @@ public class SplitTopDown extends SubLayoutless {
 					.height().is(1)//
 			);
 			this.child(new Decor(this.getContext())//
+			.afterTap.is(new Task() {
+				@Override
+				public void doTask() {
+					if (Math.abs(split.property.value() - height().property.value()) < Layoutless.tapSize * 0.3 + 1) {
+						split.is(0.5*height().property.value());
+					}
+					else {
+						split.is(height().property.value());
+					}
+				}
+			})//
 			.dragY.is(split.property.minus(0.5 * Layoutless.tapSize))//
 			.afterDrag.is(adjustSplit)//
 			.movableY.is(true)//

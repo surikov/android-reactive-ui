@@ -118,19 +118,18 @@ public class SplitLeftRight extends SubLayoutless {
 				@Override
 				public void doTask() {
 					if (split.property.value() < 0
-							//0.5 * Layoutless.tapSize
-							) {
+					//0.5 * Layoutless.tapSize
+					) {
 						split.is(
-								//0.5 * Layoutless.tapSize
-								0
-								);
+						//0.5 * Layoutless.tapSize
+						0);
 					}
-					if (split.property.value() > width().property.value() 
-							//- 0.5 * Layoutless.tapSize - 4
-							) {
-						split.is(width().property.value() 
-								//- 0.5 * Layoutless.tapSize - 4
-								);
+					if (split.property.value() > width().property.value()
+					//- 0.5 * Layoutless.tapSize - 4
+					) {
+						split.is(width().property.value()
+						//- 0.5 * Layoutless.tapSize - 4
+						);
 					}
 				}
 			};
@@ -158,6 +157,18 @@ public class SplitLeftRight extends SubLayoutless {
 			//
 			);
 			this.child(new Decor(this.getContext())//
+			.afterTap.is(new Task() {
+				@Override
+				public void doTask() {
+					//System.out.println("tap " + split.property.value() + " / " + width().property.value());
+					if (Math.abs(split.property.value() - width().property.value()) < Layoutless.tapSize * 0.3 + 1) {
+						split.is(0.5*width().property.value());
+					}
+					else {
+						split.is(width().property.value());
+					}
+				}
+			})//
 			.dragX.is(split.property.minus(0.5 * Layoutless.tapSize))//
 			.afterDrag.is(adjustSplit)//
 			.movableX.is(true)//
