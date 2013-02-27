@@ -14,7 +14,7 @@ import tee.binding.it.*;
 import android.text.*;
 
 public class TintBitmapGradient extends Tint {
-	public ItProperty<TintBitmapGradient, Bitmap> bitmap = new ItProperty<TintBitmapGradient, Bitmap>(this);
+	public ItProperty<TintBitmapGradient, Bitmap> bitmap = new ItProperty<TintBitmapGradient, Bitmap>(this);//Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rocket),200,100,true);
 
 	public TintBitmapGradient() {
 		super();

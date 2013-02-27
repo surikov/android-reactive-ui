@@ -44,7 +44,7 @@ public class ColumnNumer extends Column {
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
-		linePaint.setColor((int) (Layoutless.themeBlurColor));
+		linePaint.setColor((int) (Auxiliary.colorLine));
 		Decor cell = new Decor(context, true) {
 			//
 			@Override
@@ -168,7 +168,7 @@ public class ColumnNumer extends Column {
 		}
 		if (row >= 0 && row < cells.size()) {
 			presell = row;
-			cells.get(row).background.is(Layoutless.themeBlurColor);
+			cells.get(row).background.is(Auxiliary.colorSelection);
 		}
 	}
 }

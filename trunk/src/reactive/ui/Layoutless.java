@@ -4,6 +4,8 @@ import android.view.*;
 import android.app.*;
 import android.content.*;
 import android.graphics.*;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
@@ -23,8 +25,7 @@ import android.database.*;
 import android.database.sqlite.*;
 
 public class Layoutless extends RelativeLayout implements Rake {
-	public static float density = 1;
-	public static double tapSize = 8;
+	
 	//private final static int UNKNOWN_ID = -123456789;
 	public final static int NONE = 0;
 	public final static int DRAG = 1;
@@ -37,7 +38,6 @@ public class Layoutless extends RelativeLayout implements Rake {
 	private float initialShiftY = 0;
 	private float initialSpacing;
 	private float currentSpacing;
-	
 	//
 	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
@@ -61,23 +61,25 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public ItProperty<Layoutless, Task> afterZoom = new ItProperty<Layoutless, Task>(this);
 	//public ItProperty<Layoutless, Task> afterPress = new ItProperty<Layoutless, Task>(this);
 	//public NumericProperty<Layoutless> mode = new NumericProperty<Layoutless>(this);
-	public static int themeForegroundColor = 0xffff0000;
-	public static int themeBlurColor = 0xff330000;
+	//public static int themeForegroundColor = 0xffff0000;
+	//public static int themeBlurColor = 0xff330000;
 	//public static int themeBlurColor66 = 0xff666666;
 	//public static int themeBlurColor99 = 0xff666666;
 	//public static int themeFocusColor = 0xff669966;
-	public static int themeBackgroundColor = 0xffffffff;
-	private static Decor colorTest;
+	//public static int themeBackgroundColor = 0xffffffff;
+	private static TextView colorTest;
 	private boolean initialized = false;
 	private Vector<Rake> children = new Vector<Rake>();
 	//private Vector<Decor> fogs = new Vector<Decor>();
 	//private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
 	private boolean measured = false;
-
-	public static void fillBaseColors(Context c) {
+/*
+	public static void fillBaseColors(Context context) {
 		if (colorTest == null) {
-			colorTest = new Decor(c);
-			themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
+			colorTest = new TextView(context);
+			colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large);
+			themeForegroundColor=colorTest.getCurrentTextColor();
+			//themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
 			//int c1=colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
 			if ((themeForegroundColor & 0x00ffffff) > 0x00666666) {
 				themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x33000000;
@@ -89,7 +91,26 @@ public class Layoutless extends RelativeLayout implements Rake {
 			//themeBlurColor99 = (themeForegroundColor & 0x00ffffff)+0x99000000;
 			//colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
 			//themeFocusColor = (themeForegroundColor & 0x00ffffff)+0x22000000;
-			themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+			//colorTest.settr
+			Drawable drawable = colorTest.getBackground();
+			//System.out.println(drawable);
+			if (drawable instanceof ColorDrawable) {
+				ColorDrawable colorDrawable = (ColorDrawable) drawable;
+				Rect mBounds = new Rect();
+				mBounds.set(colorDrawable.getBounds()); // Save the original bounds.
+				colorDrawable.setBounds(0, 0, 1, 1); // Change the bounds.
+				Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+				Canvas mCanvas = new Canvas(mBitmap);
+				colorDrawable.draw(mCanvas);
+				themeBackgroundColor = mBitmap.getPixel(0, 0);
+				System.out.println("/"+themeBackgroundColor);
+				
+			}
+			else {
+				colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
+				themeBackgroundColor=colorTest.getCurrentTextColor();
+				//themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+			}
 			//ColorStateList colorStateList=colorTest.getTextColors();
 			//colorStateList.
 			//TypedValue tv = new TypedValue();
@@ -101,18 +122,16 @@ public class Layoutless extends RelativeLayout implements Rake {
 			//getContext().getTheme().resolveAttribute(android.R.attr.background, tv, true);
 			//themeBlurColor = getResources().getColor(tv.resourceId);
 			//System.out.println();
-			density = c.getResources().getDisplayMetrics().density;
+			density = context.getResources().getDisplayMetrics().density;
 			tapSize = 60.0 * density;
-			
-			
 		}
-	}
-	
+	}*/
 	protected void init() {
 		if (!initialized) {
 			initialized = true;
 			solid.is(true);
-			fillBaseColors(getContext());
+			//fillBaseColors(getContext());
+			Auxiliary.initThemeConstants(this.getContext());
 			setFocusable(true);
 			setFocusableInTouchMode(true);
 			hidden.property.afterChange(new Task() {
@@ -313,8 +332,8 @@ public class Layoutless extends RelativeLayout implements Rake {
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
-		if (Math.abs(initialShiftX - shiftX.property.value()) < 1 + 0.1 * tapSize// 
-				&& Math.abs(initialShiftY - shiftY.property.value()) < 1 + 0.1 * tapSize) {
+		if (Math.abs(initialShiftX - shiftX.property.value()) < 1 + 0.1 * Auxiliary.tapSize// 
+				&& Math.abs(initialShiftY - shiftY.property.value()) < 1 + 0.1 * Auxiliary.tapSize) {
 			finishTap(x, y);
 		}
 		else {

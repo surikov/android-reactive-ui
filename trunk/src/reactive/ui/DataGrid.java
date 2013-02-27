@@ -226,14 +226,14 @@ public class DataGrid extends SubLayoutless {
 			dataOffset = new NumericProperty<DataGrid>(this);
 			dataOffset.is(0);
 			headerHeight = new NumericProperty<DataGrid>(this);
-			headerHeight.is(Layoutless.tapSize);
+			headerHeight.is(Auxiliary.tapSize);
 			header = new SubLayoutless(this.getContext());
 			header.width().is(width().property);
 			header.height().is(headerHeight.property);
 			//header.left().is(-200);
 			this.child(header);
 			rowHeight = new NumericProperty<DataGrid>(this);
-			rowHeight.is(Layoutless.tapSize);
+			rowHeight.is(Auxiliary.tapSize);
 			tableLayout = new TableLayout(this.getContext());
 			scrollView = new ScrollView(this.getContext()) {
 				float initialX = -1000;
@@ -396,7 +396,7 @@ public class DataGrid extends SubLayoutless {
 			new Numeric().bind(height().property).afterChange(reFit);
 			progressBar = new ProgressBar(this.getContext(), null, android.R.attr.progressBarStyleLarge);
 			this.addView(progressBar);
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (0.5 * Layoutless.tapSize), (int) (0.5 * Layoutless.tapSize));
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (0.5 * Auxiliary.tapSize), (int) (0.5 * Auxiliary.tapSize));
 			progressBar.setLayoutParams(params);
 			progressBar.setVisibility(View.INVISIBLE);
 			new Numeric().bind(header.shiftX.property).afterChange(reFit);

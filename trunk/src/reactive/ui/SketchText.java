@@ -35,7 +35,7 @@ public class SketchText extends Sketch {
 	};
 
 	public SketchText() {
-		color.is(Layoutless.themeForegroundColor);
+		color.is(Auxiliary.textColorPrimary);
 		paint.setColor(color.property.value().intValue());
 		paint.setAntiAlias(true);
 		paint.setFilterBitmap(true);

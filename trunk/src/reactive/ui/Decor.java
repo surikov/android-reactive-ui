@@ -272,8 +272,8 @@ public class Decor extends TextView implements Rake {
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
-		if (Math.abs(initialShiftX - dragX.property.value()) < 1 + 0.7 * Layoutless.tapSize// 
-				&& Math.abs(initialShiftY - dragY.property.value()) < 1 + 0.1 * Layoutless.tapSize) {
+		if (Math.abs(initialShiftX - dragX.property.value()) < 1 + 0.7 * Auxiliary.tapSize// 
+				&& Math.abs(initialShiftY - dragY.property.value()) < 1 + 0.1 * Auxiliary.tapSize) {
 			finishTap(x, y);
 		}
 		else {
