@@ -56,9 +56,9 @@ public class ColumnBitmap extends Column {
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
-		linePaint.setColor((int) (Layoutless
+		linePaint.setColor((int) (Auxiliary.colorLine));
 		//.themeForegroundColor));
-				.themeBlurColor));
+		//.themeBlurColor));
 		Decor cell = new Decor(context, true) {
 			//
 			@Override
@@ -146,7 +146,7 @@ public class ColumnBitmap extends Column {
 		}
 		if (row >= 0 && row < cells.size()) {
 			presell = row;
-			cells.get(row).background.is(Layoutless.themeBlurColor);
+			cells.get(row).background.is(Auxiliary.colorSelection);
 		}
 	}
 	public ColumnBitmap cell(Bitmap s, Integer background, Task tap) {

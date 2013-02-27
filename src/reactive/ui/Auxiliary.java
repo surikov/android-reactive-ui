@@ -38,6 +38,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class Auxiliary {
+	public static int colorBackground = 0x66ff0000;
+	public static int textColorPrimary = 0x6600ff00;
+	public static int textColorHint = 0x660000ff;
+	public static int textColorHighlight = 0x66ffff00;
+	public static int textColorLink = 0x6600ffff;
+	public static int colorLine = 0x66ff00ff;
+	public static int colorSelection = 0x663399ff;
+	public static float density = 1;
+	public static int tapSize = 8;
 	private static final char[] FIRST_CHAR = new char[256];
 	private static final char[] SECOND_CHAR = new char[256];
 	private static final char[] HEX_DIGITS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -59,6 +68,43 @@ public class Auxiliary {
 		}
 	}
 
+	public static int transparent(int color, double transparency) {
+		int r = color;
+		int t = (int) (255.0 * transparency);
+		r = (color & 0x00ffffff) + (t << 24);
+		return r;
+	}
+	public static void initThemeConstants(Context context) {
+		TypedArray array = context.getTheme().obtainStyledAttributes(new int[] { //
+				android.R.attr.colorBackground//
+						, android.R.attr.textColorPrimary//
+						, android.R.attr.textColorHint//
+						, android.R.attr.textColorHighlight//
+						, android.R.attr.textColorLink//
+						
+				});
+		colorBackground = array.getColor(0, colorBackground);
+		textColorPrimary = array.getColor(1, textColorPrimary);
+		textColorHint = array.getColor(2, textColorHint);
+		textColorHighlight = array.getColor(3, textColorHighlight);
+		textColorLink = array.getColor(4, textColorLink);
+		array.recycle();
+		
+		if ((textColorPrimary & 0x00ffffff) > 0x00666666) {//darkonlight
+			colorLine=transparent(textColorPrimary,0.2);
+			colorSelection=transparent(textColorLink,0.3);
+		}
+		else {//lightondark
+			colorLine=transparent(textColorPrimary,0.1);
+			colorSelection=transparent(textColorLink,0.2);
+		}
+		
+		
+		//colorLine=transparent(textColorPrimary,0.2);
+		//colorSelection=transparent(textColorLink,0.2);
+		density = context.getResources().getDisplayMetrics().density;
+		tapSize = (int)(60.0 * density);
+	}
 	public static void hideSoftKeyboard(Activity activity) {
 		try {
 			InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -163,7 +209,7 @@ public class Auxiliary {
 	public static Bough fromCursor(Cursor cursor) {
 		return fromCursor(cursor, false);
 	}
-	public static Bough fromCursor(Cursor cursor,boolean parseDate) {
+	public static Bough fromCursor(Cursor cursor, boolean parseDate) {
 		boolean first = true;
 		Bough bough = new Bough().name.is("cursor");
 		//cursor.moveToFirst();
@@ -190,20 +236,21 @@ public class Auxiliary {
 				try {
 					value = cursor.getString(i);
 					if (parseDate) {
-					try {
-						java.util.Date d = null;
-						if (value.length() > 12) {
-							d = bigDate.parse(value);
-						}else{
-							d = smallDate.parse(value);
+						try {
+							java.util.Date d = null;
+							if (value.length() > 12) {
+								d = bigDate.parse(value);
+							}
+							else {
+								d = smallDate.parse(value);
+							}
+							//value);
+							value = "" + d.getTime();
+							//System.out.println(name+": "+d);
 						}
-						//value);
-						value = "" + d.getTime();
-						//System.out.println(name+": "+d);
-					}
-					catch (Throwable t) {
-						//System.out.println(name+": "+t.getMessage());
-					}
+						catch (Throwable t) {
+							//System.out.println(name+": "+t.getMessage());
+						}
 					}
 				}
 				catch (Throwable t) {

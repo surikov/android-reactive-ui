@@ -57,7 +57,7 @@ public class Sheet extends SubLayoutless {
 							.left().is(curLeft)//
 					);*/
 					data.sketch(new SketchPlate()//vertical line
-					.background.is(Layoutless.themeBlurColor)//
+					.background.is(Auxiliary.textColorHint)//
 					.width.is(1)//
 					.top.is(0)//
 					.height.is(rowHeight.property.multiply(rowCount))//
@@ -104,7 +104,7 @@ public class Sheet extends SubLayoutless {
 							.top().is(rowHeight.property.multiply(y))//
 					);*/
 					data.sketch(new SketchPlate()//horizontal line
-					.background.is(Layoutless.themeBlurColor)//
+					.background.is(Auxiliary.textColorHint)//
 					.width.is(curLeft)//
 					.height.is(1)//
 					.top.is(rowHeight.property.multiply(y))//
@@ -176,8 +176,8 @@ public class Sheet extends SubLayoutless {
 			scroll = new NumericProperty<Sheet>(this);
 			maxRowHeight = new NumericProperty<Sheet>(this);
 			headerHeight = new NumericProperty<Sheet>(this);
-			rowHeight.is(Layoutless.tapSize);
-			headerHeight.is(Layoutless.tapSize);
+			rowHeight.is(Auxiliary.tapSize);
+			headerHeight.is(Auxiliary.tapSize);
 			header = new SubLayoutless(this.getContext());
 			header.height().is(headerHeight.property);
 			header.width().is(this.width().property);
@@ -325,7 +325,7 @@ public class Sheet extends SubLayoutless {
 	}
 	void setZoom() {
 		if (maxRowHeight.property.value() > body.zoom.property.value() && body.zoom.property.value() >= 0) {
-			rowHeight.is((1 + body.zoom.property.value()) * Layoutless.tapSize);
+			rowHeight.is((1 + body.zoom.property.value()) * Auxiliary.tapSize);
 			refreshSelection();
 		}
 	}

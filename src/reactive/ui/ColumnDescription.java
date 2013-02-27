@@ -47,9 +47,7 @@ public class ColumnDescription extends Column {
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
-		linePaint.setColor((int) (Layoutless
-		//.themeForegroundColor));
-				.themeBlurColor));
+		linePaint.setColor((int) (Auxiliary.colorLine));
 		HTMLText cell = new HTMLText(context, true) {
 			//
 			@Override
@@ -190,7 +188,7 @@ public class ColumnDescription extends Column {
 		}
 		if (row >= 0 && row < cells.size()) {
 			presell = row;
-			cells.get(row).background.is(Layoutless.themeBlurColor);
+			cells.get(row).background.is(Auxiliary.colorSelection);
 		}
 	}
 }
