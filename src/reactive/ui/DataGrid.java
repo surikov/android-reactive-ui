@@ -39,6 +39,7 @@ public class DataGrid extends SubLayoutless {
 	public ItProperty<DataGrid, Task> beforeFlip = new ItProperty<DataGrid, Task>(this);
 	private boolean lockAppend = false;
 	Column[] columnsArray = null;
+	//Vector<Numeric> watchers = new Vector<Numeric>();
 	ProgressBar progressBar;
 	private int currentPage = 0;
 	TableLayout tableLayout;
@@ -67,11 +68,20 @@ public class DataGrid extends SubLayoutless {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
+		//dropWatchers();
 	}
+	/*
+	void dropWatchers() {
+		for (int i = 0; i < watchers.size(); i++) {
+			watchers.get(i).unbind();
+		}
+		watchers.removeAllElements();
+	}*/
 	public DataGrid columns(Column[] indata) {
 		//System.out.println(this.getClass().getCanonicalName() + ".columns");
 		//currentPage = 0;
 		//tableLayout.removeAllViews();
+		//dropWatchers();
 		columnsArray = indata;
 		if (columnsArray.length < 1) {
 			return this;
@@ -81,8 +91,15 @@ public class DataGrid extends SubLayoutless {
 			for (int x = 0; x < columnsArray.length; x++) {
 				Rake headerCell = columnsArray[x].header(getContext());
 				headerCell.height().is(headerHeight.property.value());
-				headerCell.width().is(columnsArray[x].width.property.value());
+				headerCell.width().is(columnsArray[x].width.property);
 				headerCell.left().is(header.shiftX.property.plus(left));
+				/*Numeric nn = new Numeric().bind(columnsArray[x].width.property).afterChange(new Task() {
+					@Override
+					public void doTask() {
+						//resetWidth();
+					}
+				});*/
+				//watchers.add(nn);
 				left = left + columnsArray[x].width.property.value().intValue();
 				header.child(headerCell);
 			}
@@ -93,6 +110,29 @@ public class DataGrid extends SubLayoutless {
 		flip();
 		return this;
 	}
+	/*
+	void resetWidth() {
+		System.out.println("reset width");
+		int left = 0;
+		for (int x = 0; x < columnsArray.length; x++) {
+			left = left + columnsArray[x].width.property.value().intValue();
+			if (x < header.count()) {
+				header.child(x).width().is(columnsArray[x].width.property.value());
+			}
+			for(int y=0;y<rows.size();y++){
+				TableRow row=rows.get(y);
+				if(x<row.getBaseline()){
+					View v=row.getChildAt(x);
+					if(v instanceof Rake){
+						Rake r=(Rake)v;
+						r.width().is(columnsArray[x].width.property.value());
+					}
+				}
+			}
+		}
+		header.innerWidth.is(left);
+	}
+	*/
 	public void flip() {
 		//System.out.println(this.getClass().getCanonicalName() + ".flipData");
 		currentPage = 0;
@@ -133,7 +173,7 @@ public class DataGrid extends SubLayoutless {
 						Rake r = columnsArray[x].item(x, y, getContext());
 						//View d = r.view();
 						r.height().is(rowHeight.property.value());
-						r.width().is(columnsArray[x].width.property.value());
+						r.width().is(columnsArray[x].width.property);
 						//r.left().is(header.shiftX.property);
 						tableRow.addView(r.view());
 					}
@@ -187,26 +227,26 @@ public class DataGrid extends SubLayoutless {
 					if (scrollView != null) {
 						int scrw = width().property.value().intValue();
 						int scrh = (int) (height().property.value() - hh);
-						int scrl=0;//header.shiftX.property.value().intValue();
-						int scrt=(int) hh;
+						int scrl = 0;//header.shiftX.property.value().intValue();
+						int scrt = (int) hh;
 						RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(scrw, scrh);
 						params.topMargin = scrt;
 						params.leftMargin = scrl;
 						//System.out.println(scrl+"x"+scrt+" / "+scrw+"x"+scrh);
 						scrollView.setLayoutParams(params);
 					}
-					if(tableLayout!=null){
-						FrameLayout.LayoutParams p=(FrameLayout.LayoutParams)tableLayout.getLayoutParams();
-						p.leftMargin=header.shiftX.property.value().intValue();
+					if (tableLayout != null) {
+						FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) tableLayout.getLayoutParams();
+						p.leftMargin = header.shiftX.property.value().intValue();
 						tableLayout.setLayoutParams(p);
 						//System.out.println(p.width);
 					}
 					//if(rows!=null){
 					//for(int i=0;i<rows.size();i++){
-						//TableLayout.LayoutParams p=(TableLayout.LayoutParams )rows.get(i).getLayoutParams();
-						//p.width=10*i;
-						//rows.get(i).setLayoutParams(p);
-						//System.out.println(p.width);
+					//TableLayout.LayoutParams p=(TableLayout.LayoutParams )rows.get(i).getLayoutParams();
+					//p.width=10*i;
+					//rows.get(i).setLayoutParams(p);
+					//System.out.println(p.width);
 					//}}
 					//System.out.println(scrollView.getWidth());
 					//tableLayout
@@ -238,8 +278,9 @@ public class DataGrid extends SubLayoutless {
 			scrollView = new ScrollView(this.getContext()) {
 				float initialX = -1000;
 				float initialY = -1000;
+
 				/*@Override
-			    public void draw(Canvas canvas) {
+				public void draw(Canvas canvas) {
 					super.draw(canvas);
 					System.out.println("draw "+getWidth());
 				}*/
