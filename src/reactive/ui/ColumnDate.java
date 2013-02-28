@@ -17,7 +17,7 @@ public class ColumnDate extends Column {
 	public Vector<Task> tasks = new Vector<Task>();
 	public Vector<Decor> cells = new Vector<Decor>();
 	public Vector<Integer> backgrounds = new Vector<Integer>();
-	protected Paint linePaint = new Paint();
+	//protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
 	public NumericProperty<ColumnDate> headerBackground = new NumericProperty<ColumnDate>(this);
@@ -47,7 +47,7 @@ public class ColumnDate extends Column {
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
-		linePaint.setColor((int) (Auxiliary.colorLine));
+		//linePaint.setColor((int) (Auxiliary.colorLine));
 		Decor cell = new Decor(context, true) {
 			//
 			@Override
@@ -62,7 +62,7 @@ public class ColumnDate extends Column {
 						sz.top = 0;
 						sz.right = 1;
 						sz.bottom = height().property.value().intValue();
-						canvas.drawRect(sz, linePaint);//left
+						canvas.drawRect(sz, Auxiliary.paintLine);//left
 					}
 				}
 				if (!noHorizontalBorder.property.value()) {
@@ -70,7 +70,7 @@ public class ColumnDate extends Column {
 					sz.top = height().property.value().intValue() - 1;
 					sz.right = width().property.value().intValue();
 					sz.bottom = height().property.value().intValue();
-					canvas.drawRect(sz, linePaint);//under
+					canvas.drawRect(sz, Auxiliary.paintLine);//under
 				}
 			}
 		};
@@ -111,9 +111,9 @@ public class ColumnDate extends Column {
 	}
 	public ColumnDate() {
 		this.width.is(150);
-		linePaint.setAntiAlias(true);
-		linePaint.setFilterBitmap(true);
-		linePaint.setDither(true);
+		//linePaint.setAntiAlias(true);
+		//linePaint.setFilterBitmap(true);
+		//linePaint.setDither(true);
 		format.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
@@ -138,7 +138,7 @@ public class ColumnDate extends Column {
 						, height().property.value().intValue() - 1//
 						, width().property.value().intValue()//
 						, height().property.value().intValue() //
-						), linePaint);
+						), Auxiliary.paintLine);
 			}
 		};
 		header.setPadding(3, 0, 3, 2);
