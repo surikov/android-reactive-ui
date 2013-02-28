@@ -44,6 +44,7 @@ public class Auxiliary {
 	public static int textColorHighlight = 0x66ffff00;
 	public static int textColorLink = 0x6600ffff;
 	public static int colorLine = 0x66ff00ff;
+	public static Paint paintLine = null;
 	public static int colorSelection = 0x663399ff;
 	public static float density = 1;
 	public static int tapSize = 8;
@@ -98,7 +99,11 @@ public class Auxiliary {
 			colorLine=transparent(textColorPrimary,0.1);
 			colorSelection=transparent(textColorLink,0.2);
 		}
-		
+		paintLine=new Paint();
+		paintLine.setColor(Auxiliary.colorLine);
+		paintLine.setAntiAlias(true);
+		paintLine.setFilterBitmap(true);
+		paintLine.setDither(true);
 		
 		//colorLine=transparent(textColorPrimary,0.2);
 		//colorSelection=transparent(textColorLink,0.2);

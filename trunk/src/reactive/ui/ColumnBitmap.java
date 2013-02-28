@@ -14,7 +14,7 @@ public class ColumnBitmap extends Column {
 	public Vector<Decor> cells = new Vector<Decor>();
 	public Vector<Bitmap> bitmaps = new Vector<Bitmap>();
 	public Vector<Integer> backgrounds = new Vector<Integer>();
-	protected Paint linePaint = new Paint();
+	//protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
 
@@ -49,14 +49,14 @@ public class ColumnBitmap extends Column {
 	}
 	public ColumnBitmap() {
 		this.width.is(150);
-		linePaint.setColor(0x33666666);
-		linePaint.setAntiAlias(true);
-		linePaint.setFilterBitmap(true);
-		linePaint.setDither(true);
+		//linePaint.setColor(0x33666666);
+		//linePaint.setAntiAlias(true);
+		//linePaint.setFilterBitmap(true);
+		//linePaint.setDither(true);
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
-		linePaint.setColor((int) (Auxiliary.colorLine));
+		//linePaint.setColor((int) (Auxiliary.colorLine));
 		//.themeForegroundColor));
 		//.themeBlurColor));
 		Decor cell = new Decor(context, true) {
@@ -75,7 +75,7 @@ public class ColumnBitmap extends Column {
 						sz.top = 0;
 						sz.right = 1;
 						sz.bottom = height().property.value().intValue();
-						canvas.drawRect(sz, linePaint);//left
+						canvas.drawRect(sz, Auxiliary.paintLine);//left
 					}
 				}
 				if (!noHorizontalBorder.property.value()) {
@@ -83,7 +83,7 @@ public class ColumnBitmap extends Column {
 					sz.top = height().property.value().intValue() - 1;
 					sz.right = width().property.value().intValue();
 					sz.bottom = height().property.value().intValue();
-					canvas.drawRect(sz, linePaint);//under
+					canvas.drawRect(sz, Auxiliary.paintLine);//under
 				}
 			}
 		};
@@ -112,7 +112,7 @@ public class ColumnBitmap extends Column {
 						, height().property.value().intValue() - 1//
 						, width().property.value().intValue()//
 						, height().property.value().intValue() //
-						), linePaint);
+						), Auxiliary.paintLine);
 			}
 		};
 		header.setPadding(3, 0, 3, 2);

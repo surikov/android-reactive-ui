@@ -20,7 +20,7 @@ public class ColumnDescription extends Column {
 	public Vector<Task> tasks = new Vector<Task>();
 	public Vector<HTMLText> cells = new Vector<HTMLText>();
 	public Vector<Integer> backgrounds = new Vector<Integer>();
-	protected Paint linePaint = new Paint();
+	//protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
 	public NumericProperty<ColumnDescription> headerBackground = new NumericProperty<ColumnDescription>(this);
@@ -47,7 +47,7 @@ public class ColumnDescription extends Column {
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
-		linePaint.setColor((int) (Auxiliary.colorLine));
+		//linePaint.setColor((int) (Auxiliary.colorLine));
 		HTMLText cell = new HTMLText(context, true) {
 			//
 			@Override
@@ -64,7 +64,7 @@ public class ColumnDescription extends Column {
 						sz.top = 0;
 						sz.right = 1;
 						sz.bottom = height().property.value().intValue();
-						canvas.drawRect(sz, linePaint);//left
+						canvas.drawRect(sz, Auxiliary.paintLine);//left
 					}
 				}
 				if (!noHorizontalBorder.property.value()) {
@@ -72,7 +72,7 @@ public class ColumnDescription extends Column {
 					sz.top = height().property.value().intValue() - 1;
 					sz.right = width().property.value().intValue();
 					sz.bottom = height().property.value().intValue();
-					canvas.drawRect(sz, linePaint);//under
+					canvas.drawRect(sz, Auxiliary.paintLine);//under
 				}
 			}
 		};
@@ -123,10 +123,11 @@ public class ColumnDescription extends Column {
 	}
 	public ColumnDescription() {
 		this.width.is(150);
-		linePaint.setColor(0x33666666);
-		linePaint.setAntiAlias(true);
-		linePaint.setFilterBitmap(true);
-		linePaint.setDither(true);
+		//linePaint.setColor(0x33ff0000);
+		//linePaint.setColor(Auxiliary.colorLine);
+		//linePaint.setAntiAlias(true);
+		//linePaint.setFilterBitmap(true);
+		//linePaint.setDither(true);
 		//linePaint.setStrokeWidth(0);
 		//linePaint.setst
 		//linePaint.setStyle(Style.STROKE);
@@ -134,6 +135,7 @@ public class ColumnDescription extends Column {
 	@Override
 	public Rake header(Context context) {
 		//Knob k = new Knob(context).labelText.is(title.property.value());
+		//linePaint.setColor((int) (Auxiliary.colorLine));
 		Decor header = new Decor(context) {
 			//
 			@Override
@@ -144,7 +146,7 @@ public class ColumnDescription extends Column {
 						, height().property.value().intValue() - 1//
 						, width().property.value().intValue()//
 						, height().property.value().intValue() //
-						), linePaint);
+						), Auxiliary.paintLine);
 			}
 		};
 		header.setPadding(3, 0, 3, 2);
