@@ -7,6 +7,7 @@ import tee.binding.properties.*;
 import tee.binding.task.Task;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 
@@ -14,7 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class RedactSingleChoice extends Button implements Rake {
+public class RedactSingleChoice extends EditText implements Rake {
 	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NumericProperty<RedactSingleChoice> selection = new NumericProperty<RedactSingleChoice>(this);
 	public NoteProperty<RedactSingleChoice> textLabel = new NoteProperty<RedactSingleChoice>(this);
@@ -64,21 +65,30 @@ public class RedactSingleChoice extends Button implements Rake {
 			return;
 		}
 		initialized = true;
+		setInputType(InputType.TYPE_NULL);
+		setKeyListener(null);
+		setFocusable(false);
+		setFocusableInTouchMode(false);
 		//format.is("yyyy-MM-dd");
 		width.property.afterChange(reFit).value(100);
 		height.property.afterChange(reFit).value(100);
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
-		setOnClickListener(new View.OnClickListener() {
+		//setOnClickListener(new View.OnClickListener() {
+		setOnTouchListener(new View.OnTouchListener() {
 			@Override
-			public void onClick(View v) {
-				if (items.size() > 0) {
-					String[] strings = new String[items.size()];
-					for (int i = 0; i < items.size(); i++) {
-						strings[i] = items.get(i);
+			//public void onClick(View v) {
+			public boolean onTouch(View view, MotionEvent motionEvent) {
+				if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+					if (items.size() > 0) {
+						String[] strings = new String[items.size()];
+						for (int i = 0; i < items.size(); i++) {
+							strings[i] = items.get(i);
+						}
+						Auxiliary.pickSingleChoice(RedactSingleChoice.this.getContext(), strings, selection.property);
 					}
-					Auxiliary.pickSingleChoice(RedactSingleChoice.this.getContext(), strings, selection.property);
 				}
+				return true;
 			}
 		});
 		selection.property.afterChange(new Task() {

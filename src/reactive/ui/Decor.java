@@ -13,6 +13,7 @@ import android.widget.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
+import android.text.style.UnderlineSpan;
 
 public class Decor extends TextView implements Rake {
 	private int mode = Layoutless.NONE;
@@ -187,8 +188,14 @@ public class Decor extends TextView implements Rake {
 			@Override
 			public void doTask() {
 				setText(labelText.property.value(), BufferType.SPANNABLE);
+				/*
+				SpannableString content = new SpannableString(labelText.property.value());
+				content.setSpan(new UnderlineSpan(), 0, labelText.property.value().length(), 0);
+				setText(content);
+				*/
 			}
 		});
+		//this.setTextAppearance(this.getContext(), android.R.style.textapp.TextAppearance_Large);
 		labelColor.is(this.getCurrentTextColor());
 		labelColor.property.afterChange(new Task() {
 			@Override
