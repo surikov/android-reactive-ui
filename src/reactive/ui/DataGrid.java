@@ -17,6 +17,7 @@ public class DataGrid extends SubLayoutless {
 	public NumericProperty<DataGrid> dataOffset;
 	public NumericProperty<DataGrid> headerHeight;
 	public NumericProperty<DataGrid> rowHeight;
+	public ToggleProperty<DataGrid> center;
 	private Numeric margin;
 	public ItProperty<DataGrid, Task> beforeFlip = new ItProperty<DataGrid, Task>(this);
 	private boolean lockAppend = false;
@@ -215,13 +216,18 @@ public class DataGrid extends SubLayoutless {
 	}
 	private void reFitGrid() {
 		int left = 0;
-		if (columnsArray != null) {
-			for (int x = 0; x < columnsArray.length; x++) {
-				left = left + columnsArray[x].width.property.value().intValue();
+		if (center.property.value()) {
+			if (columnsArray != null) {
+				for (int x = 0; x < columnsArray.length; x++) {
+					left = left + columnsArray[x].width.property.value().intValue();
+				}
+			}
+			margin.value((width().property.value() - left) / 2);
+			if (margin.value() < 0) {
+				margin.value(0);
 			}
 		}
-		margin.value((width().property.value() - left) / 2);
-		if (margin.value() < 0) {
+		else {
 			margin.value(0);
 		}
 		double hh = headerHeight.property.value();
@@ -250,6 +256,7 @@ public class DataGrid extends SubLayoutless {
 		if (!initialized) {
 			initialized = true;
 			noHead = new ToggleProperty<DataGrid>(this);
+			center = new ToggleProperty<DataGrid>(this);
 			margin = new Numeric();
 			/*Task reFit = new Task() {
 				@Override
@@ -301,7 +308,7 @@ public class DataGrid extends SubLayoutless {
 									double xx = 0;
 									for (int i = 0; i < columnsArray.length; i++) {
 										xx = xx + columnsArray[i].width.property.value();
-										if (xx > aX-margin.value()) {
+										if (xx > aX - margin.value()) {
 											tapRow(nn, i);
 											break;
 										}
