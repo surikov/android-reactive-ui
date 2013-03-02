@@ -14,6 +14,7 @@ import android.widget.TextView.BufferType;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import android.text.*;
+import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 /*
@@ -144,6 +145,7 @@ public class HTMLText extends TextView implements Rake {
 			return;
 		}
 		initialized = true;
+		setMovementMethod(LinkMovementMethod.getInstance());//android:autoLink="web" 
 		paint.setColor(0xff000000);
 		paint.setAntiAlias(true);
 		paint.setFilterBitmap(true);

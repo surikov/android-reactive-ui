@@ -25,7 +25,6 @@ import android.database.*;
 import android.database.sqlite.*;
 
 public class Layoutless extends RelativeLayout implements Rake {
-	
 	//private final static int UNKNOWN_ID = -123456789;
 	public final static int NONE = 0;
 	public final static int DRAG = 1;
@@ -73,59 +72,60 @@ public class Layoutless extends RelativeLayout implements Rake {
 	//private Vector<Decor> fogs = new Vector<Decor>();
 	//private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
 	private boolean measured = false;
-/*
-	public static void fillBaseColors(Context context) {
-		if (colorTest == null) {
-			colorTest = new TextView(context);
-			colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large);
-			themeForegroundColor=colorTest.getCurrentTextColor();
-			//themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
-			//int c1=colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-			if ((themeForegroundColor & 0x00ffffff) > 0x00666666) {
-				themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x33000000;
+
+	/*
+		public static void fillBaseColors(Context context) {
+			if (colorTest == null) {
+				colorTest = new TextView(context);
+				colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large);
+				themeForegroundColor=colorTest.getCurrentTextColor();
+				//themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
+				//int c1=colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
+				if ((themeForegroundColor & 0x00ffffff) > 0x00666666) {
+					themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x33000000;
+				}
+				else {
+					themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x11000000;
+				}
+				//themeBlurColor66 = (themeForegroundColor & 0x00ffffff)+0x66000000;
+				//themeBlurColor99 = (themeForegroundColor & 0x00ffffff)+0x99000000;
+				//colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
+				//themeFocusColor = (themeForegroundColor & 0x00ffffff)+0x22000000;
+				//colorTest.settr
+				Drawable drawable = colorTest.getBackground();
+				//System.out.println(drawable);
+				if (drawable instanceof ColorDrawable) {
+					ColorDrawable colorDrawable = (ColorDrawable) drawable;
+					Rect mBounds = new Rect();
+					mBounds.set(colorDrawable.getBounds()); // Save the original bounds.
+					colorDrawable.setBounds(0, 0, 1, 1); // Change the bounds.
+					Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+					Canvas mCanvas = new Canvas(mBitmap);
+					colorDrawable.draw(mCanvas);
+					themeBackgroundColor = mBitmap.getPixel(0, 0);
+					System.out.println("/"+themeBackgroundColor);
+					
+				}
+				else {
+					colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
+					themeBackgroundColor=colorTest.getCurrentTextColor();
+					//themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
+				}
+				//ColorStateList colorStateList=colorTest.getTextColors();
+				//colorStateList.
+				//TypedValue tv = new TypedValue();
+				//getContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, tv, true);
+				//getContext().getTheme().resolveAttribute(android.R.attr.textColorHighlight, tv, true);
+				//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, tv, true);
+				//getContext().getTheme().resolveAttribute(android.R.attr.textColorHint, tv, true);
+				//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimaryDisableOnly, tv, true);
+				//getContext().getTheme().resolveAttribute(android.R.attr.background, tv, true);
+				//themeBlurColor = getResources().getColor(tv.resourceId);
+				//System.out.println();
+				density = context.getResources().getDisplayMetrics().density;
+				tapSize = 60.0 * density;
 			}
-			else {
-				themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x11000000;
-			}
-			//themeBlurColor66 = (themeForegroundColor & 0x00ffffff)+0x66000000;
-			//themeBlurColor99 = (themeForegroundColor & 0x00ffffff)+0x99000000;
-			//colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-			//themeFocusColor = (themeForegroundColor & 0x00ffffff)+0x22000000;
-			//colorTest.settr
-			Drawable drawable = colorTest.getBackground();
-			//System.out.println(drawable);
-			if (drawable instanceof ColorDrawable) {
-				ColorDrawable colorDrawable = (ColorDrawable) drawable;
-				Rect mBounds = new Rect();
-				mBounds.set(colorDrawable.getBounds()); // Save the original bounds.
-				colorDrawable.setBounds(0, 0, 1, 1); // Change the bounds.
-				Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-				Canvas mCanvas = new Canvas(mBitmap);
-				colorDrawable.draw(mCanvas);
-				themeBackgroundColor = mBitmap.getPixel(0, 0);
-				System.out.println("/"+themeBackgroundColor);
-				
-			}
-			else {
-				colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
-				themeBackgroundColor=colorTest.getCurrentTextColor();
-				//themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
-			}
-			//ColorStateList colorStateList=colorTest.getTextColors();
-			//colorStateList.
-			//TypedValue tv = new TypedValue();
-			//getContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, tv, true);
-			//getContext().getTheme().resolveAttribute(android.R.attr.textColorHighlight, tv, true);
-			//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, tv, true);
-			//getContext().getTheme().resolveAttribute(android.R.attr.textColorHint, tv, true);
-			//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimaryDisableOnly, tv, true);
-			//getContext().getTheme().resolveAttribute(android.R.attr.background, tv, true);
-			//themeBlurColor = getResources().getColor(tv.resourceId);
-			//System.out.println();
-			density = context.getResources().getDisplayMetrics().density;
-			tapSize = 60.0 * density;
-		}
-	}*/
+		}*/
 	protected void init() {
 		if (!initialized) {
 			initialized = true;
@@ -167,6 +167,37 @@ public class Layoutless extends RelativeLayout implements Rake {
 		this.addView(v.view());
 		children.add(v);
 		return this;
+	}
+	public Layoutless field(Context context, int row, Note label, Rake content, Numeric contentWidth) {
+		this.child(new Decor(context).labelText.is(label)//
+				.labelAlignRightCenter()//
+				.left().is(this.shiftX.property)//
+				.top().is(this.shiftY.property.plus(0.2 * Auxiliary.tapSize).plus(0.8 * row * Auxiliary.tapSize))//
+				.width().is(this.width().property.multiply(0.3))//
+				.height().is(0.8 * Auxiliary.tapSize)//
+		);
+		this.child(content//
+				.left().is(this.shiftX.property.plus(this.width().property.multiply(0.3).plus(0.1 * Auxiliary.tapSize)))//
+				.top().is(this.shiftY.property.plus(0.2 * Auxiliary.tapSize).plus(0.8 * row * Auxiliary.tapSize))//
+				.width().is(contentWidth)//
+				.height().is(0.8 * Auxiliary.tapSize)//
+		);
+		return this;
+	}
+	public Layoutless field(Context context, int row, Note label, Rake content) {
+		return field(context, row, label, content, new Numeric().value(5 * Auxiliary.tapSize));
+	}
+	public Layoutless field(Context context, int row, Note label, Rake content, int contentWidth) {
+		return field(context, row, label, content, new Numeric().value(contentWidth));
+	}
+	public Layoutless field(Context context, int row, String label, Rake content) {
+		return field(context, row, new Note().value(label), content, new Numeric().value(5 * Auxiliary.tapSize));
+	}
+	public Layoutless field(Context context, int row, String label, Rake content, int contentWidth) {
+		return field(context, row, new Note().value(label), content, new Numeric().value(contentWidth));
+	}
+	public Layoutless field(Context context, int row, String label, Rake content, Numeric contentWidth) {
+		return field(context, row, new Note().value(label), content, contentWidth);
 	}
 	public Rake child(int nn) {
 		if (nn < children.size()) {
