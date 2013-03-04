@@ -43,6 +43,7 @@ public abstract class Column {
 	public abstract void afterTap(int row);
 	public NoteProperty<Column> title = new NoteProperty<Column>(this);
 	public abstract Rake item(int column,int row, Context context);
+	public abstract String export(int row);
 	public abstract void update(int row);
 	public abstract Rake header( Context context);
 	public abstract int count();

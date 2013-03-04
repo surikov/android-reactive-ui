@@ -17,7 +17,10 @@ public class ColumnBitmap extends Column {
 	//protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
-
+	@Override
+public String export(int row){
+		return "";
+	}
 	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {
