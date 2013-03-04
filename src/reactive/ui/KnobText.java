@@ -6,6 +6,8 @@ import tee.binding.properties.*;
 import tee.binding.properties.*;
 import tee.binding.task.Task;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,7 +16,8 @@ import android.widget.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-public class KnobText extends EditText implements Rake{
+
+public class KnobText extends EditText implements Rake {
 	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	//public NumericProperty<KnobText> date = new NumericProperty<KnobText>(this);
 	public NoteProperty<KnobText> text = new NoteProperty<KnobText>(this);//dd.MM.yyyy, yyyy-MM-dd
@@ -23,6 +26,7 @@ public class KnobText extends EditText implements Rake{
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	public ItProperty<KnobText, Task> afterTap = new ItProperty<KnobText, Task>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
+	Paint dot = new Paint();
 	boolean initialized = false;
 	private boolean lock = false;
 	Task reFit = new Task() {
@@ -59,11 +63,21 @@ public class KnobText extends EditText implements Rake{
 		super(context, attrs, defStyle);
 		init();
 	}
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		int r = 1 + (int) (Auxiliary.tapSize * 0.05);
+		canvas.drawCircle(width.property.value().intValue() - 3 * r, 3 * r, r, dot);
+	}
 	void init() {
 		if (initialized) {
 			return;
 		}
+		//this.draw(canvas);
+		//this.onDraw(canvas)
 		initialized = true;
+		dot.setColor(Auxiliary.textColorHint);
+		dot.setAntiAlias(true);
 		//format.is("yyyy-MM-dd");
 		setInputType(InputType.TYPE_NULL);
 		setKeyListener(null);
@@ -102,10 +116,7 @@ public class KnobText extends EditText implements Rake{
 		text.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				
-					setText(text.property.value());
-				
-				
+				setText(text.property.value());
 			}
 		});
 		hidden.property.afterChange(new Task() {
