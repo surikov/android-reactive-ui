@@ -26,6 +26,22 @@ public class ColumnDescription extends Column {
 	public NumericProperty<ColumnDescription> headerBackground = new NumericProperty<ColumnDescription>(this);
 
 	@Override
+	public String export(int row) {
+		String s = "";
+		if (row > -1 && row < strings.size()) {
+			if (strings.get(row) != null) {
+				s = s + strings.get(row);
+			}
+		}
+		s=s+" / ";
+		if (row > -1 && row < descriptions.size()) {
+			if (descriptions.get(row) != null) {
+				s = s + descriptions.get(row);
+			}
+		}
+		return s;
+	}
+	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {
 			HTMLText cell = cells.get(row);

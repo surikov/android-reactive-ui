@@ -1,5 +1,6 @@
 package reactive.ui;
 
+import java.util.Date;
 import java.util.Vector;
 
 import tee.binding.properties.*;
@@ -21,7 +22,14 @@ public class ColumnNumer extends Column {
 	int presell = -1;
 	public NumericProperty<ColumnNumer> headerBackground = new NumericProperty<ColumnNumer>(this);
 	public NoteProperty<ColumnNumer> format = new NoteProperty<ColumnNumer>(this);//http://docs.oracle.com/javase/1.4.2/docs/api/java/text/DecimalFormat.html
-
+	@Override
+	public String export(int row) {
+		if (row > -1 && row < numbers.size()) {
+			
+			return formater.format(numbers.get(row));
+		}
+		return "";
+	}
 	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {

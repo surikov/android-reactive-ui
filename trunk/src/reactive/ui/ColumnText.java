@@ -21,7 +21,14 @@ public class ColumnText extends Column {
 	protected Rect sz;
 	int presell = -1;
 	public NumericProperty<ColumnText> headerBackground = new NumericProperty<ColumnText>(this);
-
+	@Override
+	public String export(int row) {
+		if (row > -1 && row < strings.size()) {
+			
+			return strings.get(row);
+		}
+		return "";
+	}
 	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {

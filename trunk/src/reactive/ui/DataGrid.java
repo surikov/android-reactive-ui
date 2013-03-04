@@ -2,10 +2,13 @@ package reactive.ui;
 
 import tee.binding.properties.*;
 import android.view.*;
+import android.app.Activity;
 import android.content.*;
 import android.os.*;
 import android.util.*;
 import android.widget.*;
+
+import java.io.File;
 import java.util.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
@@ -248,6 +251,45 @@ public class DataGrid extends SubLayoutless {
 			FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) tableLayout.getLayoutParams();
 			p.leftMargin = (int) (header.shiftX.property.value() + margin.value());
 			tableLayout.setLayoutParams(p);
+		}
+	}
+	public void exportCurrentDataCSV(Activity activity, String fileNameInDownloadFolder, String encoding) {//encoding=windows-1251,utf-8
+		try {
+			StringBuilder sb = new StringBuilder();
+			boolean first = true;
+			for (int i = 0; i < this.columnsArray.length; i++) {
+				if (!first) {
+					sb.append(",");
+				}
+				else {
+					first = false;
+				}
+				sb.append(columnsArray[i].title.property.value());
+			}
+			sb.append("\n");
+			if (columnsArray.length > 0) {
+				for (int r = 0; r < columnsArray[0].count(); r++) {
+					first = true;
+					for (int i = 0; i < this.columnsArray.length; i++) {
+						if (!first) {
+							sb.append(",");
+						}
+						else {
+							first = false;
+						}
+						sb.append(columnsArray[i].export(r));
+					}
+					sb.append("\n");
+				}
+			}
+			String f = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/" + fileNameInDownloadFolder;
+			File file = new File(f);
+			Auxiliary.writeTextToFile(file, sb.toString(), "windows-1251");
+			Auxiliary.inform(file.getAbsolutePath(), activity);
+			Auxiliary.startFile(activity, android.content.Intent.ACTION_VIEW, "text/plain", file);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
 		}
 	}
 	@Override

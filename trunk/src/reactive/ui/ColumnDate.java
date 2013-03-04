@@ -24,6 +24,15 @@ public class ColumnDate extends Column {
 	public NoteProperty<ColumnDate> format = new NoteProperty<ColumnDate>(this);//http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html
 
 	@Override
+	public String export(int row) {
+		if (row > -1 && row < mills.size()) {
+			Date d = new Date();
+			d.setTime(mills.get(row));
+			return formater.format(d);
+		}
+		return "";
+	}
+	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {
 			Decor cell = cells.get(row);
