@@ -5,6 +5,8 @@ import android.app.*;
 import tee.binding.properties.*;
 import tee.binding.task.Task;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +24,7 @@ public class RedactDate extends EditText implements Rake {
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
+	Paint dot = new Paint();
 	boolean initialized = false;
 	private boolean lock = false;
 	Task reFit = new Task() {
@@ -43,7 +46,12 @@ public class RedactDate extends EditText implements Rake {
 			RedactDate.this.setMinHeight(height.property.value().intValue());
 		}
 	};
-
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		int r = 1 + (int) (Auxiliary.tapSize * 0.05);
+		canvas.drawCircle(width.property.value().intValue() - 3 * r, 3 * r, r, dot);
+	}
 	public RedactDate(Context context) {
 		super(context);
 		init();
@@ -61,6 +69,8 @@ public class RedactDate extends EditText implements Rake {
 			return;
 		}
 		initialized = true;
+		dot.setColor(Auxiliary.textColorHint);
+		dot.setAntiAlias(true);
 		format.is("yyyy-MM-dd");
 		setInputType(InputType.TYPE_NULL);
 		setKeyListener(null);

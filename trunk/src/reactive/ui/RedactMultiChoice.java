@@ -9,6 +9,8 @@ import tee.binding.They;
 import tee.binding.properties.*;
 import tee.binding.task.Task;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.*;
 import android.widget.*;
@@ -21,6 +23,7 @@ public class RedactMultiChoice extends EditText implements Rake {
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
+	Paint dot = new Paint();
 	boolean initialized = false;
 	//private boolean lock = false;
 	private Vector<String> items = new Vector<String>();
@@ -47,7 +50,12 @@ public class RedactMultiChoice extends EditText implements Rake {
 			//System.out.println("params.topMargin: " + params.topMargin+" / "+Decor.this.getLeft()+"x"+Decor.this.getTop()+"/"+Decor.this.getWidth()+"x"+Decor.this.getHeight());
 		}
 	};
-
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		int r = 1 + (int) (Auxiliary.tapSize * 0.05);
+		canvas.drawCircle(width.property.value().intValue() - 3 * r, 3 * r, r, dot);
+	}
 	public RedactMultiChoice(Context context) {
 		super(context);
 		init();
@@ -74,6 +82,8 @@ public class RedactMultiChoice extends EditText implements Rake {
 			return;
 		}
 		initialized = true;
+		dot.setColor(Auxiliary.textColorHint);
+		dot.setAntiAlias(true);
 		setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent motionEvent) {
