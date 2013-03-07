@@ -8,6 +8,8 @@ import org.apache.http.impl.client.*;
 import org.apache.http.params.*;
 import org.apache.http.protocol.*;
 import org.apache.http.util.*;
+
+import android.net.http.AndroidHttpClient;
 import android.os.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
@@ -33,7 +35,10 @@ public class RawSOAP {
 			HttpParams httpParameters = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpParameters, timeout.property.value().intValue());
 			HttpConnectionParams.setSoTimeout(httpParameters, timeout.property.value().intValue());
+			HttpConnectionParams.setSocketBufferSize(httpParameters, 8192);
+			HttpConnectionParams.setConnectionTimeout(httpParameters, timeout.property.value().intValue());
 			HttpClient client = new DefaultHttpClient(httpParameters);
+			//HttpClient client = new AndroidHttpClient(httpParameters);
 			StringEntity stringEntity = new StringEntity(xml.property.value(), requestEncoding.property.value());
 			stringEntity.setContentType("text/xml; charset=" + requestEncoding.property.value());
 			request.setEntity(stringEntity);
