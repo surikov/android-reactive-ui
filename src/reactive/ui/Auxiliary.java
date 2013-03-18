@@ -81,8 +81,7 @@ public class Auxiliary {
 						, android.R.attr.textColorPrimary//
 						, android.R.attr.textColorHint//
 						, android.R.attr.textColorHighlight//
-						, android.R.attr.textColorLink//
-						
+						, android.R.attr.textColorLink //
 				});
 		colorBackground = array.getColor(0, colorBackground);
 		textColorPrimary = array.getColor(1, textColorPrimary);
@@ -90,25 +89,23 @@ public class Auxiliary {
 		textColorHighlight = array.getColor(3, textColorHighlight);
 		textColorLink = array.getColor(4, textColorLink);
 		array.recycle();
-		
 		if ((textColorPrimary & 0x00ffffff) > 0x00666666) {//darkonlight
-			colorLine=transparent(textColorPrimary,0.2);
-			colorSelection=transparent(textColorLink,0.3);
+			colorLine = transparent(textColorPrimary, 0.2);
+			colorSelection = transparent(textColorLink, 0.3);
 		}
 		else {//lightondark
-			colorLine=transparent(textColorPrimary,0.1);
-			colorSelection=transparent(textColorLink,0.2);
+			colorLine = transparent(textColorPrimary, 0.1);
+			colorSelection = transparent(textColorLink, 0.2);
 		}
-		paintLine=new Paint();
+		paintLine = new Paint();
 		paintLine.setColor(Auxiliary.colorLine);
 		paintLine.setAntiAlias(true);
 		paintLine.setFilterBitmap(true);
 		paintLine.setDither(true);
-		
 		//colorLine=transparent(textColorPrimary,0.2);
 		//colorSelection=transparent(textColorLink,0.2);
 		density = context.getResources().getDisplayMetrics().density;
-		tapSize = (int)(60.0 * density);
+		tapSize = (int) (60.0 * density);
 	}
 	public static void hideSoftKeyboard(Activity activity) {
 		try {
@@ -314,12 +311,35 @@ public class Auxiliary {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		final EditText input = new EditText(context);
+		input.setSingleLine(false);
 		input.setText(text.value());
 		builder.setView(input);
 		builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				text.value("" + input.getText());
-				callbackPositiveBtn.start();
+				if (callbackPositiveBtn != null) {
+					callbackPositiveBtn.start();
+				}
+			}
+		});
+		builder.create().show();
+	}
+	public static void pickString(Context context//
+			, String title//
+			, final Note text//
+			, String positiveButtonTitle//
+			, final Task callbackPositiveBtn) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle(title);
+		final EditText input = new EditText(context);
+		input.setText(text.value());
+		builder.setView(input);
+		builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				text.value("" + input.getText());
+				if (callbackPositiveBtn != null) {
+					callbackPositiveBtn.start();
+				}
 			}
 		});
 		builder.create().show();
