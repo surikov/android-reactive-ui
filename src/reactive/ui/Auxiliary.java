@@ -6,6 +6,7 @@ import android.content.*;
 import android.content.DialogInterface.OnCancelListener;
 import android.graphics.*;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
@@ -16,6 +17,7 @@ import reactive.ui.*;
 
 import android.content.res.*;
 import android.view.animation.*;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import tee.binding.properties.*;
 import tee.binding.task.*;
@@ -312,7 +314,10 @@ public class Auxiliary {
 		builder.setTitle(title);
 		final EditText input = new EditText(context);
 		input.setSingleLine(false);
+		input.setMinLines(3);
+		input.setGravity(android.view.Gravity.LEFT | android.view.Gravity.TOP);
 		input.setText(text.value());
+		//input.setInputType(EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
 		builder.setView(input);
 		builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -333,6 +338,9 @@ public class Auxiliary {
 		builder.setTitle(title);
 		final EditText input = new EditText(context);
 		input.setText(text.value());
+		input.setSingleLine(true);
+		//input.setEllipsize(TextUtils.TruncateAt.END);
+		//input.setInputType(EditorInfo.type_text_fl.TYPE_TEXT_FLAG_MULTI_LINE);
 		builder.setView(input);
 		builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -467,6 +475,13 @@ public class Auxiliary {
 			});
 			builder.create().show();
 		}
+	}
+	public static void pickConfirm(Context context//
+			, String message//
+			, String positiveButtonTitle//
+			, final Task callbackPositiveBtn//
+			){
+		pick3Choice(context,null,message,positiveButtonTitle,callbackPositiveBtn,null,null,null,null);
 	}
 	public static void pick3Choice(Context context//
 			, String title//
@@ -700,6 +715,15 @@ public class Auxiliary {
 			t.printStackTrace();
 		}
 		return b;
+	}
+	public static void createAbsolutePath(String path) {
+		String s = File.separator;
+		String[] names = path.split(File.separator);
+		String r = names[0];
+		for (int i = 1; i < names.length; i++) {
+			r = r + File.separator + names[i];
+			new File(r).mkdirs();
+		}
 	}
 	public static void exportResource(Context context, String path, int id) {
 		if (!(new File(path)).exists()) {
