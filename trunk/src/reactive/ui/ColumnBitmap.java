@@ -39,6 +39,7 @@ public String export(int row){
 			else {
 				cell.bitmap.property.value(null);
 			}
+			cell.invalidate();
 		}
 	}
 	@Override
