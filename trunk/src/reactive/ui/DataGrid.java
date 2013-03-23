@@ -21,8 +21,11 @@ public class DataGrid extends SubLayoutless {
 	public NumericProperty<DataGrid> headerHeight;
 	public NumericProperty<DataGrid> rowHeight;
 	public ToggleProperty<DataGrid> center;
+	public int pressed = -1;
 	private Numeric margin;
 	public ItProperty<DataGrid, Task> beforeFlip = new ItProperty<DataGrid, Task>(this);
+	public ItProperty<DataGrid, Task> pluck = new ItProperty<DataGrid, Task>(this);
+	boolean pluckMode = false;
 	private boolean lockAppend = false;
 	Column[] columnsArray = null;
 	ProgressBar progressBar;
@@ -139,6 +142,9 @@ public class DataGrid extends SubLayoutless {
 			scrollView.setOverScrollMode(OVER_SCROLL_IF_CONTENT_SCROLLS);
 		}
 	}
+	//	void pressRow(int row) {
+	//System.out.println("pressRow " + row);
+	//}
 	void tapRow(int row, int column) {
 		for (int x = 0; x < columnsArray.length; x++) {
 			columnsArray[x].highlight(row);
@@ -328,20 +334,46 @@ public class DataGrid extends SubLayoutless {
 					if (columnsArray == null) {
 						return false;
 					}
+					/*
+					float aX = event.getX();
+					float aY = event.getY();
+					int columnsWidth = 0;
+					if (columnsArray != null) {
+						for (int x = 0; x < columnsArray.length; x++) {
+							columnsWidth = columnsWidth + columnsArray[x].width.property.value().intValue();
+						}
+					}
+					*/
 					if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+						pluckMode = false;
 						initialX = event.getX();
 						initialY = event.getY();
+						/*
+						if (aX > margin.value() && aX < margin.value() + columnsWidth) {
+							int nn = (int) ((this.getScrollY() + aY) / rowHeight.property.value());
+							pressRow(nn);
+						}*/
 					}
 					else {
+						float aY = event.getY();
+						float aX = event.getX();
+						int columnsWidth = 0;
+						if (columnsArray != null) {
+							for (int x = 0; x < columnsArray.length; x++) {
+								columnsWidth = columnsWidth + columnsArray[x].width.property.value().intValue();
+							}
+						}
+						
 						if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
-							int columnsWidth = 0;
+							pluckMode = false;
+							/*int columnsWidth = 0;
 							if (columnsArray != null) {
 								for (int x = 0; x < columnsArray.length; x++) {
 									columnsWidth = columnsWidth + columnsArray[x].width.property.value().intValue();
 								}
 							}
 							float aX = event.getX();
-							float aY = event.getY();
+							float aY = event.getY();*/
 							if (aX > margin.value() && aX < margin.value() + columnsWidth) {
 								//System.out.println(event.getX()+" / "+margin.value());
 								float diff = 4;
@@ -355,6 +387,30 @@ public class DataGrid extends SubLayoutless {
 											break;
 										}
 									}
+								}
+							}
+						}
+						else {
+							if (pluck.property.value() != null) {
+								if (!pluckMode) {
+									if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
+										float delta = Math.abs(event.getX() - initialX);
+										//System.out.println("/ " + event.getY()+" / "+initialY);
+										if (delta > Auxiliary.tapSize) {
+											//System.out.println("pluck " + delta);
+											
+											if (aX > margin.value() && aX < margin.value() + columnsWidth) {
+												int nn = (int) ((this.getScrollY() + aY) / rowHeight.property.value());
+												pressed = nn;
+												pluckMode = true;
+												pluck.property.value().start();
+												return true;
+											}
+										}
+									}
+								}
+								else {
+									return true;
 								}
 							}
 						}

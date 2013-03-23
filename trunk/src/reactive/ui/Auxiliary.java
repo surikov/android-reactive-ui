@@ -728,6 +728,7 @@ public class Auxiliary {
 	public static void exportResource(Context context, String path, int id) {
 		if (!(new File(path)).exists()) {
 			try {
+				System.out.println(	"exportResource write "+path);
 				/*if (!(new File(path)).exists()) {
 				System.out.println(	path+": "+new File(path+name).mkdirs());
 				}*/
@@ -747,6 +748,9 @@ public class Auxiliary {
 			catch (Throwable t) {
 				t.printStackTrace();
 			}
+		}
+		else{
+			System.out.println(	"exportResource skip "+path);
 		}
 	}
 	public static java.util.Date date(String mills) {
