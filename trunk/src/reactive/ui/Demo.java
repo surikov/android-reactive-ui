@@ -3,6 +3,8 @@ package reactive.ui;
 //http://www3.ntu.edu.sg/home/ehchua/programming/android/Android_3D.html
 import android.view.*;
 import android.app.*;
+import android.app.KeyguardManager.*;
+import android.app.admin.*;
 import android.content.*;
 import android.graphics.*;
 import android.os.AsyncTask;
@@ -12,9 +14,7 @@ import android.text.Html;
 import android.util.*;
 import android.net.*;
 import android.widget.*;
-
 import java.util.*;
-
 import org.apache.http.*;
 import org.apache.http.client.*;
 import org.apache.http.client.methods.*;
@@ -27,10 +27,8 @@ import org.apache.http.util.EntityUtils;
 import android.database.*;
 import android.database.sqlite.*;
 import reactive.ui.*;
-
 import java.net.*;
 import java.nio.channels.FileChannel;
-
 import android.view.animation.*;
 import android.view.inputmethod.*;
 import tee.binding.properties.*;
@@ -40,31 +38,109 @@ import tee.binding.*;
 import java.io.*;
 import java.text.*;
 
+
 public class Demo extends Activity {
 	Layoutless layoutless;
-	
-public static String version(){return "1.04";}
+	public static String version() {
+		return "1.04";
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		layoutless = new Layoutless(this);
 		this.setContentView(layoutless);
 		layoutless//
-				.child(new Decor(this)//
-				.background.is(0x33ff0000).width().is(200).height().is(200)//
+				.child(new Knob(this)//
+				.afterTap.is(new Task() {
+					@Override
+					public void doTask() {
+						System.out.println("lock");
+						lockAll();
+						System.out.println("lock done");
+					}
+				})//
+				.labelText.is("lock").width().is(200).height().is(70)//
 				)//
-				.child(new Decor(this)//
-				.background.is(0x3300ff00).width().is(200).height().is(200).left().is(150).top().is(50)//
+				.child(new Knob(this)//
+				.afterTap.is(new Task() {
+					@Override
+					public void doTask() {
+						System.out.println("unlock");
+						unlockAll();
+						System.out.println("unlock done");
+					}
+				})//
+				.labelText.is("exit").top().is(70).width().is(200).height().is(70)//
 				)//
-				.child(new SplitTopDown(this)//
-				.topSide(new Decor(this).labelText.is("top").background.is(0x6633ff66))//
-				.downSide(new Decor(this).labelText.is("down").background.is(0x3300ffff))//
-				.width().is(700)//
-				.height().is(500)//
-				)
 		;
-		
 		System.out.println("done onCreate");
+	}
+	public void lockAll() {
+	}
+	public void unlockAll() {
+	}
+	public void exitHome() {
+		Intent selector = new Intent("android.intent.action.MAIN");
+		selector.addCategory("android.intent.category.HOME");
+		selector.setComponent(new ComponentName("android", "com.android.internal.app.ResolverActivity"));
+		startActivity(selector);
+		
+		//finish this activity
+		finish();
+	}
+	//override some buttons
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		//Log.d("button", new Integer(keyCode).toString());
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			System.out.println("KEYCODE_BACK");
+			return true;
+		} else {
+			if ((keyCode == KeyEvent.KEYCODE_CALL)) {
+				System.out.println("KEYCODE_CALL");
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	public void lockTest() {
+		KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Activity.KEYGUARD_SERVICE);
+		KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
+		//lock.reenableKeyguard();
+		lock.disableKeyguard();
+	}
+	public void _lockTest() {
+		ComponentName devAdminReceiver; // this would have been declared in your class body
+		// then in your onCreate
+		DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+		devAdminReceiver = new ComponentName(this, DeviceAdminReceiver.class);
+		//then in your onResume
+		boolean admin = mDPM.isAdminActive(devAdminReceiver);
+		if (admin) {
+			mDPM.lockNow();
+		} else {
+			System.out.println("Not an admin");
+		}
+		Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+		if (!mDPM.isAdminActive(devAdminReceiver)) {
+			intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+			intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, devAdminReceiver);
+			intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "is locked");
+			intent.putExtra("force-locked", DeviceAdminInfo.USES_POLICY_FORCE_LOCK);
+			startActivityForResult(intent, 1);
+			System.out.println("The Device Could not lock because device admin not enabled");
+			//mDPM.lockNow();
+		} else {
+			System.out.println("The Device  device admin enabled");
+			intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+			intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, devAdminReceiver);
+			intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "onEnabled");
+			mDPM.lockNow();
+			mDPM.setMaximumTimeToLock(devAdminReceiver, 0);
+			intent.putExtra("force-locked", DeviceAdminInfo.USES_POLICY_FORCE_LOCK);
+			startActivityForResult(intent, 1);
+		}
+		System.out.println("done");
 	}
 	/*
 	SQLiteDatabase db() {
