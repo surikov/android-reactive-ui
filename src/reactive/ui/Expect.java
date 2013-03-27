@@ -99,10 +99,12 @@ public class Expect //extends AsyncTask<Void, Void, Void>
 				lock = false;
 			}
 		};
+		//System.out.println(this.getClass().getCanonicalName()+" execute");
 		asyncTask.execute();
 	}
 	public boolean start(Context context) {
 		if (lock) {
+			//System.out.println(this.getClass().getCanonicalName()+" is locked");
 			return false;
 		}
 		lock = true;
@@ -119,6 +121,7 @@ public class Expect //extends AsyncTask<Void, Void, Void>
 			}
 		});
 		builder.setMessage(status.property.value());
+		//System.out.println(this.getClass().getCanonicalName()+" show status");
 		dialog = builder.show();
 		//execute();
 		executeTask();

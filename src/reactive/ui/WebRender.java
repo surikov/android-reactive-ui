@@ -4,6 +4,7 @@ import android.webkit.*;
 import java.io.*;
 import java.util.*;
 
+import tee.binding.it.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
 
@@ -26,6 +27,7 @@ public class WebRender extends WebView implements Rake {
 	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	public NoteProperty<WebView> url = new NoteProperty<WebView>(this);
 	public ItProperty<WebRender, Task> afterLink = new ItProperty<WebRender, Task>(this);
+	//public ItProperty<WebRender, Task> afterLoad = new ItProperty<WebRender, Task>(this);
 	//public NoteProperty<WebView> active = new NoteProperty<WebView>(this);
 	private NumericProperty<Rake> width = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
@@ -34,6 +36,7 @@ public class WebRender extends WebView implements Rake {
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
 	private boolean shouldOverrideUrlLoading = true;
 	Task reFit;
+	//Toggle loading=new Toggle();
 
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -91,6 +94,10 @@ public class WebRender extends WebView implements Rake {
 				System.out.println("onPageFinished " + urlString);
 				shouldOverrideUrlLoading = true;
 				setEnabled(true);
+				//loading.value(false);
+				/*if (afterLoad.property.value() != null) {
+					afterLoad.property.value().start();
+				}*/
 			}
 		});
 		hidden.property.afterChange(new Task() {
@@ -108,8 +115,10 @@ public class WebRender extends WebView implements Rake {
 	}
 	public void go(String urlString) {
 		System.out.println("go " + urlString);
+		//loading.value(true);
 		shouldOverrideUrlLoading = false;
 		this.setEnabled(false);
+
 		loadUrl(urlString);
 	}
 	@Override

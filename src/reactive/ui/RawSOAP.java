@@ -26,11 +26,13 @@ public class RawSOAP {
 	public ItProperty<RawSOAP, Task> afterSuccess = new ItProperty<RawSOAP, Task>(this);
 	public ItProperty<RawSOAP, Task> afterError = new ItProperty<RawSOAP, Task>(this);
 	public ItProperty<RawSOAP, Throwable> exception = new ItProperty<RawSOAP, Throwable>(this);
+	//public NoteProperty exceptionDescription = new NoteProperty(this);
 	public Bough data;
 
 	public void startNow() {
 		//System.out.println(xml.property.value());
 		try {
+			statusCode.is(-2);
 			HttpPost request = new HttpPost(url.property.value());
 			HttpParams httpParameters = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpParameters, timeout.property.value().intValue());
@@ -42,7 +44,9 @@ public class RawSOAP {
 			StringEntity stringEntity = new StringEntity(xml.property.value(), requestEncoding.property.value());
 			stringEntity.setContentType("text/xml; charset=" + requestEncoding.property.value());
 			request.setEntity(stringEntity);
+			statusCode.is(-3);
 			HttpResponse httpResponse = client.execute(request);
+			statusCode.is(-4);
 			statusCode.is(httpResponse.getStatusLine().getStatusCode());
 			statusDescription.is(httpResponse.getStatusLine().getReasonPhrase());
 			HttpEntity entity = httpResponse.getEntity();
@@ -56,7 +60,9 @@ public class RawSOAP {
 			}*/
 		}
 		catch (Throwable t) {
+			//exceptionDescription.is(t.getMessage());
 			exception.is(t);
+			//t.printStackTrace();
 		}
 		//return false;
 	}
