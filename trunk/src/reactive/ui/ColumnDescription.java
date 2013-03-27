@@ -173,6 +173,16 @@ public class ColumnDescription extends Column {
 	}
 	@Override
 	public void clear() {
+		if (presell >= 0 && presell < cells.size()) {
+			if (presell >= 0 && presell < backgrounds.size()) {
+				if (backgrounds.get(presell) != null) {
+					cells.get(presell).background.is(backgrounds.get(presell));
+				}
+				else {
+					cells.get(presell).background.is(0);
+				}
+			}
+		}
 		strings.removeAllElements();
 		backgrounds.removeAllElements();
 		tasks.removeAllElements();
@@ -188,14 +198,11 @@ public class ColumnDescription extends Column {
 			//System.out.println("label "+strings.get(row));
 		}
 	}
+	
 	@Override
 	public void highlight(int row) {
 		if (presell >= 0 && presell < cells.size()) {
 			if (presell >= 0 && presell < backgrounds.size()) {
-				//System.out.println(cells.get(presell));
-				//int b=backgrounds.get(presell);
-				//System.out.println(backgrounds.get(presell));
-				//System.out.println(backgrounds.get(presell));
 				if (backgrounds.get(presell) != null) {
 					cells.get(presell).background.is(backgrounds.get(presell));
 				}

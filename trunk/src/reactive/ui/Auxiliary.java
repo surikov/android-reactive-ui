@@ -480,8 +480,8 @@ public class Auxiliary {
 			, String message//
 			, String positiveButtonTitle//
 			, final Task callbackPositiveBtn//
-			){
-		pick3Choice(context,null,message,positiveButtonTitle,callbackPositiveBtn,null,null,null,null);
+	) {
+		pick3Choice(context, null, message, positiveButtonTitle, callbackPositiveBtn, null, null, null, null);
 	}
 	public static void pick3Choice(Context context//
 			, String title//
@@ -608,12 +608,24 @@ public class Auxiliary {
 		final AlertDialog d = dialogBuilder.create();
 		d.show();
 	}
-	public static Vector<String> readTextFromFile(File aFile) {
+	public static String strings2text(Vector<String> s) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.size(); i++) {
+			sb.append(s.get(i));
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+	public static Vector<String> readTextFromFile(File file) {
+		return readTextFromFile(file, "UTF-8");
+	}
+	public static Vector<String> readTextFromFile(File file, String encoding) {
 		Vector<String> result = new Vector<String>();
 		try {
-			BufferedReader input = new BufferedReader(new FileReader(aFile));
+			//BufferedReader input = new BufferedReader(new FileReader(aFile));
+			BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding));
 			try {
-				String line = null; //not declared within while loop
+				String line = null;
 				while ((line = input.readLine()) != null) {
 					result.add(line);
 					//contents.append(System.getProperty("line.separator"));
@@ -716,7 +728,7 @@ public class Auxiliary {
 		}
 		return b;
 	}
-	public static void createAbsolutePath(String path) {
+	public static void createAbsolutePathForFolder(String path) {
 		String s = File.separator;
 		String[] names = path.split(File.separator);
 		String r = names[0];
@@ -725,10 +737,19 @@ public class Auxiliary {
 			new File(r).mkdirs();
 		}
 	}
+	public static void createAbsolutePathForFile(String path) {
+		String s = File.separator;
+		String[] names = path.split(File.separator);
+		String r = names[0];
+		for (int i = 1; i < names.length - 1; i++) {
+			r = r + File.separator + names[i];
+			new File(r).mkdirs();
+		}
+	}
 	public static void exportResource(Context context, String path, int id) {
 		if (!(new File(path)).exists()) {
 			try {
-				System.out.println(	"exportResource write "+path);
+				System.out.println("exportResource write " + path);
 				/*if (!(new File(path)).exists()) {
 				System.out.println(	path+": "+new File(path+name).mkdirs());
 				}*/
@@ -749,8 +770,8 @@ public class Auxiliary {
 				t.printStackTrace();
 			}
 		}
-		else{
-			System.out.println(	"exportResource skip "+path);
+		else {
+			System.out.println("exportResource skip " + path);
 		}
 	}
 	public static java.util.Date date(String mills) {

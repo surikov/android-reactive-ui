@@ -158,6 +158,16 @@ public class ColumnDate extends Column {
 	}
 	@Override
 	public void clear() {
+		if (presell >= 0 && presell < cells.size()) {
+			if (presell >= 0 && presell < backgrounds.size()) {
+				if (backgrounds.get(presell) != null) {
+					cells.get(presell).background.is(backgrounds.get(presell));
+				}
+				else {
+					cells.get(presell).background.is(0);
+				}
+			}
+		}
 		mills.removeAllElements();
 		backgrounds.removeAllElements();
 		tasks.removeAllElements();
