@@ -168,7 +168,37 @@ public class Layoutless extends RelativeLayout implements Rake {
 		children.add(v);
 		return this;
 	}
-	public Layoutless field(Context context, int row, Note label, Rake content, Numeric contentWidth) {
+	public Layoutless input(Context context, double row, double left,Note label, Rake content, Numeric contentWidth) {
+		this.child(new Decor(context).labelText.is(label)//
+				.left().is(this.shiftX.property.plus(left))//
+				.top().is(this.shiftY.property.plus(1.5 * row * Auxiliary.tapSize))//
+				.width().is(contentWidth)//
+				.height().is(0.5 * Auxiliary.tapSize)//
+		);
+		this.child(content//
+				.left().is(this.shiftX.property.plus(left))//
+				.top().is(this.shiftY.property.plus((0.5 + 1.5 * row) * Auxiliary.tapSize))//
+				.width().is(contentWidth)//
+				.height().is(0.8 * Auxiliary.tapSize)//
+		);
+		return this;
+	}
+	public Layoutless input(Context context, double row, double left, Note label, Rake content) {
+		return input(context, row, left,label, content, new Numeric().value(5 * Auxiliary.tapSize));
+	}
+	public Layoutless input(Context context, double row, double left, Note label, Rake content, int contentWidth) {
+		return input(context, row, left,label, content, new Numeric().value(contentWidth));
+	}
+	public Layoutless input(Context context, double row, double left, String label, Rake content) {
+		return input(context, row, left,new Note().value(label), content, new Numeric().value(5 * Auxiliary.tapSize));
+	}
+	public Layoutless input(Context context, double row, double left, String label, Rake content, int contentWidth) {
+		return input(context, row, left,new Note().value(label), content, new Numeric().value(contentWidth));
+	}
+	public Layoutless input(Context context, double row, double left, String label, Rake content, Numeric contentWidth) {
+		return input(context, row, left,new Note().value(label), content, contentWidth);
+	}
+	public Layoutless field(Context context, double row, Note label, Rake content, Numeric contentWidth) {
 		this.child(new Decor(context).labelText.is(label)//
 				.labelAlignRightCenter()//
 				.left().is(this.shiftX.property)//
@@ -184,19 +214,19 @@ public class Layoutless extends RelativeLayout implements Rake {
 		);
 		return this;
 	}
-	public Layoutless field(Context context, int row, Note label, Rake content) {
+	public Layoutless field(Context context, double row, Note label, Rake content) {
 		return field(context, row, label, content, new Numeric().value(5 * Auxiliary.tapSize));
 	}
-	public Layoutless field(Context context, int row, Note label, Rake content, int contentWidth) {
+	public Layoutless field(Context context, double row, Note label, Rake content, int contentWidth) {
 		return field(context, row, label, content, new Numeric().value(contentWidth));
 	}
-	public Layoutless field(Context context, int row, String label, Rake content) {
+	public Layoutless field(Context context, double row, String label, Rake content) {
 		return field(context, row, new Note().value(label), content, new Numeric().value(5 * Auxiliary.tapSize));
 	}
-	public Layoutless field(Context context, int row, String label, Rake content, int contentWidth) {
+	public Layoutless field(Context context, double row, String label, Rake content, int contentWidth) {
 		return field(context, row, new Note().value(label), content, new Numeric().value(contentWidth));
 	}
-	public Layoutless field(Context context, int row, String label, Rake content, Numeric contentWidth) {
+	public Layoutless field(Context context, double row, String label, Rake content, Numeric contentWidth) {
 		return field(context, row, new Note().value(label), content, contentWidth);
 	}
 	public Rake child(int nn) {
