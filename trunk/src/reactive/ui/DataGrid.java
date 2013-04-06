@@ -26,7 +26,7 @@ public class DataGrid extends SubLayoutless {
 	public ItProperty<DataGrid, Task> beforeFlip = new ItProperty<DataGrid, Task>(this);
 	public ItProperty<DataGrid, Task> afterPluck = new ItProperty<DataGrid, Task>(this);
 	public ItProperty<DataGrid, Task> afterTap = new ItProperty<DataGrid, Task>(this);
-	public NumericProperty<DataGrid> pluckX; 
+	public NumericProperty<DataGrid> pluckX;
 	public NumericProperty<DataGrid> pluckY;
 	//public MotionEvent lastPluckMotionEvent = null;
 	private boolean pluckMode = false;
@@ -101,6 +101,9 @@ public class DataGrid extends SubLayoutless {
 	private void append() {
 		if (lockAppend) {
 			//System.out.println("append locked");
+			return;
+		}
+		if (columnsArray == null) {
 			return;
 		}
 		if (columnsArray.length > 0) {
@@ -311,8 +314,8 @@ public class DataGrid extends SubLayoutless {
 			noHead = new ToggleProperty<DataGrid>(this);
 			center = new ToggleProperty<DataGrid>(this);
 			margin = new Numeric();
-			pluckX= new NumericProperty<DataGrid>(this);
-			pluckY= new NumericProperty<DataGrid>(this);
+			pluckX = new NumericProperty<DataGrid>(this);
+			pluckY = new NumericProperty<DataGrid>(this);
 			pageSize = new NumericProperty<DataGrid>(this);
 			pageSize.is(33);
 			dataOffset = new NumericProperty<DataGrid>(this);
@@ -335,16 +338,13 @@ public class DataGrid extends SubLayoutless {
 					if (columnsArray == null) {
 						return false;
 					}
-					
 					if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
-						
 						pluckMode = false;
 						if (afterTap.property.value() != null) {
 							afterTap.property.value().start();
 						}
 					}
 					if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-						
 						pluckMode = false;
 						initialX = event.getX();
 						initialY = event.getY();
@@ -353,7 +353,7 @@ public class DataGrid extends SubLayoutless {
 						if (pluckMode) {
 							//System.out.println("redirect "+event);
 							pluckX.is(event.getX());
-							pluckY.is(event.getY() );
+							pluckY.is(event.getY());
 							return true;
 						}
 						float aY = event.getY();
@@ -379,7 +379,6 @@ public class DataGrid extends SubLayoutless {
 										}
 									}
 								}
-								
 							}
 						}
 						else {
@@ -395,8 +394,8 @@ public class DataGrid extends SubLayoutless {
 											plucked = nn;
 											//lastPluckMotionEvent = event;
 											pluckMode = true;
-											pluckX.is(event.getX() );
-											pluckY.is(event.getY() );
+											pluckX.is(event.getX());
+											pluckY.is(event.getY());
 											afterPluck.property.value().start();
 											return true;
 										}
