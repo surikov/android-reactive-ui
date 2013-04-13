@@ -11,7 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import java.text.*;
 
-public class ColumnNumer extends Column {
+public class ColumnNumeric extends Column {
 	private DecimalFormat formater = new DecimalFormat();
 	public Vector<Double> numbers = new Vector<Double>();
 	public Vector<Task> tasks = new Vector<Task>();
@@ -20,8 +20,8 @@ public class ColumnNumer extends Column {
 	//protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
-	public NumericProperty<ColumnNumer> headerBackground = new NumericProperty<ColumnNumer>(this);
-	public NoteProperty<ColumnNumer> format = new NoteProperty<ColumnNumer>(this);//http://docs.oracle.com/javase/1.4.2/docs/api/java/text/DecimalFormat.html
+	public NumericProperty<ColumnNumeric> headerBackground = new NumericProperty<ColumnNumeric>(this);
+	public NoteProperty<ColumnNumeric> format = new NoteProperty<ColumnNumeric>(this);//http://docs.oracle.com/javase/1.4.2/docs/api/java/text/DecimalFormat.html
 	@Override
 	public String export(int row) {
 		if (row > -1 && row < numbers.size()) {
@@ -92,26 +92,26 @@ public class ColumnNumer extends Column {
 		cells.add(cell);
 		return cell;
 	}
-	public ColumnNumer cell(double s, Integer background, Task tap) {
+	public ColumnNumeric cell(double s, Integer background, Task tap) {
 		numbers.add(s);
 		tasks.add(tap);
 		backgrounds.add(background);
 		return this;
 	}
-	public ColumnNumer cell(double s) {
+	public ColumnNumeric cell(double s) {
 		return cell(s, null, null);
 	}
-	public ColumnNumer cell(double s, Task tap) {
+	public ColumnNumeric cell(double s, Task tap) {
 		return cell(s, null, tap);
 	}
-	public ColumnNumer cell(double s, Integer background) {
+	public ColumnNumeric cell(double s, Integer background) {
 		return cell(s, background, null);
 	}
 	@Override
 	public int count() {
 		return numbers.size();
 	}
-	public ColumnNumer() {
+	public ColumnNumeric() {
 		this.width.is(150);
 		//linePaint.setAntiAlias(true);
 		//linePaint.setFilterBitmap(true);
