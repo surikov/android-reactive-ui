@@ -91,7 +91,20 @@ public class ColumnSketch extends Column {
 	}
 	@Override
 	public void update(int row) {
-		// TODO Auto-generated method stub
+		if (row >= 0 && row < cells.size()) {
+			Decor cell = cells.get(row);
+			if (row > -1 && row < backgrounds.size()) {
+				if (backgrounds.get(row) != null) {
+					cell.background.is(backgrounds.get(row));
+				} else {
+					cell.background.is(null);
+				}
+			}
+			cell.clear();
+			if (row > -1 && row < sketches.size()) {
+				cell.sketch(sketches.get(row));
+			}
+		}
 	}
 	@Override
 	public Rake header(Context context) {
