@@ -1,14 +1,11 @@
 package reactive.ui;
 
-import java.util.Date;
-import java.util.Vector;
+import java.util.*;
 import tee.binding.properties.*;
-import tee.binding.task.Task;
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import java.text.*;
+import tee.binding.task.*;
+import android.content.*;
+import android.graphics.*;
+
 
 
 public class ColumnSketch extends Column {
@@ -16,37 +13,34 @@ public class ColumnSketch extends Column {
 	public Vector<Task> tasks = new Vector<Task>();
 	public Vector<Decor> cells = new Vector<Decor>();
 	public Vector<Integer> backgrounds = new Vector<Integer>();
-	//protected Paint linePaint = new Paint();
 	protected Rect sz;
 	int presell = -1;
 	public NumericProperty<ColumnSketch> headerBackground = new NumericProperty<ColumnSketch>(this);
 	@Override
-	public void afterTap(int row) {
-		if (row > -1 && row < tasks.size()) {
-			if (tasks.get(row) != null) {
-				tasks.get(row).start();
+	public String export(int row) {
+		return "";
+	}
+	@Override
+	public void update(int row) {
+		if (row >= 0 && row < cells.size()) {
+			Decor cell = cells.get(row);
+			if (row > -1 && row < backgrounds.size()) {
+				if (backgrounds.get(row) != null) {
+					cell.background.is(backgrounds.get(row));
+				}
+				else {
+					cell.background.is(null);
+				}
+			}
+			cell.clear();
+			if (row > -1 && row < sketches.size()) {
+				cell.sketch(sketches.get(row));
 			}
 		}
-	}
-	public ColumnSketch cell(Sketch s, Integer background, Task tap) {
-		sketches.add(s);
-		tasks.add(tap);
-		backgrounds.add(background);
-		return this;
-	}
-	public ColumnSketch cell(Sketch s) {
-		return cell(s, null, null);
-	}
-	public ColumnSketch cell(Sketch s, Task tap) {
-		return cell(s, null, tap);
-	}
-	public ColumnSketch cell(Sketch s, Integer background) {
-		return cell(s, background, null);
 	}
 	@Override
 	public Rake item(final int column, int row, Context context) {
 		Decor cell = new Decor(context, true) {
-			//
 			@Override
 			protected void onDraw(Canvas canvas) {
 				super.onDraw(canvas);
@@ -76,40 +70,40 @@ public class ColumnSketch extends Column {
 				cell.background.is(backgrounds.get(row));
 			}
 		}
-		//cell.setPadding(3, 0, 3, 0);
-		//cell.labelStyleMediumNormal();
+		cell.setPadding(3, 0, 3, 0);
+		cell.labelStyleMediumNormal();
+		
 		if (row > -1 && row < sketches.size()) {
-			//cell.labelText.is(strings.get(row));
 			cell.sketch(sketches.get(row));
 		}
 		cells.add(cell);
 		return cell;
 	}
-	@Override
-	public String export(int row) {
-		return "";
+	public ColumnSketch cell(Sketch s, Integer background, Task tap) {
+		sketches.add(s);
+		tasks.add(tap);
+		backgrounds.add(background);
+		return this;
+	}
+	public ColumnSketch cell(Sketch s) {
+		return cell(s, null, null);
+	}
+	public ColumnSketch cell(Sketch s, Task tap) {
+		return cell(s, null, tap);
+	}
+	public ColumnSketch cell(Sketch s, Integer background) {
+		return cell(s, background, null);
 	}
 	@Override
-	public void update(int row) {
-		if (row >= 0 && row < cells.size()) {
-			Decor cell = cells.get(row);
-			if (row > -1 && row < backgrounds.size()) {
-				if (backgrounds.get(row) != null) {
-					cell.background.is(backgrounds.get(row));
-				} else {
-					cell.background.is(null);
-				}
-			}
-			cell.clear();
-			if (row > -1 && row < sketches.size()) {
-				cell.sketch(sketches.get(row));
-			}
-		}
+	public int count() {
+		return sketches.size();
+	}
+	public ColumnSketch() {
+		this.width.is(150);
 	}
 	@Override
 	public Rake header(Context context) {
 		Decor header = new Decor(context) {
-			//
 			@Override
 			protected void onDraw(Canvas canvas) {
 				super.onDraw(canvas);
@@ -128,16 +122,13 @@ public class ColumnSketch extends Column {
 		return header;
 	}
 	@Override
-	public int count() {
-		return sketches.size();
-	}
-	@Override
 	public void clear() {
 		if (presell >= 0 && presell < cells.size()) {
 			if (presell >= 0 && presell < backgrounds.size()) {
 				if (backgrounds.get(presell) != null) {
 					cells.get(presell).background.is(backgrounds.get(presell));
-				} else {
+				}
+				else {
 					cells.get(presell).background.is(0);
 				}
 			}
@@ -147,12 +138,21 @@ public class ColumnSketch extends Column {
 		tasks.removeAllElements();
 	}
 	@Override
+	public void afterTap(int row) {
+		if (row > -1 && row < tasks.size()) {
+			if (tasks.get(row) != null) {
+				tasks.get(row).start();
+			}
+		}
+	}
+	@Override
 	public void highlight(int row) {
 		if (presell >= 0 && presell < cells.size()) {
 			if (presell >= 0 && presell < backgrounds.size()) {
 				if (backgrounds.get(presell) != null) {
 					cells.get(presell).background.is(backgrounds.get(presell));
-				} else {
+				}
+				else {
 					cells.get(presell).background.is(0);
 				}
 			}
