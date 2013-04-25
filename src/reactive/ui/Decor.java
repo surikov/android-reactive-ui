@@ -209,6 +209,12 @@ public class Decor extends TextView implements Rake {
 				setBackgroundColor(background.property.value().intValue());
 			}
 		});
+		bitmap.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				invalidate();
+			}
+		});
 		labelFace.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
