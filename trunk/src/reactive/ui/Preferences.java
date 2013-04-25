@@ -33,6 +33,8 @@ import java.text.*;
 
 public class Preferences {
 	static Hashtable<String, Numeric> integers = new Hashtable<String, Numeric>();
+	static Hashtable<String, Note> strings = new Hashtable<String, Note>();
+	static Hashtable<String, Toggle> toggles = new Hashtable<String, Toggle>();
 	//static Preferences me;
 	static SharedPreferences preferences;
 
@@ -51,6 +53,18 @@ public class Preferences {
 			editor.putInt(k, integers.get(k).value().intValue());
 			//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
 		}
+		for (Enumeration<String> e = strings.keys(); e.hasMoreElements();) {
+			String k = e.nextElement();
+			editor.putString(k, strings.get(k).value());
+			//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+		}
+		
+		
+		for (Enumeration<String> e = toggles.keys(); e.hasMoreElements();) {
+			String k = e.nextElement();
+			editor.putBoolean(k, toggles.get(k).value());
+			//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+		}
 		editor.commit();
 	}
 	public static Numeric integer(String name, int defaultValue) {
@@ -61,6 +75,27 @@ public class Preferences {
 			n = new Numeric().value(storedPreference);
 			integers.put(name, n);
 			//System.out.println("create preference: "+name+"="+n.value().intValue());
+		}
+		return n;
+	}
+	
+	
+	public static Note string(String name, String defaultValue) {
+		Note n = strings.get(name);
+		if (n == null) {
+			String storedPreference = preferences.getString(name, defaultValue);
+			n = new Note().value(storedPreference);
+			strings.put(name, n);
+		}
+		return n;
+	}
+	
+	public static Toggle toggle(String name, boolean defaultValue) {
+		Toggle n = toggles.get(name);
+		if (n == null) {
+			boolean storedPreference = preferences.getBoolean(name, defaultValue);
+			n = new Toggle().value(storedPreference);
+			toggles.put(name, n);
 		}
 		return n;
 	}
