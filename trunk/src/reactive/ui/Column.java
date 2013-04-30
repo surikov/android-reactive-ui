@@ -42,6 +42,7 @@ public abstract class Column {
 	public ToggleProperty<Column> noHorizontalBorder = new ToggleProperty<Column>(this);
 	public abstract void afterTap(int row);
 	public NoteProperty<Column> title = new NoteProperty<Column>(this);
+	public NoteProperty<Column> footer = new NoteProperty<Column>(this);
 	public abstract Rake item(int column,int row, Context context);
 	public abstract String export(int row);
 	public abstract void update(int row);
