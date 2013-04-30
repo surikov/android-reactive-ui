@@ -4,6 +4,8 @@ import tee.binding.properties.*;
 import android.view.*;
 import android.app.Activity;
 import android.content.*;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.*;
 import android.util.*;
 import android.widget.*;
@@ -15,10 +17,12 @@ import tee.binding.it.*;
 
 public class DataGrid extends SubLayoutless {
 	public ToggleProperty<DataGrid> noHead;
+	public ToggleProperty<DataGrid> noFoot;
 	static final int maxPageCount = 3;
 	public NumericProperty<DataGrid> pageSize;
 	public NumericProperty<DataGrid> dataOffset;
 	public NumericProperty<DataGrid> headerHeight;
+	public NumericProperty<DataGrid> footerHeight;
 	public NumericProperty<DataGrid> rowHeight;
 	public ToggleProperty<DataGrid> center;
 	public int plucked = -1;
@@ -40,6 +44,7 @@ public class DataGrid extends SubLayoutless {
 	Vector<TableRow> rows = new Vector<TableRow>();
 	private boolean initialized = false;
 	private SubLayoutless header;
+	private SubLayoutless footer;
 
 	public DataGrid(Context context) {
 		super(context);
@@ -61,6 +66,19 @@ public class DataGrid extends SubLayoutless {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 	}
+	/*
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		if(noFoot.property.value()){
+		canvas.drawRect(new Rect(//under
+				0//
+				, height().property.value().intValue() - 1-footerHeight.property.value().intValue()//
+				, width().property.value().intValue()//
+				, height().property.value().intValue()-footerHeight.property.value().intValue() //
+				), Auxiliary.paintLine);
+		}
+	}*/
 	public DataGrid columns(Column[] indata) {
 		columnsArray = indata;
 		if (columnsArray.length < 1) {
@@ -75,9 +93,18 @@ public class DataGrid extends SubLayoutless {
 				headerCell.left().is(header.shiftX.property.plus(left).plus(margin));
 				header.child(headerCell);
 			}
+			if (!noFoot.property.value()) {
+				//System.out.println("foot "+x);
+				Rake footerCell = new Decor(getContext()).labelText.is(columnsArray[x].footer.property).labelAlignCenterTop();
+				footerCell.height().is(footerHeight.property.value());
+				footerCell.width().is(columnsArray[x].width.property);
+				footerCell.left().is(footer.shiftX.property.plus(left).plus(margin));
+				footer.child(footerCell);
+			}
 			left = left + columnsArray[x].width.property.value().intValue();
 		}
 		header.innerWidth.is(left);
+		footer.innerWidth.is(left);
 		reset();
 		flip();
 		reFitGrid();
@@ -186,8 +213,12 @@ public class DataGrid extends SubLayoutless {
 						if (noHead.property.value()) {
 							hh = 0;
 						}
+						double fh = footerHeight.property.value();
+						if (noFoot.property.value()) {
+							fh = 0;
+						}
 						scrollView.scrollTo(0, (int) (//
-								pageSize.property.value() * rowHeight.property.value() - hh//
+								pageSize.property.value() * rowHeight.property.value() - hh - fh//
 								));
 						progressBar.setVisibility(View.INVISIBLE);
 					}
@@ -251,9 +282,13 @@ public class DataGrid extends SubLayoutless {
 		if (noHead.property.value()) {
 			hh = 0;
 		}
+		double fh = footerHeight.property.value();
+		if (noFoot.property.value()) {
+			fh = 0;
+		}
 		if (scrollView != null) {
 			int scrw = width().property.value().intValue();
-			int scrh = (int) (height().property.value() - hh);
+			int scrh = (int) (height().property.value() - hh - fh);
 			int scrl = 0;
 			int scrt = (int) hh;
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(scrw, scrh);
@@ -312,6 +347,8 @@ public class DataGrid extends SubLayoutless {
 		if (!initialized) {
 			initialized = true;
 			noHead = new ToggleProperty<DataGrid>(this);
+			noFoot = new ToggleProperty<DataGrid>(this);
+			noFoot.is(true);
 			center = new ToggleProperty<DataGrid>(this);
 			margin = new Numeric();
 			pluckX = new NumericProperty<DataGrid>(this);
@@ -320,12 +357,31 @@ public class DataGrid extends SubLayoutless {
 			pageSize.is(33);
 			dataOffset = new NumericProperty<DataGrid>(this);
 			dataOffset.is(0);
+			footerHeight = new NumericProperty<DataGrid>(this);
+			footerHeight.is(Auxiliary.tapSize);
+			footer = new SubLayoutless(this.getContext());
+			footer.width().is(width().property);
+			footer.height().is(footerHeight.property);
+			footer.top().is(height().property.minus(footerHeight.property));
+			this.child(footer);
+			
 			headerHeight = new NumericProperty<DataGrid>(this);
 			headerHeight.is(Auxiliary.tapSize);
 			header = new SubLayoutless(this.getContext());
 			header.width().is(width().property);
 			header.height().is(headerHeight.property);
 			this.child(header);
+			
+			
+			Decor footLine = new Decor(getContext()).background.is(Auxiliary.colorLine);
+			footLine.left().is(header.shiftX.property);
+			footLine.top().is(height().property.minus(footerHeight.property).minus(1));
+			footLine.width().is(width().property);
+			footLine.height().is(1);
+			footLine.hidden().is(noFoot.property);
+			this.child(footLine);
+			
+			
 			rowHeight = new NumericProperty<DataGrid>(this);
 			rowHeight.is(Auxiliary.tapSize);
 			tableLayout = new TableLayout(this.getContext());
@@ -418,9 +474,12 @@ public class DataGrid extends SubLayoutless {
 					super.onScrollChanged(left, top, oldLeft, oldTop);
 					progressBar.setVisibility(View.VISIBLE);
 					progressBar.postInvalidate();
-					double scrollViewHeight = height().property.value() - headerHeight.property.value();
-					if (noHead.property.value()) {
-						scrollViewHeight = height().property.value();
+					double scrollViewHeight = height().property.value();
+					if (!noHead.property.value()) {
+						scrollViewHeight = scrollViewHeight - headerHeight.property.value();
+					}
+					if (!noFoot.property.value()) {
+						scrollViewHeight = scrollViewHeight - footerHeight.property.value();
 					}
 					double contentHeight = rowHeight.property.value() * (currentPage + 1) * pageSize.property.value();
 					//double contentHeight = rowHeight.property.value() * currentPage * pageSize.property.value();
@@ -490,6 +549,7 @@ public class DataGrid extends SubLayoutless {
 					reFitGrid();
 				}
 			});
+			header.shiftX.property.bind(footer.shiftX.property);
 		}
 	}
 }
