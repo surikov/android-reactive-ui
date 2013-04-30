@@ -298,9 +298,11 @@ public class Auxiliary {
 		return bitmap;
 	}
 	public static void inform(String s, Context context) {
+		System.out.println("inform: " +s);
 		Toast.makeText(context, s, Toast.LENGTH_LONG).show();
 	}
 	public static void warn(String s, Context context) {
+		System.out.println("warn: " +s);
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setMessage(s);
 		builder.create().show();
