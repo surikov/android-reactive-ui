@@ -30,6 +30,21 @@ public class ColumnNumeric extends Column {
 		}
 		return "";
 	}
+	String getValue(double d) {
+		if (d == 0) {
+			return "";
+		}
+		else {
+			
+			if (format.property.value().length() > 1) {
+				//System.out.println(t+": "+(int)t+": "+d+": "+formater.format(d));
+				return formater.format(d);
+			}
+			else {
+				return ""+d;
+			}
+		}
+	}
 	@Override
 	public void update(int row) {
 		if (row >= 0 && row < cells.size()) {
@@ -43,7 +58,8 @@ public class ColumnNumeric extends Column {
 				}
 			}
 			if (row > -1 && row < numbers.size()) {
-				cell.labelText.is(formater.format(numbers.get(row)));
+				cell.labelText.is(getValue(numbers.get(row)));
+				//cell.labelText.is(formater.format(numbers.get(row)));
 			}
 			else {
 				cell.labelText.is("");
@@ -87,7 +103,8 @@ public class ColumnNumeric extends Column {
 		cell.setPadding(3, 0, 3, 0);
 		cell.labelStyleMediumNormal();
 		if (row > -1 && row < numbers.size()) {
-			cell.labelText.is(formater.format(numbers.get(row)));
+			//cell.labelText.is(formater.format(numbers.get(row)));
+			cell.labelText.is(getValue(numbers.get(row)));
 		}
 		cells.add(cell);
 		return cell;
