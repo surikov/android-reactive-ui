@@ -26,9 +26,10 @@ public class ColumnDate extends Column {
 	@Override
 	public String export(int row) {
 		if (row > -1 && row < mills.size()) {
-			Date d = new Date();
+			/*Date d = new Date();
 			d.setTime(mills.get(row));
-			return formater.format(d);
+			return formater.format(d);*/
+			return getValue(mills.get(row));
 		}
 		return "";
 	}
@@ -45,9 +46,10 @@ public class ColumnDate extends Column {
 				}
 			}
 			if (row > -1 && row < mills.size()) {
-				Date d = new Date();
+				/*Date d = new Date();
 				d.setTime(mills.get(row));
-				cell.labelText.is(formater.format(d));
+				cell.labelText.is(formater.format(d));*/
+				cell.labelText.is(getValue(mills.get(row)));
 			}
 			else {
 				cell.labelText.is("");
@@ -92,12 +94,29 @@ public class ColumnDate extends Column {
 		cell.labelStyleMediumNormal();
 		if (row > -1 && row < mills.size()) {
 			//cell.labelText.is(formater.format(numbers.get(row)));
-			Date d = new Date();
-			d.setTime(mills.get(row));
-			cell.labelText.is(formater.format(d));
+			//Date d = new Date();
+			//d.setTime(mills.get(row));
+			//cell.labelText.is(formater.format(d));
+			cell.labelText.is(getValue(mills.get(row)));
 		}
 		cells.add(cell);
 		return cell;
+	}
+	String getValue(long t) {
+		if (t == 0) {
+			return "";
+		}
+		else {
+			Date d = new Date();
+			d.setTime(t);
+			if (format.property.value().length() > 1) {
+				//System.out.println(t+": "+(int)t+": "+d+": "+formater.format(d));
+				return formater.format(d);
+			}
+			else {
+				return d.toString();
+			}
+		}
 	}
 	public ColumnDate cell(long s, Integer background, Task tap) {
 		mills.add(s);
@@ -127,7 +146,8 @@ public class ColumnDate extends Column {
 			@Override
 			public void doTask() {
 				try {
-					formater = new SimpleDateFormat(format.property.value());
+					formater = new SimpleDateFormat(format.property.value(), Locale.ENGLISH);
+					formater.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
 				}
 				catch (Throwable t) {
 					t.printStackTrace();
