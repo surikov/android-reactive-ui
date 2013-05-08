@@ -146,7 +146,7 @@ public class ColumnDate extends Column {
 			@Override
 			public void doTask() {
 				try {
-					formater = new SimpleDateFormat(format.property.value(), Locale.ENGLISH);
+					formater = new SimpleDateFormat(format.property.value());
 					formater.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
 				}
 				catch (Throwable t) {
