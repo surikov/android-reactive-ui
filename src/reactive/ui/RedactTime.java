@@ -148,6 +148,7 @@ public class RedactTime  extends EditText implements Rake {
 		}
 		else {
 			DateFormat to = new SimpleDateFormat(format.property.value());
+			to.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
 			Calendar c = Calendar.getInstance();
 			c.setTimeInMillis(time.property.value().longValue());
 			setText(to.format(c.getTime()));
