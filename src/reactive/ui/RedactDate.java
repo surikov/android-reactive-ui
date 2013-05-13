@@ -85,6 +85,7 @@ public class RedactDate extends EditText implements Rake {
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 					Calendar c = Calendar.getInstance();
+					c.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
 					c.setTimeInMillis(date.property.value().longValue());
 					if(date.property.value()==0){
 						c.setTimeInMillis(new Date().getTime());
@@ -97,6 +98,7 @@ public class RedactDate extends EditText implements Rake {
 						@Override
 						public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 							Calendar c = Calendar.getInstance();
+							c.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
 							c.set(Calendar.YEAR, year);
 							c.set(Calendar.MONTH, monthOfYear);
 							c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
