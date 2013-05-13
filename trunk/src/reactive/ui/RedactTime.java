@@ -84,6 +84,7 @@ public class RedactTime  extends EditText implements Rake {
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 					Calendar c = Calendar.getInstance();
+					c.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
 					c.setTimeInMillis(time.property.value().longValue());
 					if(time.property.value()==0){
 						c.setTimeInMillis(new Date().getTime());
@@ -100,6 +101,7 @@ public class RedactTime  extends EditText implements Rake {
 						@Override
 						public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 							Calendar lc = Calendar.getInstance();
+							lc.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
 							lc.set(Calendar.YEAR, 0);
 							lc.set(Calendar.MONTH, 0);
 							lc.set(Calendar.DAY_OF_MONTH, 1);
@@ -149,6 +151,7 @@ public class RedactTime  extends EditText implements Rake {
 		else {
 			DateFormat to = new SimpleDateFormat(format.property.value());
 			to.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+			
 			Calendar c = Calendar.getInstance();
 			c.setTimeInMillis(time.property.value().longValue());
 			setText(to.format(c.getTime()));
