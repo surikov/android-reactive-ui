@@ -15,6 +15,7 @@ public class RedactNumber extends EditText implements Rake {
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
+	public ToggleProperty<RedactNumber> selectAllOnFocus = new ToggleProperty<RedactNumber>(this);
 	boolean initialized = false;
 	private boolean lock = false;
 	Task reFit = new Task() {
@@ -61,6 +62,7 @@ public class RedactNumber extends EditText implements Rake {
 		left.property.afterChange(reFit);
 		top.property.afterChange(reFit);
 		setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+		this.setSelectAllOnFocus(selectAllOnFocus.property.value());
 		addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -101,6 +103,12 @@ public class RedactNumber extends EditText implements Rake {
 				else {
 					setVisibility(View.VISIBLE);
 				}
+			}
+		});
+		selectAllOnFocus.property.afterChange(new Task() {
+			@Override
+			public void doTask() {
+				setSelectAllOnFocus(selectAllOnFocus.property.value());
 			}
 		});
 	}

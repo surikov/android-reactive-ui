@@ -28,7 +28,7 @@ public class RedactSingleChoice extends EditText implements Rake {
 	Paint dot = new Paint();
 	boolean initialized = false;
 	//private boolean lock = false;
-	private Vector<String> items = new Vector<String>();
+	public Vector<String> items = new Vector<String>();
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
