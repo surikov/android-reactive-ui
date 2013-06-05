@@ -42,7 +42,7 @@ import java.text.*;
 public class Demo extends Activity {
 	Layoutless layoutless;
 	public static String version() {
-		return "1.06";
+		return "1.07";
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
