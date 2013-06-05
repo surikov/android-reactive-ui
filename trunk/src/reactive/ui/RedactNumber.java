@@ -69,19 +69,27 @@ public class RedactNumber extends EditText implements Rake {
 			}
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				//System.out.println("onTextChanged ["+s.toString()+"]"+start+"/"+before+"/"+count);
 			}
 			@Override
 			public void afterTextChanged(Editable s) {
+				//System.out.println("afterTextChanged ["+s.toString()+"]"+lock);
 				if (!lock) {
 					lock = true;
 					try {
-						number.property.value(Double.parseDouble(s.toString()));
+						if (s.toString().length() > 0) {
+							number.property.value(Double.parseDouble(s.toString()));
+						}
+						else {
+							number.property.value(0);
+						}
 					}
 					catch (Throwable t) {
 						t.printStackTrace();
 					}
 					lock = false;
 				}
+				//System.out.println("afterTextChanged is "+number.property.value());
 			}
 		});
 		number.property.afterChange(new Task() {
