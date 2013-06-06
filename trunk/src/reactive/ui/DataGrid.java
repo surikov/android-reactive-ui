@@ -376,7 +376,7 @@ public class DataGrid extends SubLayoutless {
 			Decor footLine = new Decor(getContext()).background.is(Auxiliary.colorLine);
 			footLine.left().is(header.shiftX.property);
 			footLine.top().is(height().property.minus(footerHeight.property).minus(1));
-			footLine.width().is(width().property);
+			footLine.width().is(footer.innerWidth.property);
 			footLine.height().is(1);
 			footLine.hidden().is(noFoot.property);
 			this.child(footLine);
