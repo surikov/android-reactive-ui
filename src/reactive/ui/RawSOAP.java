@@ -28,7 +28,7 @@ public class RawSOAP {
 	public ItProperty<RawSOAP, Throwable> exception = new ItProperty<RawSOAP, Throwable>(this);
 	//public NoteProperty exceptionDescription = new NoteProperty(this);
 	public Bough data;
-
+public String rawResponse=null;
 	public void startNow() {
 		//System.out.println(xml.property.value());
 		try {
@@ -50,8 +50,8 @@ public class RawSOAP {
 			statusCode.is(httpResponse.getStatusLine().getStatusCode());
 			statusDescription.is(httpResponse.getStatusLine().getReasonPhrase());
 			HttpEntity entity = httpResponse.getEntity();
-			String res = EntityUtils.toString(entity, responseEncoding.property.value());
-			data = tee.binding.Bough.parseXML(res);
+			rawResponse = EntityUtils.toString(entity, responseEncoding.property.value());
+			data = tee.binding.Bough.parseXML(rawResponse);
 			/*if (statusCode.property.value() >= 100 && statusCode.property.value() <= 300) {
 				return true;
 			}
