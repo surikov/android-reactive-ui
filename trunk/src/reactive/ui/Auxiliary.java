@@ -54,6 +54,8 @@ public class Auxiliary {
 	private static final char[] SECOND_CHAR = new char[256];
 	private static final char[] HEX_DIGITS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	private static final byte[] DIGITS = new byte['f' + 1];
+	static SimpleDateFormat sqliteTime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
+	static SimpleDateFormat sqliteDate = new SimpleDateFormat("yyyy-MM-DD");
 	static {
 		for (int i = 0; i < 256; i++) {
 			FIRST_CHAR[i] = HEX_DIGITS[(i >> 4) & 0xF];
@@ -221,25 +223,8 @@ public class Auxiliary {
 		return fromCursor(cursor, false);
 	}
 	public static Bough fromCursor(Cursor cursor, boolean parseDate) {
-		boolean first = true;
 		Bough bough = new Bough().name.is("cursor");
-		//cursor.moveToFirst();
-		/*SimpleDateFormat dateFormat = null;
-		if (datePattern != null) {
-			try {
-				dateFormat = new SimpleDateFormat(datePattern);
-			}
-			catch (Throwable t) {
-				t.printStackTrace();
-			}
-		}*/
-		SimpleDateFormat bigDate = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
-		SimpleDateFormat smallDate = new SimpleDateFormat("yyyy-MM-DD");
 		while (cursor.moveToNext()) {
-			if (first) {
-				first = false;
-				//System.out.println("Auxiliary.fromCursor started");
-			}
 			Bough row = new Bough().name.is("row");
 			for (int i = 0; i < cursor.getColumnCount(); i++) {
 				String name = cursor.getColumnName(i);
@@ -250,21 +235,20 @@ public class Auxiliary {
 						try {
 							java.util.Date d = null;
 							if (value.length() > 12) {
-								d = bigDate.parse(value);
+								d = sqliteTime.parse(value);
 							}
 							else {
-								d = smallDate.parse(value);
+								d = sqliteDate.parse(value);
 							}
-							//value);
 							value = "" + d.getTime();
-							//System.out.println(name+": "+d);
 						}
 						catch (Throwable t) {
-							//System.out.println(name+": "+t.getMessage());
+							//nor date nor time
 						}
 					}
 				}
 				catch (Throwable t) {
+					//can't getString due blob
 					byte[] b = cursor.getBlob(i);
 					value = hex2String(b);
 				}
@@ -275,7 +259,115 @@ public class Auxiliary {
 			}
 			bough.child(row);
 		}
-		//System.out.println("Auxiliary.fromCursor done");
+		return bough;
+	}
+	public static String cursorString(Cursor cursor, String name) {
+		String value = "";
+		try {
+			value = cursor.getString(cursor.getColumnIndex(name));
+			if (value == null) {
+				return "";
+			}
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return value;
+	}
+	public static double cursorDouble(Cursor cursor, String name) {
+		double value = 0;
+		try {
+			value = cursor.getDouble(cursor.getColumnIndex(name));
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return value;
+	}
+	public static String cursorDate(Cursor cursor, String name) {
+		String value = "";
+		try {
+			value = cursor.getString(cursor.getColumnIndex(name));
+			if (value == null) {
+				return "";
+			}
+			if (value.length() > 9) {
+				java.util.Date d = sqliteDate.parse(value);
+				value = "" + d.getTime();
+			}
+			else {
+				value = "0";
+			}
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return value;
+	}
+	public static String cursorTime(Cursor cursor, String name) {
+		String value = "";
+		try {
+			value = cursor.getString(cursor.getColumnIndex(name));
+			if (value == null) {
+				return "";
+			}
+			if (value.length() > 12) {
+				java.util.Date d = sqliteTime.parse(value);
+				value = "" + d.getTime();
+			}
+			else {
+				value = "0";
+			}
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return value;
+	}
+	public static String cursorBlob(Cursor cursor, String name) {
+		String value = "";
+		try {
+			byte[] b = cursor.getBlob(cursor.getColumnIndex(name));
+			if (b == null) {
+				return "";
+			}
+			value = hex2String(b);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return value;
+	}
+	public static Bough fromStrictCursor(Cursor cursor, String[] strings, String[] dates, String[] times, String[] blobs) {
+		Bough bough = new Bough().name.is("cursor");
+		while (cursor.moveToNext()) {
+			Bough row = new Bough().name.is("row");
+			if (strings != null) {
+				for (int f = 0; f < strings.length; f++) {
+					String name = strings[f];
+					row.child(new Bough().name.is(name).value.is(cursorString(cursor, name)));
+				}
+			}
+			if (dates != null) {
+				for (int f = 0; f < dates.length; f++) {
+					String name = dates[f];
+					row.child(new Bough().name.is(name).value.is(cursorDate(cursor, name)));
+				}
+			}
+			if (times != null) {
+				for (int f = 0; f < times.length; f++) {
+					String name = times[f];
+					row.child(new Bough().name.is(name).value.is(cursorTime(cursor, name)));
+				}
+			}
+			if (blobs != null) {
+				for (int f = 0; f < blobs.length; f++) {
+					String name = blobs[f];
+					row.child(new Bough().name.is(name).value.is(cursorBlob(cursor, name)));
+				}
+			}
+			bough.child(row);
+		}
 		return bough;
 	}
 	public static Bitmap loadBitmapFromURL(String url) {
