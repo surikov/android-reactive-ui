@@ -28,7 +28,8 @@ public class RawSOAP {
 	public ItProperty<RawSOAP, Throwable> exception = new ItProperty<RawSOAP, Throwable>(this);
 	//public NoteProperty exceptionDescription = new NoteProperty(this);
 	public Bough data;
-public String rawResponse=null;
+	public String rawResponse = null;
+
 	public void startNow() {
 		//System.out.println(xml.property.value());
 		try {
@@ -45,13 +46,19 @@ public String rawResponse=null;
 			stringEntity.setContentType("text/xml; charset=" + requestEncoding.property.value());
 			request.setEntity(stringEntity);
 			statusCode.is(-3);
-			HttpResponse httpResponse = client.execute(request);
+			System.out.println("POST "+url.property.value());
+			HttpResponse httpResponse = client.execute(request);			
 			statusCode.is(-4);
+			System.out.println("done POST "+url.property.value());
 			statusCode.is(httpResponse.getStatusLine().getStatusCode());
 			statusDescription.is(httpResponse.getStatusLine().getReasonPhrase());
+			System.out.println("getEntity "+url.property.value());
 			HttpEntity entity = httpResponse.getEntity();
+			System.out.println("EntityUtils.toString "+url.property.value());
 			rawResponse = EntityUtils.toString(entity, responseEncoding.property.value());
+			System.out.println("parse "+url.property.value());
 			data = tee.binding.Bough.parseXML(rawResponse);
+			System.out.println("done parse "+url.property.value());
 			/*if (statusCode.property.value() >= 100 && statusCode.property.value() <= 300) {
 				return true;
 			}
