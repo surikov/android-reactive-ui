@@ -9,6 +9,10 @@ import org.apache.http.params.*;
 import org.apache.http.protocol.*;
 import org.apache.http.util.*;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.net.http.AndroidHttpClient;
 import android.os.*;
 import tee.binding.properties.*;
@@ -26,12 +30,10 @@ public class RawSOAP {
 	public ItProperty<RawSOAP, Task> afterSuccess = new ItProperty<RawSOAP, Task>(this);
 	public ItProperty<RawSOAP, Task> afterError = new ItProperty<RawSOAP, Task>(this);
 	public ItProperty<RawSOAP, Throwable> exception = new ItProperty<RawSOAP, Throwable>(this);
-	//public NoteProperty exceptionDescription = new NoteProperty(this);
 	public Bough data;
 	public String rawResponse = null;
 
 	public void startNow() {
-		//System.out.println(xml.property.value());
 		try {
 			statusCode.is(-2);
 			HttpPost request = new HttpPost(url.property.value());
@@ -41,39 +43,32 @@ public class RawSOAP {
 			HttpConnectionParams.setSocketBufferSize(httpParameters, 8192);
 			HttpConnectionParams.setConnectionTimeout(httpParameters, timeout.property.value().intValue());
 			HttpClient client = new DefaultHttpClient(httpParameters);
-			//HttpClient client = new AndroidHttpClient(httpParameters);
 			StringEntity stringEntity = new StringEntity(xml.property.value(), requestEncoding.property.value());
 			stringEntity.setContentType("text/xml; charset=" + requestEncoding.property.value());
 			request.setEntity(stringEntity);
 			statusCode.is(-3);
-			System.out.println("POST "+url.property.value());
-			HttpResponse httpResponse = client.execute(request);			
+			System.out.println("POST " + url.property.value());
+			HttpResponse httpResponse = client.execute(request);
 			statusCode.is(-4);
-			System.out.println("done POST "+url.property.value());
+			System.out.println("done POST " + url.property.value());
 			statusCode.is(httpResponse.getStatusLine().getStatusCode());
 			statusDescription.is(httpResponse.getStatusLine().getReasonPhrase());
-			System.out.println("getEntity "+url.property.value());
+			System.out.println("getEntity " + url.property.value());
 			HttpEntity entity = httpResponse.getEntity();
-			System.out.println("EntityUtils.toString "+url.property.value());
+			System.out.println("EntityUtils.toString " + url.property.value());
 			rawResponse = EntityUtils.toString(entity, responseEncoding.property.value());
-			System.out.println("parse "+url.property.value());
+			System.out.println("parse " + url.property.value());
 			data = tee.binding.Bough.parseXML(rawResponse);
-			System.out.println("done parse "+url.property.value());
-			/*if (statusCode.property.value() >= 100 && statusCode.property.value() <= 300) {
-				return true;
-			}
-			else {
-				return false;
-			}*/
+			System.out.println("done parse " + url.property.value());
 		}
 		catch (Throwable t) {
-			//exceptionDescription.is(t.getMessage());
 			exception.is(t);
-			//t.printStackTrace();
 		}
-		//return false;
 	}
-	public void startLater() {
+	public void startLater(Context context, String alert) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(alert);
+		final AlertDialog dialog = builder.show();
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... r) {
@@ -82,6 +77,9 @@ public class RawSOAP {
 			}
 			@Override
 			protected void onPostExecute(Void r) {
+				if (dialog != null) {
+					dialog.dismiss();
+				}
 				if (exception.property.value() == null) {
 					if (afterSuccess.property.value() != null) {
 						afterSuccess.property.value().start();
