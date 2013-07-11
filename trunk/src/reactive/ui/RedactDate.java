@@ -90,23 +90,24 @@ public class RedactDate extends EditText implements Rake {
 					if(date.property.value()==0){
 						c.setTimeInMillis(new Date().getTime());
 					}
-					c.set(Calendar.HOUR, 0);
+					/*c.set(Calendar.HOUR, 0);
 					c.set(Calendar.MINUTE, 0);
 					c.set(Calendar.SECOND, 0);
-					c.set(Calendar.MILLISECOND, 0);
+					c.set(Calendar.MILLISECOND, 0);*/
 					new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
 						@Override
 						public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-							Calendar c = Calendar.getInstance();
-							c.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
-							c.set(Calendar.YEAR, year);
-							c.set(Calendar.MONTH, monthOfYear);
-							c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-							c.set(Calendar.HOUR, 0);
-							c.set(Calendar.MINUTE, 0);
-							c.set(Calendar.SECOND, 0);
-							c.set(Calendar.MILLISECOND, 0);
-							date.property.value((double) c.getTimeInMillis());
+							Calendar newCalendar = Calendar.getInstance();
+							newCalendar.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+							newCalendar.setTimeInMillis(date.property.value().longValue());
+							newCalendar.set(Calendar.YEAR, year);
+							newCalendar.set(Calendar.MONTH, monthOfYear);
+							newCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+							//newCalendar.set(Calendar.HOUR, 0);
+							//newCalendar.set(Calendar.MINUTE, 0);
+							//newCalendar.set(Calendar.SECOND, 0);
+							//newCalendar.set(Calendar.MILLISECOND, 0);
+							date.property.value((double) newCalendar.getTimeInMillis());
 						}
 					}, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
 				}
