@@ -89,26 +89,27 @@ public class RedactTime  extends EditText implements Rake {
 					if(time.property.value()==0){
 						c.setTimeInMillis(new Date().getTime());
 					}
-					c.set(Calendar.YEAR, 0);
-					c.set(Calendar.MONTH, 0);
-					c.set(Calendar.DAY_OF_MONTH, 1);
+					//c.set(Calendar.YEAR, 0);
+					//c.set(Calendar.MONTH, 0);
+					//c.set(Calendar.DAY_OF_MONTH, 1);
 					//c.set(Calendar.HOUR, 0);
 					//c.set(Calendar.MINUTE, 0);
-					c.set(Calendar.SECOND, 0);
-					c.set(Calendar.MILLISECOND, 0);
+					//c.set(Calendar.SECOND, 0);
+					//c.set(Calendar.MILLISECOND, 0);
 					//System.out.println("show "+c.get(Calendar.HOUR));
 					new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
 						@Override
 						public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 							Calendar lc = Calendar.getInstance();
 							lc.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
-							lc.set(Calendar.YEAR, 0);
-							lc.set(Calendar.MONTH, 0);
-							lc.set(Calendar.DAY_OF_MONTH, 1);
+							lc.setTimeInMillis(time.property.value().longValue());
+							//lc.set(Calendar.YEAR, 0);
+							//lc.set(Calendar.MONTH, 0);
+							//lc.set(Calendar.DAY_OF_MONTH, 1);
 							lc.set(Calendar.HOUR_OF_DAY, hourOfDay);
 							lc.set(Calendar.MINUTE, minute);
-							lc.set(Calendar.SECOND, 0);
-							lc.set(Calendar.MILLISECOND, 0);
+							//lc.set(Calendar.SECOND, 0);
+							//lc.set(Calendar.MILLISECOND, 0);
 							time.property.value((double) lc.getTimeInMillis());
 						}
 					}, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show();
