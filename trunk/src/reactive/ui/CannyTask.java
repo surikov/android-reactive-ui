@@ -9,6 +9,7 @@ public abstract class CannyTask extends Task {
 	private double key = 0;
 	//private int laziness = 50;
 	public NumericProperty<CannyTask> laziness = new NumericProperty<CannyTask>(this);
+
 	public CannyTask() {
 		laziness.is(50);
 	}
@@ -16,9 +17,10 @@ public abstract class CannyTask extends Task {
 		laziness.is(lazy);
 		start();
 	}
+	public void doBackground() {
+	}
 	@Override
 	public void start() {
-		
 		key = Math.random();
 		final double started = key;
 		new AsyncTask<Void, Void, Void>() {
@@ -29,6 +31,9 @@ public abstract class CannyTask extends Task {
 				}
 				catch (Throwable t) {
 					//
+				}
+				if (started == key) {
+					doBackground();
 				}
 				return null;
 			}

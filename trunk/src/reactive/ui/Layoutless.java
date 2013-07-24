@@ -18,6 +18,7 @@ import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import tee.binding.*;
+import tee.binding.properties.ToggleProperty;
 import android.net.*;
 import java.io.*;
 import java.text.*;
