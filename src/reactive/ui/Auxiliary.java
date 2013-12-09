@@ -540,6 +540,10 @@ public class Auxiliary {
 	}
 	public static void pickMultiChoice(Context context, CharSequence[] items, final They<Integer> defaultSelection//
 	) {
+		pickMultiChoice(context, items, defaultSelection, null, null);
+	}
+	public static void pickMultiChoice(Context context, CharSequence[] items, final They<Integer> defaultSelection//
+			, String positiveButtonTitle, final Task callbackPositiveBtn) {
 		if (items.length > 0) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			boolean[] checks = new boolean[items.length];
@@ -574,6 +578,16 @@ public class Auxiliary {
 					}
 				}
 			});
+			if(callbackPositiveBtn!=null){
+				builder.setPositiveButton(positiveButtonTitle, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						if (callbackPositiveBtn != null) {
+							callbackPositiveBtn.start();
+						}
+					}
+				});
+			}
 			builder.create().show();
 		}
 	}

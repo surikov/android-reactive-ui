@@ -16,7 +16,7 @@ public class RedactText extends EditText implements Rake {
 	private NumericProperty<Rake> height = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
-	public ToggleProperty<Rake> singleLine = new ToggleProperty<Rake>(this);
+	public ToggleProperty<RedactText> singleLine = new ToggleProperty<RedactText>(this);
 	public ToggleProperty<RedactText> selectAllOnFocus = new ToggleProperty<RedactText>(this);
 	boolean initialized = false;
 	private boolean lock = false;
