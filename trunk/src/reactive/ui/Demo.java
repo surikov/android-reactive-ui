@@ -42,7 +42,7 @@ public class Demo extends Activity {
 	Layoutless layoutless;
 
 	public static String version() {
-		return "1.32";
+		return "1.33";
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,25 +51,26 @@ public class Demo extends Activity {
 		layoutless = new Layoutless(this);
 		this.setContentView(layoutless);
 		layoutless.child(new Decor(this).background.is(0xffcc9966)//
-				.left().is(100)//
-				.top().is(100)//
-				.width().is(800)//
-				.height().is(500)//
+				.left().is(10)//
+				.top().is(10)//
+				.width().is(1250)//
+				.height().is(700)//
 				);
-		layoutless.child(new SQLiteGrid(this)//
-				.noFoot.is(false)//
-		//.alignCenter.is(true)//
-				.columns(new SQLiteGridColumn[] {
-						//
-						new SQLiteGridColumn().headerText.is("One").footerText.is("1").width.is(100)//
-						, new SQLiteGridColumn().headerText.is("Two").footerText.is("2").width.is(100)//
-						, new SQLiteGridColumn().headerText.is("Three").footerText.is("3").width.is(100)//
-						, new SQLiteGridColumn().headerText.is("Four").footerText.is("4").width.is(200) //
-						})//
-				.left().is(100)//
-				.top().is(100)//
-				.width().is(800)//
-				.height().is(500)//
+		final BigGrid bg=new BigGrid(this);
+		layoutless.child(bg//
+		/*.afterShift.is(new Task(){
+
+			@Override
+			public void doTask() {
+				System.out.println("afterShift");
+				//bg.invalidate();
+				
+			}})*/
+				//.data()//
+				.left().is(10)//
+				.top().is(10)//
+				.width().is(1250)//
+				.height().is(700)//
 				);
 		System.out.println("done onCreate");
 	}
