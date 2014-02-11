@@ -40,7 +40,7 @@ public class Decor extends TextView implements Rake {
 	public ItProperty<Decor, Task> afterTap = new ItProperty<Decor, Task>(this);
 	public ItProperty<Decor, Task> afterDrag = new ItProperty<Decor, Task>(this);
 	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
-	Vector<Sketch> sketches = new Vector<Sketch>();
+	public Vector<Sketch> sketches = new Vector<Sketch>();
 	//Context context;
 	Paint paint = new Paint();
 	boolean initialized = false;
