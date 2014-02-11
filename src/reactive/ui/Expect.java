@@ -8,8 +8,8 @@ import android.content.*;
 import android.content.DialogInterface.*;
 
 abstract class RealAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
-	public void realPublishProgress() {
-		publishProgress();
+	public void realPublishProgress(Progress... values) {
+		publishProgress( values);
 	}
 }
 
