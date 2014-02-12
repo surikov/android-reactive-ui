@@ -162,7 +162,7 @@ public class SplitLeftRight extends SubLayoutless {
 				public void doTask() {
 					//System.out.println("tap " + split.property.value() + " / " + width().property.value());
 					if (Math.abs(split.property.value() - width().property.value()) < Auxiliary.tapSize * 0.3 + 1) {
-						split.is(0.7*width().property.value());
+						split.is(0.7 * width().property.value());
 					}
 					else {
 						split.is(width().property.value());
@@ -220,12 +220,13 @@ public class SplitLeftRight extends SubLayoutless {
 							.point(2 + 0.65 * Auxiliary.tapSize, 2 + 0.7 * Auxiliary.tapSize)//
 					.strokeColor.is(Auxiliary.textColorHint)//
 					.strokeWidth.is(1 + 0.08 * Auxiliary.tapSize)//
-					).sketch(new SketchLine()//
+					)//
+					.sketch(new SketchLine()//
 							.point(2 + 0.35 * Auxiliary.tapSize, 2 + 0.3 * Auxiliary.tapSize)//
 							.point(2 + 0.2 * Auxiliary.tapSize, 2 + 0.5 * Auxiliary.tapSize)//
 							.point(2 + 0.35 * Auxiliary.tapSize, 2 + 0.7 * Auxiliary.tapSize)//
-							.strokeColor.is(Auxiliary.textColorHint)//
-							.strokeWidth.is(1 + 0.08 * Auxiliary.tapSize)//
+					.strokeColor.is(Auxiliary.textColorHint)//
+					.strokeWidth.is(1 + 0.08 * Auxiliary.tapSize)//
 					)//
 					.width().is(Auxiliary.tapSize + 4)//
 					.height().is(Auxiliary.tapSize + 4)//

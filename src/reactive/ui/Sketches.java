@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Sketches extends Sketch {
 	public Vector<Sketch> sketches = new Vector<Sketch>();
-
+	
 	public Sketches child(Sketch s) {
 		sketches.add(s);
 		return this;
@@ -21,13 +21,17 @@ public class Sketches extends Sketch {
 		for (int i = 0; i < sketches.size(); i++) {
 			sketches.get(i).unbind();
 		}
+		
 	}
 	@Override
 	public void draw(Canvas canvas) {
+		
+		
 		for (int i = 0; i < sketches.size(); i++) {
 			if (sketches.get(i) != null) {
 				sketches.get(i).draw(canvas);
 			}
 		}
 	}
+	
 }

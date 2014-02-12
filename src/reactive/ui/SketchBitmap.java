@@ -7,7 +7,10 @@ import tee.binding.task.*;
 public class SketchBitmap extends Sketch {
 	public ItProperty<SketchBitmap, Bitmap> bitmap = new ItProperty<SketchBitmap, Bitmap>(this);
 	Paint paint = new Paint();
-
+	public NumericProperty<SketchBitmap> width = new NumericProperty<SketchBitmap>(this);
+	public NumericProperty<SketchBitmap> height = new NumericProperty<SketchBitmap>(this);
+	public NumericProperty<SketchBitmap> left = new NumericProperty<SketchBitmap>(this);
+	public NumericProperty<SketchBitmap> top = new NumericProperty<SketchBitmap>(this);
 	public SketchBitmap() {
 		paint.setColor(0xff000000);
 		paint.setAntiAlias(true);
@@ -30,6 +33,10 @@ public class SketchBitmap extends Sketch {
 	public void unbind() {
 		super.unbind();
 		bitmap.property.unbind();
+		width.property.unbind();
+		height.property.unbind();
+		left.property.unbind();
+		top.property.unbind();
 		/*if (bitmap.property.value() != null) {
 			bitmap.property.value().recycle();
 		}*/

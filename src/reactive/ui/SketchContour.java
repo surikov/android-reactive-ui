@@ -7,11 +7,11 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 public class SketchContour extends Sketch {
-	/*public NumericProperty<SketchContour> width = new NumericProperty<SketchContour>(this);
+	public NumericProperty<SketchContour> width = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> height = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> left = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> top = new NumericProperty<SketchContour>(this);
-	*/
+	
 	public NumericProperty<SketchContour> strokeColor = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> strokeWidth = new NumericProperty<SketchContour>(this);
 	public NumericProperty<SketchContour> arcX = new NumericProperty<SketchContour>(this);
@@ -25,6 +25,10 @@ public class SketchContour extends Sketch {
 		left.property.unbind();
 		top.property.unbind();*/
 		super.unbind();
+		width.property.unbind();
+		height.property.unbind();
+		left.property.unbind();
+		top.property.unbind();
 		strokeColor.property.unbind();
 		strokeWidth.property.unbind();
 		arcX.property.unbind();

@@ -45,6 +45,10 @@ public class Decor extends TextView implements Rake {
 	Paint paint = new Paint();
 	boolean initialized = false;
 	private boolean inTableRow = false;
+	
+	
+	
+	
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
