@@ -4,6 +4,9 @@ import tee.binding.it.Numeric;
 import tee.binding.properties.*;
 import tee.binding.task.*;
 import android.graphics.*;
+import android.text.StaticLayout;
+import android.text.Layout.Alignment;
+
 import java.util.*;
 
 public class SketchLine extends Sketch {
@@ -17,10 +20,17 @@ public class SketchLine extends Sketch {
 	private Path path = new Path();
 	private Vector<Numeric> xs = new Vector<Numeric>();
 	private Vector<Numeric> ys = new Vector<Numeric>();
-
 	//private boolean first = true;
 	//private Vector<Integer>xx=new Vector<Integer>();
 	//private Vector<Integer>yy=new Vector<Integer>();
+	/*
+	Bitmap bm = null;
+	Rect src = null;
+	Rect dest = null;
+	Paint bmPaint = new Paint();
+	boolean valid = false;
+	boolean released = false;
+*/
 	@Override
 	public void unbind() {
 		super.unbind();
@@ -34,6 +44,10 @@ public class SketchLine extends Sketch {
 			ys.get(i).unbind();
 		}
 		ys.removeAllElements();
+		/*if (bm != null) {
+			bm.recycle();
+			bm = null;
+		}*/
 	}
 	void resetPath() {
 		path = new Path();
@@ -43,6 +57,7 @@ public class SketchLine extends Sketch {
 				path.lineTo(xs.get(i).value().floatValue(), ys.get(i).value().floatValue());
 			}
 		}
+		//valid = false;
 	}
 	public SketchLine point(double x, double y) {
 		return point(new Numeric().value(x), new Numeric().value(y));
@@ -63,6 +78,7 @@ public class SketchLine extends Sketch {
 			}
 		}, true));
 		resetPath();
+		
 		postInvalidate.start();
 		/*
 		if (first) {
@@ -77,6 +93,7 @@ public class SketchLine extends Sketch {
 		}*/
 		//xx.add(x);
 		//yy.add(y);
+		
 		return this;
 	}
 	public SketchLine() {
@@ -87,7 +104,7 @@ public class SketchLine extends Sketch {
 		strokeColor.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				// TODO Auto-generated method stub
+				//valid = false;
 				paint.setColor(strokeColor.property.value().intValue());
 				postInvalidate.start();
 			}
@@ -95,7 +112,7 @@ public class SketchLine extends Sketch {
 		strokeWidth.property.afterChange(new Task() {
 			@Override
 			public void doTask() {
-				// TODO Auto-generated method stub
+				//valid = false;
 				paint.setStrokeWidth(strokeWidth.property.value().floatValue());
 				postInvalidate.start();
 			}
@@ -116,6 +133,40 @@ public class SketchLine extends Sketch {
 				, endY.property.value().floatValue()//
 				, paint//
 		);*/
+		/*resetBM();
+		if (bm != null) {
+			//canvas.drawPath(path, paint);
+			canvas.drawBitmap(bm, src, dest, bmPaint);
+		}*/
 		canvas.drawPath(path, paint);
+		
 	}
+	/*void resetBM() {
+		if (valid) {
+			return;
+		}
+		valid = true;
+		int w = width.property.value().intValue();
+		int h = height.property.value().intValue();
+		int l = left.property.value().intValue();
+		int t = top.property.value().intValue();
+		if (w > 0 && h > 0) {
+			bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
+			src = new Rect(0, 0, w, h);
+			dest = new Rect(l, t, l + w, t + h);
+			Canvas canvas = new Canvas(bm);
+			canvas.drawPath(path, paint);
+			
+			Paint p=new Paint();
+			p.setColor(0xff00ffff);
+			canvas.drawRoundRect(new RectF(0, 0,  8,  8)//
+			, 4//
+			, 4//
+			, p);
+			
+			System.out.println("recache");
+			//StaticLayout staticLayout = new StaticLayout(text.property.value(), paint, w, Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+			//staticLayout.draw(canvas);
+		}
+	}*/
 }

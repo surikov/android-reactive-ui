@@ -42,7 +42,7 @@ public class Demo extends Activity {
 	Layoutless layoutless;
 
 	public static String version() {
-		return "1.34";
+		return "1.35";
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,21 +56,42 @@ public class Demo extends Activity {
 				.width().is(1250)//
 				.height().is(700)//
 				);
-		final BigGrid bg=new BigGrid(this);
-		layoutless.child(bg//
-		/*.afterShift.is(new Task(){
-
-			@Override
-			public void doTask() {
-				System.out.println("afterShift");
-				//bg.invalidate();
-				
-			}})*/
+		final BigGrid bg = new BigGrid(this);
+		/*layoutless.child(bg//
+		
 				//.data()//
 				.left().is(10)//
 				.top().is(10)//
 				.width().is(1250)//
 				.height().is(700)//
+				);*/
+		layoutless.child(new SplitLeftRight(this)//
+				.left().is(0)//
+				.top().is(0)//
+				.width().is(layoutless.width().property)//
+				.height().is(layoutless.height().property)//
+				);
+		SketchPlate sk = new SketchPlate()//
+		.background.is(0x9900ffff)//
+				.left.is(0)//
+				.top.is(0)//
+				.width.is(1000)//
+				.height.is(1000)//
+				;
+		for (int i = 0; i < 999; i++) {
+			sk.child(new SketchLine().strokeColor.is(0x66ff00ff).strokeWidth.is(5)//
+					.point(Math.random() * 700, Math.random() * 500)//
+					.point(Math.random() * 700, Math.random() * 500)//
+			);
+		}
+		layoutless.child(new Decor(this)//
+				.sketch(new Sketches()//
+						.child(sk)//
+				)//
+				.left().is(layoutless.shiftX.property)//
+				.top().is(layoutless.shiftY.property)//
+				.width().is(700)//
+				.height().is(500)//
 				);
 		System.out.println("done onCreate");
 	}

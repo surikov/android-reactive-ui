@@ -14,6 +14,10 @@ public class SketchText extends Sketch {
 	public NumericProperty<SketchText> height = new NumericProperty<SketchText>(this);
 	public NumericProperty<SketchText> left = new NumericProperty<SketchText>(this);
 	public NumericProperty<SketchText> top = new NumericProperty<SketchText>(this);*/
+	public NumericProperty<SketchText> width = new NumericProperty<SketchText>(this);
+	public NumericProperty<SketchText> height = new NumericProperty<SketchText>(this);
+	public NumericProperty<SketchText> left = new NumericProperty<SketchText>(this);
+	public NumericProperty<SketchText> top = new NumericProperty<SketchText>(this);
 	public NumericProperty<SketchText> color = new NumericProperty<SketchText>(this);
 	public NoteProperty<SketchText> text = new NoteProperty<SketchText>(this);
 	public ItProperty<SketchText, Typeface> typeface = new ItProperty<SketchText, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
@@ -89,6 +93,10 @@ public class SketchText extends Sketch {
 	@Override
 	public void unbind() {
 		super.unbind();
+		width.property.unbind();
+		height.property.unbind();
+		left.property.unbind();
+		top.property.unbind();
 		color.property.unbind();
 		text.property.unbind();
 		typeface.property.unbind();
