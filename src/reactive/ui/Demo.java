@@ -42,7 +42,7 @@ public class Demo extends Activity {
 	Layoutless layoutless;
 
 	public static String version() {
-		return "1.35";
+		return "1.36";
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
