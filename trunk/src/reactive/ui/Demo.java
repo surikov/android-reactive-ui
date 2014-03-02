@@ -38,9 +38,9 @@ import tee.binding.*;
 import java.io.*;
 import java.text.*;
 
+
 public class Demo extends Activity {
 	Layoutless layoutless;
-
 	public static String version() {
 		return "1.36";
 	}
@@ -73,11 +73,11 @@ public class Demo extends Activity {
 				);
 		SketchPlate sk = new SketchPlate()//
 		.background.is(0x9900ffff)//
-				.left.is(0)//
-				.top.is(0)//
-				.width.is(1000)//
-				.height.is(1000)//
-				;
+		.left.is(0)//
+		.top.is(0)//
+		.width.is(1000)//
+		.height.is(1000)//
+		;
 		for (int i = 0; i < 999; i++) {
 			sk.child(new SketchLine().strokeColor.is(0x66ff00ff).strokeWidth.is(5)//
 					.point(Math.random() * 700, Math.random() * 500)//
@@ -107,10 +107,17 @@ public class Demo extends Activity {
 	}
 	@Override
 	protected void onPause() {
+		Auxiliary.stopSensorEventListener(this);
 		super.onPause();
 	}
 	@Override
 	protected void onResume() {
+		Auxiliary.startSensorEventListener(this, new Task() {
+			@Override
+			public void doTask() {
+				System.out.println("accelerometr "+Auxiliary.accelerometerX+", "+Auxiliary.accelerometerY+", "+Auxiliary.accelerometerZ);
+			}
+		});
 		super.onResume();
 	}
 }
