@@ -52,6 +52,7 @@ public class Auxiliary {
 	public static double accelerometerX = 0;
 	public static double accelerometerY = 0;
 	public static double accelerometerZ = 0;
+	public static double accelerometerNoise = 1.0;
 	private static final char[] FIRST_CHAR = new char[256];
 	private static final char[] SECOND_CHAR = new char[256];
 	private static final char[] HEX_DIGITS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -883,9 +884,9 @@ public class Auxiliary {
 					//System.out.println("Auxiliary.startSensorEventListener.onSensorChanged " + event);
 					try {
 						if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-							if (accelerometerX != event.values[0]//
-									|| accelerometerY != event.values[1]//
-									|| accelerometerZ != event.values[2]//
+							if (Math.abs(accelerometerX - event.values[0])>accelerometerNoise//
+									|| Math.abs(accelerometerY - event.values[1])>accelerometerNoise//
+									||Math.abs( accelerometerZ - event.values[2])>accelerometerNoise//
 							) {
 								accelerometerX = event.values[0];
 								accelerometerY = event.values[1];
