@@ -41,6 +41,11 @@ import java.text.*;
 
 public class Demo extends Activity {
 	Layoutless layoutless;
+	Numeric xx = new Numeric();
+	Numeric yy = new Numeric();
+	double preX=0;
+	double preY=0;
+	double preZ=0;
 	public static String version() {
 		return "1.36";
 	}
@@ -84,7 +89,7 @@ public class Demo extends Activity {
 					.point(Math.random() * 700, Math.random() * 500)//
 			);
 		}
-		layoutless.child(new Decor(this)//
+		/*layoutless.child(new Decor(this)//
 				.sketch(new Sketches()//
 						.child(sk)//
 				)//
@@ -92,7 +97,30 @@ public class Demo extends Activity {
 				.top().is(layoutless.shiftY.property)//
 				.width().is(700)//
 				.height().is(500)//
+				);*/
+		layoutless.child(new Decor(this)//
+		.background.is(0x660000ff)//
+				.left().is(xx.multiply(2).plus(200))//
+				.top().is(yy.multiply(2).plus(100))//
+				.width().is(100)//
+				.height().is(100)//
+		);
+		layoutless.child(new Decor(this)//
+		.background.is(0x6600ff00)//
+				.left().is(xx.plus(200))//
+				.top().is(yy.plus(100))//
+				.width().is(100)//
+				.height().is(100)//
+		);
+		layoutless.child(new Decor(this)//
+				.background.is(0x66ff0000)//
+						.left().is(200)//
+						.top().is(100)//
+						.width().is(100)//
+						.height().is(100)//
 				);
+		
+		
 		System.out.println("done onCreate");
 	}
 	@Override
@@ -115,7 +143,9 @@ public class Demo extends Activity {
 		Auxiliary.startSensorEventListener(this, new Task() {
 			@Override
 			public void doTask() {
-				System.out.println("accelerometr "+Auxiliary.accelerometerX+", "+Auxiliary.accelerometerY+", "+Auxiliary.accelerometerZ);
+				xx.value(-Auxiliary.accelerometerX);
+				yy.value(Auxiliary.accelerometerY);
+				System.out.println("accelerometr " + Auxiliary.accelerometerX + ", " + Auxiliary.accelerometerY + ", " + Auxiliary.accelerometerZ);
 			}
 		});
 		super.onResume();
