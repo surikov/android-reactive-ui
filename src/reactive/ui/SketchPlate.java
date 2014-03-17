@@ -75,7 +75,7 @@ public class SketchPlate extends Sketch {
 		height.is(100);
 		left.is(0);
 		top.is(0);
-		background.is(0xff990000);
+		background.is(0x00990000);
 		//paint.property.value().setColor(background.property.value().intValue());
 		width.property.afterChange(reFit);
 		height.property.afterChange(reFit);
