@@ -47,7 +47,7 @@ public class Demo extends Activity {
 	double preY=0;
 	double preZ=0;
 	public static String version() {
-		return "1.36";
+		return "1.38";
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
