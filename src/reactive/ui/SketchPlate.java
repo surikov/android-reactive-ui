@@ -27,7 +27,7 @@ public class SketchPlate extends Sketch {
 	public NumericProperty<SketchPlate> arcY = new NumericProperty<SketchPlate>(this);
 	public Vector<Sketch> sketches = new Vector<Sketch>();
 	private Tint paint = new Tint();
-	Bitmap bm = null;
+	NativeBitmap bitmapCache = new NativeBitmap();
 	Rect src = null;
 	Rect dest = null;
 	Paint bmPaint = new Paint();
@@ -60,9 +60,9 @@ public class SketchPlate extends Sketch {
 		for (int i = 0; i < sketches.size(); i++) {
 			sketches.get(i).unbind();
 		}
-		if (bm != null) {
-			bm.recycle();
-			bm = null;
+		if (bitmapCache != null) {
+			bitmapCache.freeBitmap();
+			bitmapCache = null;
 		}
 	}
 	//Paint paint = new Paint();
@@ -112,12 +112,12 @@ public class SketchPlate extends Sketch {
 		int l = left.property.value().intValue();
 		int t = top.property.value().intValue();
 		if (w > 0 && h > 0) {
-			if (bm != null) {
-				bm.recycle();
-				bm = null;
+			if (bitmapCache != null) {
+				bitmapCache.freeBitmap();
+				bitmapCache = null;
 			}
 			try{
-			bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
+			Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 			src = new Rect(0, 0, w, h);
 			dest = new Rect(l, t, l + w, t + h);
 			Canvas canvas = new Canvas(bm);
@@ -126,6 +126,8 @@ public class SketchPlate extends Sketch {
 					sketches.get(i).draw(canvas);
 				}
 			}
+			bitmapCache.storeBitmap(bm);
+			bm.recycle();
 			}catch(Throwable tr){
 				tr.printStackTrace();
 			}
@@ -154,8 +156,8 @@ public class SketchPlate extends Sketch {
 			}
 		}
 		*/
-		if (bm != null) {
-			canvas.drawBitmap(bm, src, dest, bmPaint);
+		if (bitmapCache != null) {
+			canvas.drawBitmap(bitmapCache.getBitmap(), src, dest, bmPaint);
 		}
 	};
 }
