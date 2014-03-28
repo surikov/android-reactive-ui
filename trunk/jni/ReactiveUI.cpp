@@ -41,13 +41,13 @@ JNIEXPORT void JNICALL Java_reactive_ui_NativeBitmap_drop(JNIEnv * env, jobject 
 JNIEXPORT jobject JNICALL Java_reactive_ui_NativeBitmap_get(JNIEnv * env, jobject obj, jobject handle) {
 	NativeBitmap* jniBitmap = (NativeBitmap*) env->GetDirectBufferAddress(handle);
 	if (jniBitmap->_storedBitmapPixels == NULL) {
-		LOGD("no bitmap data was stored. returning null...");
+		LOGE("no bitmap data was stored. returning null...");
 		return NULL;
 	}
 	//
 	//creating a new bitmap to put the pixels into it - using Bitmap Bitmap.createBitmap (int width, int height, Bitmap.Config config) :
 	//
-	LOGD("creating new bitmap...");
+	//LOGD("creating new bitmap...");
 	jclass bitmapCls = env->FindClass("android/graphics/Bitmap");
 	jmethodID createBitmapFunction = env->GetStaticMethodID(bitmapCls, "createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
 	jstring configName = env->NewStringUTF("ARGB_8888");
@@ -69,20 +69,20 @@ JNIEXPORT jobject JNICALL Java_reactive_ui_NativeBitmap_get(JNIEnv * env, jobjec
 	int pixelsCount = jniBitmap->_bitmapInfo.height * jniBitmap->_bitmapInfo.width;
 	memcpy(newBitmapPixels, jniBitmap->_storedBitmapPixels, sizeof(uint32_t) * pixelsCount);
 	AndroidBitmap_unlockPixels(env, newBitmap);
-	LOGD("returning the new bitmap");
+	//LOGD("returning the new bitmap");
 	return newBitmap;
 }
 
 JNIEXPORT jobject JNICALL Java_reactive_ui_NativeBitmap_store(JNIEnv * env, jobject obj, jobject bitmap) {
 	AndroidBitmapInfo bitmapInfo;
 	uint32_t* storedBitmapPixels = NULL;
-	LOGD("reading bitmap info...");
+	//LOGD("reading bitmap info...");
 	int ret = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
 	if (ret < 0) {
 		LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
 		return NULL;
 	}
-	LOGD("width:%d height:%d stride:%d", bitmapInfo.width, bitmapInfo.height, bitmapInfo.stride);
+	//LOGD("width:%d height:%d stride:%d", bitmapInfo.width, bitmapInfo.height, bitmapInfo.stride);
 	if (bitmapInfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
 		LOGE("Bitmap format is not RGBA_8888!");
 		return NULL;
@@ -90,7 +90,7 @@ JNIEXPORT jobject JNICALL Java_reactive_ui_NativeBitmap_store(JNIEnv * env, jobj
 	//
 	//read pixels of bitmap into native memory :
 	//
-	LOGD("reading bitmap pixels...");
+	//LOGD("reading bitmap pixels...");
 	void* bitmapPixels;
 	ret = AndroidBitmap_lockPixels(env, bitmap, &bitmapPixels);
 	if (ret < 0) {

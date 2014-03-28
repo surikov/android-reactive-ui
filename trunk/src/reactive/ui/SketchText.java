@@ -23,18 +23,23 @@ public class SketchText extends Sketch {
 	public ItProperty<SketchText, Typeface> typeface = new ItProperty<SketchText, Typeface>(this); // .face.is(Typeface.createFromAsset(me.getAssets(), "fonts/PoiretOne-Regular.ttf"))
 	public NumericProperty<SketchText> size = new NumericProperty<SketchText>(this);
 	private TextPaint paint = new TextPaint();
-	Bitmap bm = null;
+	StaticLayout staticLayout;
+	//Bitmap bm = null;
 	Rect src = null;
 	Rect dest = null;
 	Paint bmPaint = new Paint();
-	boolean valid = false;
-	boolean released = false;
+	//boolean valid = false;
+	//boolean released = false;
 	//private StaticLayout staticLayout;
+	
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
 			//resetLayout();
-			valid = false;
+			//valid = false;
+			 staticLayout = new StaticLayout(text.property.value(), paint, width.property.value().intValue(), Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+			
+			postInvalidate.start();
 		}
 	};
 
@@ -44,6 +49,7 @@ public class SketchText extends Sketch {
 		paint.setAntiAlias(true);
 		paint.setFilterBitmap(true);
 		paint.setDither(true);
+		size.is(14);
 		//paint.setTextSize(17);
 		//paint.setColor(color.property.value().intValue());
 		//aint.sett
@@ -52,7 +58,8 @@ public class SketchText extends Sketch {
 			@Override
 			public void doTask() {
 				//resetLayout();
-				valid = false;
+				//valid = false;
+				reFit.start();
 				postInvalidate.start();
 			}
 		});
@@ -62,7 +69,8 @@ public class SketchText extends Sketch {
 			public void doTask() {
 				paint.setColor(color.property.value().intValue());
 				//resetLayout();
-				valid = false;
+				//valid = false;
+				reFit.start();
 				postInvalidate.start();
 			}
 		});
@@ -71,7 +79,8 @@ public class SketchText extends Sketch {
 			public void doTask() {
 				paint.setTypeface(typeface.property.value());
 				//resetLayout();
-				valid = false;
+				//valid = false;
+				reFit.start();
 				postInvalidate.start();
 			}
 		});
@@ -80,7 +89,7 @@ public class SketchText extends Sketch {
 			public void doTask() {
 				paint.setTextSize(size.property.value().floatValue());
 				//resetLayout();
-				valid = false;
+				//valid = false;
 				postInvalidate.start();
 			}
 		});
@@ -101,21 +110,18 @@ public class SketchText extends Sketch {
 		text.property.unbind();
 		typeface.property.unbind();
 		size.property.unbind();
-		if (bm != null) {
+		/*if (bm != null) {
 			bm.recycle();
 			bm = null;
 		}
-		released = true;
+		released = true;*/
 		//System.out.println("released");
 		/*width.property.unbind();
 		height.property.unbind();
 		left.property.unbind();
 		top.property.unbind();*/
-	}
+	}/*
 	void resetLayout() {
-		/*if(released){
-			System.out.println("strange resetLayout");
-		}*/
 		if (valid) {
 			return;
 		}
@@ -132,10 +138,17 @@ public class SketchText extends Sketch {
 			StaticLayout staticLayout = new StaticLayout(text.property.value(), paint, w, Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
 			staticLayout.draw(canvas);
 		}
-	}
+	}*/
 	@Override
 	public void draw(Canvas canvas) {
-		resetLayout();
+		int w = width.property.value().intValue();
+		int h = height.property.value().intValue();
+
+		if (w > 0 && h > 0 && staticLayout!=null) {
+			
+			staticLayout.draw(canvas);
+		}
+		//resetLayout();
 		//System.out.println("draw");
 		//float x=Math.abs(paint.getFontMetrics().ascent) + Math.abs(paint.getFontMetrics().descent);		
 		//canvas.drawText(text.property.value(), 0, x, paint);
@@ -148,8 +161,8 @@ public class SketchText extends Sketch {
 		//boolean is_ok = canvas.clipRect(0, 0, width.property.value().intValue(), height.property.value().intValue(), Region.Op.REPLACE);
 		//staticLayout.draw(canvas);
 		//canvas.restore();
-		if (bm != null) {
+		/*if (bm != null) {
 			canvas.drawBitmap(bm, src, dest, bmPaint);
-		}
+		}*/
 	}
 }
