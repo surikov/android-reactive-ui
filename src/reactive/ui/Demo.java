@@ -14,7 +14,9 @@ import android.text.Html;
 import android.util.*;
 import android.net.*;
 import android.widget.*;
+
 import java.util.*;
+
 import org.apache.http.*;
 import org.apache.http.client.*;
 import org.apache.http.client.methods.*;
@@ -24,17 +26,22 @@ import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.params.*;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+
 import android.database.*;
 import android.database.sqlite.*;
 import reactive.ui.*;
+
+
 import java.net.*;
 import java.nio.channels.FileChannel;
+
 import android.view.animation.*;
 import android.view.inputmethod.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import tee.binding.*;
+
 import java.io.*;
 import java.text.*;
 
@@ -45,15 +52,19 @@ public class Demo extends Activity {
 	double preX = 0;
 	double preY = 0;
 	double preZ = 0;
+	int cnt = 0;
 
 	public static String version() {
-		return "1.40";
+		return "1.46";
 	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		System.out.println("start onCreate");
+		
 		super.onCreate(savedInstanceState);
 		layoutless = new Layoutless(this);
+		this.setTitle(version());
 		this.setContentView(layoutless);
 		layoutless.child(new Decor(this).background.is(0xffcc9966)//
 				.left().is(10)//
@@ -130,10 +141,18 @@ public class Demo extends Activity {
 		layoutless.child(new Decor(this)//
 				.bitmap.is(b)//
 				.background.is(0x6600ff00)//
-						.left().is(xx.plus(250))//
-						.top().is(yy.plus(200))//
+						.left().is(250)//
+						.top().is(200)//
 						.width().is(100)//
 						.height().is(100)//
+				);
+		final Decor dcr = new Decor(this);
+		layoutless.child(dcr//
+				.background.is(0x3300ffff)//
+						.left().is(layoutless.shiftX.property.plus(390))//
+						.top().is(layoutless.shiftY.property.plus(50))//
+						.width().is(800)//
+						.height().is(600)//
 				);
 		layoutless.child(new Knob(this)//
 				.labelText.is("test")//
@@ -142,25 +161,55 @@ public class Demo extends Activity {
 					@Override
 					public void doTask() {
 						b.value(n2.getBitmap());
-						Vector<Bitmap> bs = new Vector<Bitmap>();
-						Vector<NativeBitmap> nat = new Vector<NativeBitmap>();
-						for (int nn = 0; nn < 10; nn++) {
-							for (int i = 0; i < 10; i++) {
-								Bitmap b0 = BitmapFactory.decodeResource(getResources(), R.drawable.rocket);
-								Bitmap b1 = Bitmap.createScaledBitmap(b0, 500, 500, true);
-								NativeBitmap na = new NativeBitmap();
-								na.storeBitmap(b1);
-								b0.recycle();
-								b1.recycle();
-								// bs.add(b1);
-								nat.add(na);
-							}
-						}
 
+						// Vector<NativeBitmap> nat = new
+						// Vector<NativeBitmap>();
+
+						for (int i = 0; i < 100; i++) {
+							SketchPlate sp = new SketchPlate()//
+							//.doubleBuffered.is(true)//
+							//.externalBuffered.is(true)//
+							.background.is(0x660000ff)//
+							.top.is(Math.random() * 800)//
+							.left.is(Math.random() * 600)//
+							.width.is(300)//
+							.height.is(300);
+							sp.child(new SketchText()//
+							// .size.is(10)
+							.text.is("num " + Math.random()).width.is(300).height.is(300)
+
+							);
+							for (int nn = 0; nn < 10; nn++) {
+								sp.child(new SketchLine()//
+								.strokeColor.is(0x99ffff00)//
+								.strokeWidth.is(5)//
+										.point(Math.random() * 300, Math.random() * 300)//
+										.point(Math.random() * 300, Math.random() * 300)//
+								);
+							}
+							cnt++;
+							
+							dcr.sketch(sp);
+							sp.reCache();
+							/*
+							 * SketchPlate sp=new SketchPlate(); Bitmap b0 =
+							 * BitmapFactory.decodeResource(getResources(),
+							 * R.drawable.rocket); Bitmap b1 =
+							 * Bitmap.createScaledBitmap(b0, 500, 500, true);
+							 * NativeBitmap na = new NativeBitmap();
+							 * na.storeBitmap(b1); b0.recycle(); b1.recycle();
+							 * // bs.add(b1); nat.add(na);
+							 */
+
+						}
+						double mfree = (Runtime.getRuntime().freeMemory() / 1000) / 1000.0;
+						double tfree = (Runtime.getRuntime().totalMemory() / 1000) / 1000.0;			
+						//Auxiliary.warn(mfree + "/" + tfree, Demo.this);
+						System.out.println("cnt " + cnt+": "+mfree + "/" + tfree);
 					}
 				})//
-						.left().is(xx.plus(50))//
-						.top().is(yy.plus(50))//
+						.left().is(50)//
+						.top().is(20)//
 						.width().is(100)//
 						.height().is(100)//
 				);
