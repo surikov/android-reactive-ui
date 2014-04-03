@@ -30,14 +30,14 @@ public class SketchPlate extends Sketch {
 	public Vector<Sketch> sketches = new Vector<Sketch>();
 	private Tint paint = new Tint();
 	Bitmap bitmapCache = null;
-	NativeBitmap nativeBitmapCache = null;
+	//NativeBitmap nativeBitmapCache = null;
 	Rect src = null;
 	Rect dest = null;
 	Paint bmPaint = new Paint();
 	public ToggleProperty<SketchPlate> cached = new ToggleProperty<SketchPlate>(this);
 	// public ToggleProperty<SketchPlate> doubleBuffered = new
 	// ToggleProperty<SketchPlate>(this);
-	public ToggleProperty<SketchPlate> externalBuffered = new ToggleProperty<SketchPlate>(this);
+	//public ToggleProperty<SketchPlate> externalBuffered = new ToggleProperty<SketchPlate>(this);
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
@@ -72,9 +72,9 @@ public class SketchPlate extends Sketch {
 			bitmapCache.recycle();
 			bitmapCache = null;
 		}
-		if (nativeBitmapCache != null) {
+		/*if (nativeBitmapCache != null) {
 			nativeBitmapCache.freeBitmap();
-		}
+		}*/
 
 	}
 
@@ -135,12 +135,12 @@ public class SketchPlate extends Sketch {
 		if (w > 0 && h > 0 && sketches.size() > 0) {
 			try {
 
-				bitmapCache = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
+				bitmapCache = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 				src = new Rect(0, 0, w, h);
 				dest = new Rect(l, t, l + w, t + h);
 				Canvas canvas = new Canvas(bitmapCache);
 				drawSketches(canvas);
-				if (externalBuffered.property.value()) {
+				/*if (externalBuffered.property.value()) {
 					if(nativeBitmapCache==null){
 						nativeBitmapCache = new NativeBitmap();
 					}
@@ -151,7 +151,7 @@ public class SketchPlate extends Sketch {
 					
 					
 					
-				}
+				}*/
 			} catch (Throwable tr) {
 				tr.printStackTrace();
 			}
@@ -177,17 +177,17 @@ public class SketchPlate extends Sketch {
 				, paint);
 
 		reCache();
-		if (externalBuffered.property.value()) {
+		/*if (externalBuffered.property.value()) {
 			if (cached.property.value()) {
 				bitmapCache=nativeBitmapCache.getBitmap();
 				canvas.drawBitmap(bitmapCache, src, dest, bmPaint);
 				bitmapCache.recycle();
 				bitmapCache=null;
 			}
-		} else {
+		} else {*/
 			if (bitmapCache != null) {
 				canvas.drawBitmap(bitmapCache, src, dest, bmPaint);
 			}
-		}
+		//}
 	};
 }
