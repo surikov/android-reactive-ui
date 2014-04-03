@@ -31,14 +31,14 @@ public class SketchText extends Sketch {
 	//boolean valid = false;
 	//boolean released = false;
 	//private StaticLayout staticLayout;
-	
+
 	Task reFit = new Task() {
 		@Override
 		public void doTask() {
 			//resetLayout();
 			//valid = false;
-			 staticLayout = new StaticLayout(text.property.value(), paint, width.property.value().intValue(), Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-			
+			staticLayout = new StaticLayout(text.property.value(), paint, width.property.value().intValue(), Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+
 			postInvalidate.start();
 		}
 	};
@@ -99,6 +99,7 @@ public class SketchText extends Sketch {
 		top.property.afterChange(reFit);
 		//System.out.println(paint.getColor());
 	}
+
 	@Override
 	public void unbind() {
 		super.unbind();
@@ -121,7 +122,7 @@ public class SketchText extends Sketch {
 		left.property.unbind();
 		top.property.unbind();*/
 	}/*
-	void resetLayout() {
+		void resetLayout() {
 		if (valid) {
 			return;
 		}
@@ -138,15 +139,20 @@ public class SketchText extends Sketch {
 			StaticLayout staticLayout = new StaticLayout(text.property.value(), paint, w, Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
 			staticLayout.draw(canvas);
 		}
-	}*/
+		}*/
+
 	@Override
 	public void draw(Canvas canvas) {
 		int w = width.property.value().intValue();
 		int h = height.property.value().intValue();
 
-		if (w > 0 && h > 0 && staticLayout!=null) {
-			
+		if (w > 0 && h > 0 && staticLayout != null) {
+			canvas.save();
+			int textX = left.property.value().intValue();
+			int textY = top.property.value().intValue();
+			canvas.translate(textX, textY);
 			staticLayout.draw(canvas);
+			canvas.restore();
 		}
 		//resetLayout();
 		//System.out.println("draw");

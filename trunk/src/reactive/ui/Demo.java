@@ -55,7 +55,7 @@ public class Demo extends Activity {
 	int cnt = 0;
 
 	public static String version() {
-		return "1.46";
+		return "1.49";
 	}
 
 	@Override
@@ -130,14 +130,14 @@ public class Demo extends Activity {
 		// Bitmap b3 =
 		// Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
 		// R.drawable.refresh), 100, 100, true);
-		NativeBitmap n1 = new NativeBitmap();
-		n1.storeBitmap(b1);
-		final NativeBitmap n2 = new NativeBitmap();
-		n2.storeBitmap(b2);
+		//NativeBitmap n1 = new NativeBitmap();
+		//n1.storeBitmap(b1);
+		//final NativeBitmap n2 = new NativeBitmap();
+		//n2.storeBitmap(b2);
 		final It<Bitmap> b = new It<Bitmap>();
 		b1.recycle();
 		b2.recycle();
-		b.value(n1.getBitmap());
+		//b.value(n1.getBitmap());
 		layoutless.child(new Decor(this)//
 				.bitmap.is(b)//
 				.background.is(0x6600ff00)//
@@ -160,7 +160,7 @@ public class Demo extends Activity {
 
 					@Override
 					public void doTask() {
-						b.value(n2.getBitmap());
+						//b.value(n2.getBitmap());
 
 						// Vector<NativeBitmap> nat = new
 						// Vector<NativeBitmap>();
