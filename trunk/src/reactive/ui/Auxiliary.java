@@ -11,7 +11,9 @@ import android.text.TextUtils;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
+
 import java.util.*;
+
 import reactive.ui.*;
 import android.content.res.*;
 import android.view.animation.*;
@@ -22,9 +24,12 @@ import tee.binding.task.*;
 import tee.binding.it.*;
 import tee.binding.*;
 import android.net.*;
+
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.*;
+
 import android.database.*;
 import android.database.sqlite.*;
 import tee.binding.Bough;
@@ -358,14 +363,34 @@ public class Auxiliary {
 		}
 		return bough;
 	}
+	public static byte[] loadFileFromURL(String pathurl) throws Exception {
+		InputStream input = null;
+		ByteArrayOutputStream output = null;
+		HttpURLConnection connection = null;
+		URL url = new URL(pathurl);
+		connection = (HttpURLConnection) url.openConnection();
+		connection.connect();
+		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+			throw new Exception("Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage());
+		}
+		input = connection.getInputStream();
+		output = new ByteArrayOutputStream();
+		byte data[] = new byte[1024];
+		int nn;
+		while ((nn = input.read(data)) != -1) {
+			output.write(data, 0, nn);
+		}
+		input.close();
+		return output.toByteArray();
+	}
 	public static Bitmap loadBitmapFromURL(String url) {
 		Bitmap bitmap = null;
-		URL m;
+		/*URL m;
 		InputStream i = null;
 		BufferedInputStream bis = null;
-		ByteArrayOutputStream out = null;
+		ByteArrayOutputStream out = null;*/
 		try {
-			m = new URL(url);
+			/*m = new URL(url);
 			i = (InputStream) m.getContent();
 			bis = new BufferedInputStream(i, 1024 * 8);
 			out = new ByteArrayOutputStream();
@@ -376,10 +401,11 @@ public class Auxiliary {
 			}
 			out.close();
 			bis.close();
-			byte[] data = out.toByteArray();
+			byte[] data = out.toByteArray();*/
+			byte[] data = loadFileFromURL(url);
 			bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 		} catch (Throwable t) {
-			//
+			t.printStackTrace();
 		}
 		return bitmap;
 	}

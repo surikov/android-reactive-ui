@@ -55,7 +55,7 @@ public class Demo extends Activity {
 	int cnt = 0;
 
 	public static String version() {
-		return "1.49";
+		return "1.51";
 	}
 
 	@Override
