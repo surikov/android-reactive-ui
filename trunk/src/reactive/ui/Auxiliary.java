@@ -10,6 +10,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.*;
 import android.view.*;
+import android.webkit.MimeTypeMap;
 import android.widget.*;
 
 import java.util.*;
@@ -40,7 +41,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
 
 public class Auxiliary {
 	public static int colorBackground = 0x66ff0000;
@@ -80,6 +80,7 @@ public class Auxiliary {
 			DIGITS['a' + i] = (byte) (10 + i);
 		}
 	}
+
 	public static String pad(String text, int length, char ch) {
 		length = length - text.length();
 		for (int i = 0; i < length; i++) {
@@ -110,7 +111,8 @@ public class Auxiliary {
 		if ((textColorPrimary & 0x00ffffff) > 0x00666666) {//darkonlight
 			colorLine = transparent(textColorPrimary, 0.2);
 			colorSelection = transparent(textColorLink, 0.3);
-		} else {//lightondark
+		}
+		else {//lightondark
 			colorLine = transparent(textColorPrimary, 0.1);
 			colorSelection = transparent(textColorLink, 0.2);
 		}
@@ -128,7 +130,8 @@ public class Auxiliary {
 		try {
 			InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 			inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 	}
@@ -139,7 +142,8 @@ public class Auxiliary {
 			if (networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected()) {
 				return true;
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return false;
@@ -218,7 +222,8 @@ public class Auxiliary {
 				cArray[j++] = SECOND_CHAR[index];
 			}
 			return new String(cArray);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			return "";
 		}
 	}
@@ -239,15 +244,18 @@ public class Auxiliary {
 							java.util.Date d = null;
 							if (value.length() > 12) {
 								d = sqliteTime.parse(value);
-							} else {
+							}
+							else {
 								d = sqliteDate.parse(value);
 							}
 							value = "" + d.getTime();
-						} catch (Throwable t) {
+						}
+						catch (Throwable t) {
 							//nor date nor time
 						}
 					}
-				} catch (Throwable t) {
+				}
+				catch (Throwable t) {
 					//can't getString due blob
 					byte[] b = cursor.getBlob(i);
 					value = hex2String(b);
@@ -268,7 +276,8 @@ public class Auxiliary {
 			if (value == null) {
 				return "";
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -277,7 +286,8 @@ public class Auxiliary {
 		double value = 0;
 		try {
 			value = cursor.getDouble(cursor.getColumnIndex(name));
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -292,10 +302,12 @@ public class Auxiliary {
 			if (value.length() > 9) {
 				java.util.Date d = sqliteDate.parse(value);
 				value = "" + d.getTime();
-			} else {
+			}
+			else {
 				value = "0";
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -310,10 +322,12 @@ public class Auxiliary {
 			if (value.length() > 12) {
 				java.util.Date d = sqliteTime.parse(value);
 				value = "" + d.getTime();
-			} else {
+			}
+			else {
 				value = "0";
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -326,7 +340,8 @@ public class Auxiliary {
 				return "";
 			}
 			value = hex2String(b);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -404,7 +419,8 @@ public class Auxiliary {
 			byte[] data = out.toByteArray();*/
 			byte[] data = loadFileFromURL(url);
 			bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return bitmap;
@@ -486,7 +502,8 @@ public class Auxiliary {
 					double nn = num.value();
 					try {
 						nn = Double.parseDouble(input.getText().toString());
-					} catch (Throwable t) {
+					}
+					catch (Throwable t) {
 						t.printStackTrace();
 					}
 					num.value(nn);
@@ -577,7 +594,8 @@ public class Auxiliary {
 						}
 						//System.out.println("insert "+which);
 						defaultSelection.insert(0, which);
-					} else {
+					}
+					else {
 						for (int i = 0; i < defaultSelection.size(); i++) {
 							int n = defaultSelection.at(i);
 							if (n == which) {
@@ -756,10 +774,12 @@ public class Auxiliary {
 					result.add(line);
 					//contents.append(System.getProperty("line.separator"));
 				}
-			} finally {
+			}
+			finally {
 				input.close();
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			System.out.println(t.getMessage());
 		}
 		return result;
@@ -770,7 +790,8 @@ public class Auxiliary {
 			output.write(aContents);
 			output.flush();
 			output.close();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			System.out.println(t.getMessage());
 		}
 		return false;
@@ -781,7 +802,8 @@ public class Auxiliary {
 			fos.write(aContents.getBytes(charset));
 			fos.flush();
 			fos.close();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			System.out.println(t.getMessage());
 		}
 		return false;
@@ -798,7 +820,16 @@ public class Auxiliary {
 			});
 			builder.create().show();
 		}*/
+	public static void startFile(Activity activity, File file) {
+		String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl("file://" + file.getAbsolutePath()));
+		Intent intent = new Intent();
+		intent.setAction(android.content.Intent.ACTION_VIEW);
+		intent.setDataAndType(android.net.Uri.fromFile(file), mime);
+		Intent chooser = Intent.createChooser(intent, file.getAbsolutePath());
+		activity.startActivity(chooser);
+	}
 	public static void startFile(Activity activity, String action, String mime, File file) {
+		//String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl("file://" + path));
 		Intent intent = new Intent();
 		intent.setAction(action);//android.content.Intent.ACTION_VIEW
 		intent.setDataAndType(android.net.Uri.fromFile(file), mime);//"text/html"
@@ -812,7 +843,8 @@ public class Auxiliary {
 			DisplayMetrics dm = new DisplayMetrics();
 			activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 			w = dm.widthPixels;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return w;
@@ -823,7 +855,8 @@ public class Auxiliary {
 			DisplayMetrics dm = new DisplayMetrics();
 			activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 			h = dm.heightPixels;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return h;
@@ -832,7 +865,8 @@ public class Auxiliary {
 		Bitmap b = null;
 		try {
 			b = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), id), width, height, true);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return b;
@@ -841,7 +875,8 @@ public class Auxiliary {
 		Bitmap b = null;
 		try {
 			b = BitmapFactory.decodeResource(context.getResources(), id);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return b;
@@ -883,10 +918,12 @@ public class Auxiliary {
 				save.write(buffer);
 				save.flush();
 				save.close();
-			} catch (Throwable t) {
+			}
+			catch (Throwable t) {
 				t.printStackTrace();
 			}
-		} else {
+		}
+		else {
 			System.out.println("exportResource skip " + path);
 		}
 	}
@@ -910,9 +947,9 @@ public class Auxiliary {
 					//System.out.println("Auxiliary.startSensorEventListener.onSensorChanged " + event);
 					try {
 						if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-							if (Math.abs(accelerometerX - event.values[0])>accelerometerNoise//
-									|| Math.abs(accelerometerY - event.values[1])>accelerometerNoise//
-									||Math.abs( accelerometerZ - event.values[2])>accelerometerNoise//
+							if (Math.abs(accelerometerX - event.values[0]) > accelerometerNoise//
+									|| Math.abs(accelerometerY - event.values[1]) > accelerometerNoise//
+									|| Math.abs(accelerometerZ - event.values[2]) > accelerometerNoise//
 							) {
 								accelerometerX = event.values[0];
 								accelerometerY = event.values[1];
@@ -920,7 +957,8 @@ public class Auxiliary {
 								task.start();
 							}
 						}
-					} catch (Throwable t) {
+					}
+					catch (Throwable t) {
 						t.printStackTrace();
 					}
 				}
@@ -931,7 +969,8 @@ public class Auxiliary {
 			};
 			sensorManager.registerListener(sensorEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 			return true;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		sensorEventListener = null;
@@ -945,7 +984,8 @@ public class Auxiliary {
 			SensorManager sensorManager = (SensorManager) activity.getSystemService(android.content.Context.SENSOR_SERVICE);
 			sensorManager.unregisterListener(sensorEventListener);
 			return true;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return false;
