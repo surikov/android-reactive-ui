@@ -14,9 +14,7 @@ import android.text.Html;
 import android.util.*;
 import android.net.*;
 import android.widget.*;
-
 import java.util.*;
-
 import org.apache.http.*;
 import org.apache.http.client.*;
 import org.apache.http.client.methods.*;
@@ -26,22 +24,17 @@ import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.params.*;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
 import android.database.*;
 import android.database.sqlite.*;
 import reactive.ui.*;
-
-
 import java.net.*;
 import java.nio.channels.FileChannel;
-
 import android.view.animation.*;
 import android.view.inputmethod.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import tee.binding.*;
-
 import java.io.*;
 import java.text.*;
 
@@ -53,18 +46,22 @@ public class Demo extends Activity {
 	double preY = 0;
 	double preZ = 0;
 	int cnt = 0;
-
-	public static String version() {
-		return "1.51";
+	WebRender webRender=null;
+	public static String version(Context c) {
+		String v = "?";
+		try {
+			v = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
+		} catch (Throwable t) {
+			v = t.toString();
+		}
+		return v;
 	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		System.out.println("start onCreate");
-		
 		super.onCreate(savedInstanceState);
 		layoutless = new Layoutless(this);
-		this.setTitle(version());
+		this.setTitle(version(this));
 		this.setContentView(layoutless);
 		layoutless.child(new Decor(this).background.is(0xffcc9966)//
 				.left().is(10)//
@@ -72,6 +69,16 @@ public class Demo extends Activity {
 				.width().is(1250)//
 				.height().is(700)//
 				);
+		 WebRender wr=new WebRender(this);
+		layoutless.child( wr//
+		.left().is(layoutless.width().property.divide(2))//
+		.top().is(0)//
+		.width().is(layoutless.width().property.divide(2))//
+		.height().is(layoutless.height().property)//
+		);
+		//wr.go("http://mail.ru");
+		//wr.go("file:///sdcard/Download/g3-m-js/a2.html");
+		wr.go("file:///sdcard/Download/g3-m-js/xmaslite.html");
 		final BigGrid bg = new BigGrid(this);
 		/*
 		 * layoutless.child(bg//
@@ -79,12 +86,14 @@ public class Demo extends Activity {
 		 * //.data()// .left().is(10)// .top().is(10)// .width().is(1250)//
 		 * .height().is(700)// );
 		 */
+		
 		layoutless.child(new SplitLeftRight(this)//
 				.left().is(0)//
 				.top().is(0)//
 				.width().is(layoutless.width().property)//
 				.height().is(layoutless.height().property)//
 				);
+		
 		SketchPlate sk = new SketchPlate()//
 		.background.is(0x9900ffff)//
 		.left.is(0)//
@@ -157,14 +166,11 @@ public class Demo extends Activity {
 		layoutless.child(new Knob(this)//
 				.labelText.is("test")//
 				.afterTap.is(new Task() {
-
 					@Override
 					public void doTask() {
 						//b.value(n2.getBitmap());
-
 						// Vector<NativeBitmap> nat = new
 						// Vector<NativeBitmap>();
-
 						for (int i = 0; i < 100; i++) {
 							SketchPlate sp = new SketchPlate()//
 							//.doubleBuffered.is(true)//
@@ -176,9 +182,7 @@ public class Demo extends Activity {
 							.height.is(300);
 							sp.child(new SketchText()//
 							// .size.is(10)
-							.text.is("num " + Math.random()).width.is(300).height.is(300)
-
-							);
+							.text.is("num " + Math.random()).width.is(300).height.is(300));
 							for (int nn = 0; nn < 10; nn++) {
 								sp.child(new SketchLine()//
 								.strokeColor.is(0x99ffff00)//
@@ -188,7 +192,6 @@ public class Demo extends Activity {
 								);
 							}
 							cnt++;
-							
 							dcr.sketch(sp);
 							sp.reCache();
 							/*
@@ -200,12 +203,11 @@ public class Demo extends Activity {
 							 * na.storeBitmap(b1); b0.recycle(); b1.recycle();
 							 * // bs.add(b1); nat.add(na);
 							 */
-
 						}
 						double mfree = (Runtime.getRuntime().freeMemory() / 1000) / 1000.0;
-						double tfree = (Runtime.getRuntime().totalMemory() / 1000) / 1000.0;			
+						double tfree = (Runtime.getRuntime().totalMemory() / 1000) / 1000.0;
 						//Auxiliary.warn(mfree + "/" + tfree, Demo.this);
-						System.out.println("cnt " + cnt+": "+mfree + "/" + tfree);
+						System.out.println("cnt " + cnt + ": " + mfree + "/" + tfree);
 					}
 				})//
 						.left().is(50)//
@@ -216,26 +218,37 @@ public class Demo extends Activity {
 		// System.out.println("NativeBitmap is "+new
 		// NativeBitmap().getVersion());
 		System.out.println("done onCreate");
+		/*
+		WindowManager.LayoutParams params = new WindowManager.LayoutParams(//
+				WindowManager.LayoutParams.WRAP_CONTENT//
+				, WindowManager.LayoutParams.WRAP_CONTENT//
+				, WindowManager.LayoutParams.TYPE_SYSTEM_ALERT//
+				, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_FULLSCREEN//
+				, PixelFormat.TRANSLUCENT//
+		);
+		params.gravity = Gravity.RIGHT | Gravity.TOP;
+		WindowManager mWindowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+		Knob k = new Knob(this);
+		k.labelText.is("asreghsh").width().is(300).height().is(100);
+		mWindowManager.addView(k, params);
+		*/
+		//layoutless.child(k);
 	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add("First");
 		menu.add("Second");
 		return true;
 	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return false;
 	}
-
 	@Override
 	protected void onPause() {
 		Auxiliary.stopSensorEventListener(this);
 		super.onPause();
 	}
-
 	@Override
 	protected void onResume() {
 		Auxiliary.startSensorEventListener(this, new Task() {

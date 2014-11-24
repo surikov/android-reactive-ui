@@ -25,7 +25,7 @@ import android.widget.RelativeLayout;
 public class WebRender extends WebView implements Rake {
 	boolean initialized = false;
 	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
-	public NoteProperty<WebView> url = new NoteProperty<WebView>(this);
+	public NoteProperty<WebRender> url = new NoteProperty<WebRender>(this);
 	public ItProperty<WebRender, Task> afterLink = new ItProperty<WebRender, Task>(this);
 	//public ItProperty<WebRender, Task> afterLoad = new ItProperty<WebRender, Task>(this);
 	//public NoteProperty<WebView> active = new NoteProperty<WebView>(this);
@@ -111,6 +111,7 @@ public class WebRender extends WebView implements Rake {
 				}
 			}
 		});
+		//this.onc
 		initialized = true;
 	}
 	public void go(String urlString) {

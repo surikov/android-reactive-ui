@@ -99,7 +99,7 @@ public class SplitTopDown extends SubLayoutless {
 					}
 				}
 			};
-			this.child(new Decor(this.getContext()).background.is(0x33999999)//
+			/*this.child(new Decor(this.getContext()).background.is(0x33999999)//
 					.top().is(split.property.minus(2))//
 					.width().is(width().property)//
 					.height().is(5)//
@@ -108,7 +108,7 @@ public class SplitTopDown extends SubLayoutless {
 					.top().is(split.property.minus(1))//
 					.width().is(width().property)//
 					.height().is(3)//
-			);
+			);*/
 			this.child(new Decor(this.getContext()).background.is(Auxiliary.textColorPrimary)//
 					.top().is(split.property)//
 					.width().is(width().property)//
@@ -129,6 +129,7 @@ public class SplitTopDown extends SubLayoutless {
 			.dragY.is(split.property.minus(0.5 * Auxiliary.tapSize))//
 			.afterDrag.is(adjustSplit)//
 			.movableY.is(true)//
+			/*
 					.sketch(new SketchPlate()//
 					.arcX.is(0.5 * (4 + Auxiliary.tapSize))//
 					.arcY.is(0.5 * (4 + Auxiliary.tapSize))//
@@ -144,6 +145,7 @@ public class SplitTopDown extends SubLayoutless {
 					.width.is(2 + Auxiliary.tapSize)//
 					.height.is(2 + Auxiliary.tapSize)//
 					)//
+					*/
 					.sketch(new SketchPlate()//
 					.arcX.is(0.5 * Auxiliary.tapSize)//
 					.arcY.is(0.5 * Auxiliary.tapSize)//

@@ -135,7 +135,7 @@ public class SplitLeftRight extends SubLayoutless {
 			};
 			//split.property.afterChange(adjustSplit);
 			//split.property.m
-			this.child(new Decor(this.getContext())//
+			/*this.child(new Decor(this.getContext())//
 			.background.is(0x33999999)//
 					.left().is(split.property.minus(2))//
 					.width().is(5)//
@@ -148,7 +148,7 @@ public class SplitLeftRight extends SubLayoutless {
 					.width().is(3)//
 					.height().is(height().property)//
 			//
-			);
+			);*/
 			this.child(new Decor(this.getContext())//
 			.background.is(Auxiliary.textColorPrimary)//
 					.left().is(split.property)//
@@ -172,6 +172,7 @@ public class SplitLeftRight extends SubLayoutless {
 			.dragX.is(split.property.minus(0.5 * Auxiliary.tapSize))//
 			.afterDrag.is(adjustSplit)//
 			.movableX.is(true)//
+			/*
 					.sketch(new SketchPlate()//
 					.arcX.is(0.5 * (4 + Auxiliary.tapSize))//
 					.arcY.is(0.5 * (4 + Auxiliary.tapSize))//
@@ -187,6 +188,7 @@ public class SplitLeftRight extends SubLayoutless {
 					.width.is(2 + Auxiliary.tapSize)//
 					.height.is(2 + Auxiliary.tapSize)//
 					)//
+					*/
 					.sketch(new SketchPlate()//
 					.arcX.is(0.5 * Auxiliary.tapSize)//
 					.arcY.is(0.5 * Auxiliary.tapSize)//
