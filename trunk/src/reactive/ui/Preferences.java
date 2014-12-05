@@ -19,11 +19,8 @@ import org.apache.http.impl.client.*;
 import org.apache.http.params.*;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
 import android.content.*;
-
 import java.net.*;
-
 import android.view.animation.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
@@ -37,7 +34,6 @@ public class Preferences {
 	static Hashtable<String, Toggle> toggles = new Hashtable<String, Toggle>();
 	//static Preferences me;
 	static SharedPreferences preferences;
-
 	private Preferences() {
 	}
 	public static void init(Context context) {
@@ -46,26 +42,38 @@ public class Preferences {
 		}
 	}
 	public static void save() {
-		//System.out.println("save preferences");
-		SharedPreferences.Editor editor = preferences.edit();
-		for (Enumeration<String> e = integers.keys(); e.hasMoreElements();) {
-			String k = e.nextElement();
-			editor.putInt(k, integers.get(k).value().intValue());
-			//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+		try {
+			//System.out.println("save preferences");
+			SharedPreferences.Editor editor = preferences.edit();
+			for (Enumeration<String> e = integers.keys(); e.hasMoreElements();) {
+				String k = e.nextElement();
+				editor.putInt(k, integers.get(k).value().intValue());
+				//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+			}
+			for (Enumeration<String> e = strings.keys(); e.hasMoreElements();) {
+				String k = e.nextElement();
+				editor.putString(k, strings.get(k).value());
+				//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+			}
+			for (Enumeration<String> e = toggles.keys(); e.hasMoreElements();) {
+				String k = e.nextElement();
+				editor.putBoolean(k, toggles.get(k).value());
+				//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+			}
+			editor.commit();
+		} catch (Throwable t) {
+			t.printStackTrace();
 		}
-		for (Enumeration<String> e = strings.keys(); e.hasMoreElements();) {
-			String k = e.nextElement();
-			editor.putString(k, strings.get(k).value());
-			//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+	}
+	public static Numeric integer(String name, int minValue, int defaultValue, int maxValue) {
+		Numeric n = integer(name, defaultValue);
+		if (n.value() < minValue) {
+			n.value(minValue);
 		}
-		
-		
-		for (Enumeration<String> e = toggles.keys(); e.hasMoreElements();) {
-			String k = e.nextElement();
-			editor.putBoolean(k, toggles.get(k).value());
-			//System.out.println("save preference: "+k+"="+integers.get(k).value().intValue());
+		if (n.value() > maxValue) {
+			n.value(maxValue);
 		}
-		editor.commit();
+		return n;
 	}
 	public static Numeric integer(String name, int defaultValue) {
 		//System.out.println("read preference: "+name);
@@ -78,8 +86,6 @@ public class Preferences {
 		}
 		return n;
 	}
-	
-	
 	public static Note string(String name, String defaultValue) {
 		Note n = strings.get(name);
 		if (n == null) {
@@ -89,7 +95,6 @@ public class Preferences {
 		}
 		return n;
 	}
-	
 	public static Toggle toggle(String name, boolean defaultValue) {
 		Toggle n = toggles.get(name);
 		if (n == null) {

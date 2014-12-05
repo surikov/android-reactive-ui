@@ -80,7 +80,15 @@ public class Auxiliary {
 			DIGITS['a' + i] = (byte) (10 + i);
 		}
 	}
-
+	public static String version(Context c) {
+		String v = "?";
+		try {
+			v = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
+		} catch (Throwable t) {
+			v = t.toString();
+		}
+		return v;
+	}
 	public static String pad(String text, int length, char ch) {
 		length = length - text.length();
 		for (int i = 0; i < length; i++) {
