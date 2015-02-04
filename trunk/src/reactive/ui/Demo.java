@@ -6,6 +6,7 @@ import android.app.KeyguardManager.*;
 import android.app.admin.*;
 import android.content.*;
 import android.graphics.*;
+import android.graphics.drawable.ColorDrawable;
 import android.opengl.*;
 import android.opengl.Matrix;
 import android.os.AsyncTask;
@@ -30,6 +31,7 @@ import org.apache.http.util.EntityUtils;
 import android.database.*;
 import android.database.sqlite.*;
 import reactive.ui.*;
+
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -46,119 +48,99 @@ import java.text.*;
 import javax.microedition.khronos.opengles.GL10;
 
 public class Demo extends Activity {
-	Layoutless la;
-	Numeric bowX = new Numeric();
-	Numeric bowY = new Numeric();
-	void initall() {
-		System.out.println("init a");
-		//
-		//Preferences.
-		la = new Layoutless(this);
-		setContentView(la);
-		//
-		int w = Auxiliary.screenWidth(this);
-		int h = Auxiliary.screenHeight(this);
-		Preferences.init(this);
-		bowX.bind(Preferences.integer("bowX", Auxiliary.tapSize, 0, w - Auxiliary.tapSize * 5));
-		bowY.bind(Preferences.integer("bowY", Auxiliary.tapSize, 0, h - Auxiliary.tapSize * 5));
-		System.out.println("bowX " + bowX.value());
-		System.out.println("bowY " + bowY.value());
-		/*
-		System.out.println("w " + w);
-		System.out.println("h " + h);
-		*/
-		//
-		int squareSize = w;
-		int marginTop = (h - w) / 2;
-		int marginLeft = 0;
-		if (h < w) {
-			marginLeft = (w - h) / 2;
-			marginTop = 0;
-			squareSize = h;
-		}
-		/*
-		System.out.println("squareSize " + squareSize);
-		System.out.println("marginTop " + marginTop);
-		System.out.println("marginLeft " + marginLeft);
-		System.out.println(Auxiliary.tapSize);
-		*/
-		//
-		//
-		la.child(new Decor(this)//
-		.background.is(0xffffffff)//
-				.left().is(0)//
-				.top().is(0)//
-				.width().is(la.width().property)//
-				.height().is(la.height().property)//
-		);
-		la.child(new Decor(this)//
-		.bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bowgo_draw)//
-				, Auxiliary.tapSize, Auxiliary.tapSize, true))//
-		.movableX.is(true)//
-		.movableY.is(true)//
-		.dragX.is(bowX)//
-		.dragY.is(bowY)//
-				.left().is(bowX)//
-				.top().is(bowY)//
-				.width().is(300)//
-				.height().is(300)//
-		);
-		la.child(new Decor(this)//
-		.bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bowgo_go)//
-				, Auxiliary.tapSize, Auxiliary.tapSize, true))//
-		.afterTap.is(new Task() {
-			@Override
-			public void doTask() {
-				System.out.println("bowX " + bowX.value());
-				System.out.println("bowY " + bowY.value());
-			}
-		})//
-				.left().is(la.width().property.multiply(0.5).minus(Auxiliary.tapSize * 0.5))//
-				.top().is(la.height().property.minus(new Numeric().value(Auxiliary.tapSize).multiply(1.5)))//
-				.width().is(Auxiliary.tapSize)//
-				.height().is(Auxiliary.tapSize)//
-		);
-		la.child(new Decor(this)//
-		.bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bowgo_archer)//
-				, 200, 200, true))//
-				.left().is(marginLeft)//
-				.top().is(la.height().property.minus(200 + 100).minus(marginTop))//
-				.width().is(200)//
-				.height().is(200)//
-		);
-		la.child(new Decor(this)//
-		.bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bowgo_target)//
-				, 200, 200, true))//
-				.left().is(la.width().property.minus(200).minus(marginLeft))//
-				.top().is(la.height().property.minus(200 + 100).minus(marginTop))//
-				.width().is(200)//
-				.height().is(200)//
-		);
-		la.child(new Knob(this)//
-		.labelText.is("test")//
-				.left().is(100)//
-				.top().is(50)//
-				.width().is(200)//
-				.height().is(50)//
-		);
+	Layoutless layoutless;
+	Decor d;
+	void initAll() {
+		layoutless.child(new Knob(this).labelText.is("a " + new Date())//
+				.afterTap.is(new Task() {
+					@Override
+					public void doTask() {
+						//Demo.this.startActivity(new Intent(Demo.this, Demo.class));				
+						//Demo.this.overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+						Intent intent = new Intent(Demo.this, Demo.class);
+						intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+						Bundle bundle = new Bundle();
+						bundle.putString("key", "value");
+						intent.putExtras(bundle);
+						Demo.this.startActivity(intent);
+					}
+				}).width().is(400).height().is(100));
+		layoutless.child(new Knob(this).labelText.is("d " + new Date())//
+				.afterTap.is(new Task() {
+					@Override
+					public void doTask() {
+						Bitmap b = Auxiliary.screenshot(layoutless);
+						
+						d.bitmap.is(Bitmap.createScaledBitmap(b,200,200,true));
+					}
+				}).left().is(400).top().is(0).width().is(400).height().is(100));
+		
+		 d=new Decor(this);
+		layoutless.child(d.labelText.is("d " + new Date())//
+//				.bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rocket),200,200,true))
+				.left().is(200).top().is(200).width().is(200).height().is(200));
+		
+		
+		layoutless.child(new Knob(this).labelText.is("1").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("2").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("3").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("4").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("5").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("6").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("7").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("8").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("9").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
+		layoutless.child(new Knob(this).labelText.is("10").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
+				.is(Math.random() * 100 + 50));
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		System.out.println("onCreate");
+		System.out.println(Auxiliary.bundle2bough(this.getIntent().getExtras()).dumpXML());
+		//super.setTheme( android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+		super.setTheme(android.R.style.Theme_Holo_Light_NoActionBar);
+		//super.setTheme( android.R.style.Theme_Translucent_NoTitleBar);
+		//getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		super.onCreate(savedInstanceState);
-		initall();
+		layoutless = new Layoutless(this);
+		setContentView(layoutless);
+		Animation anim = new TranslateAnimation(Auxiliary.screenWidth(this), 0, 0, 0);
+		//Animation anim = new TranslateAnimation(0, 0, Auxiliary.screenHeight(this), 0);
+		//ScaleAnimation(0, 1, 0, 1, 200, 200);
+		anim.setDuration(300); // duration = 300
+		//getWindow().getDecorView().startAnimation(anim);
+		initAll();
+		layoutless.startAnimation(anim);
+		//getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 	}
 	@Override
 	protected void onPause() {
 		System.out.println("onPause");
 		super.onPause();
-		Preferences.save();
-		System.out.println("bowX " + bowX.value());
-		System.out.println("bowY " + bowY.value());
+		//Preferences.save();
 	}
 	@Override
 	protected void onResume() {
 		System.out.println("onResume");
 		super.onResume();
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		System.out.println("onCreateOptionsMenu");
+		return super.onCreateOptionsMenu(menu);
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		System.out.println("onOptionsItemSelected");
+		return this.onOptionsItemSelected(item);
 	}
 }
