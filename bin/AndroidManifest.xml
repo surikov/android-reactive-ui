@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="reactive.ui"
+    android:versionCode="52"
+    android:versionName="1.52" >
+
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="14"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+    <application
+        android:icon="@drawable/rocket"
+        android:label="ReactiveUI">
+        <activity
+            android:name=".Demo"
+            android:label="Reactive Demo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" /> 
+                <category android:name="android.intent.category.LAUNCHER" />
+ <!-- 
+                <category android:name="android.intent.category.HOME" />
+    			<category android:name="android.intent.category.DEFAULT" />
+    -->
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
