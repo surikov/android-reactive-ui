@@ -61,6 +61,7 @@ public class Auxiliary {
 	private static final byte[] DIGITS = new byte['f' + 1];
 	static SimpleDateFormat sqliteTime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
 	static SimpleDateFormat sqliteDate = new SimpleDateFormat("yyyy-MM-DD");
+	public final static String version="1.34";
 	static {
 		for (int i = 0; i < 256; i++) {
 			FIRST_CHAR[i] = HEX_DIGITS[(i >> 4) & 0xF];

@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.os.*;
 import android.util.*;
 import android.widget.*;
-
 import java.io.File;
 import java.util.*;
 import tee.binding.task.*;
@@ -38,6 +37,7 @@ public class DataGrid extends SubLayoutless {
 	private boolean lockAppend = false;
 	Column[] columnsArray = null;
 	ProgressBar progressBar;
+	private boolean lockScroll = false;
 	private int currentPage = 0;
 	TableLayout tableLayout;
 	ScrollView scrollView;
@@ -45,7 +45,6 @@ public class DataGrid extends SubLayoutless {
 	private boolean initialized = false;
 	private SubLayoutless header;
 	private SubLayoutless footer;
-
 	public DataGrid(Context context) {
 		super(context);
 	}
@@ -120,7 +119,7 @@ public class DataGrid extends SubLayoutless {
 		scrollView.scrollTo(0, 0);
 	}
 	private void flip() {
-		//System.out.println("flip");
+		//System.err.println("flip");
 		currentPage = 0;
 		append();
 		//currentPage = 0;
@@ -189,6 +188,7 @@ public class DataGrid extends SubLayoutless {
 		}
 	}
 	private void flipNext() {
+		//System.err.println("flipNext");
 		double off = dataOffset.property.value() + pageSize.property.value() * (maxPageCount - 1);
 		dataOffset.is(off);
 		new AsyncTask<Void, Void, Void>() {
@@ -204,23 +204,35 @@ public class DataGrid extends SubLayoutless {
 			}
 			@Override
 			protected void onPostExecute(Void v) {
+				//System.err.println("onPostExecute");
 				//currentPage = 0;
 				flip();
 				new Handler().post(new Runnable() {
 					@Override
 					public void run() {
+						//System.err.println("Handler 1");
 						double hh = headerHeight.property.value();
+						//System.err.println("Handler 2");
 						if (noHead.property.value()) {
 							hh = 0;
 						}
+						//System.err.println("Handler 3");
 						double fh = footerHeight.property.value();
 						if (noFoot.property.value()) {
 							fh = 0;
 						}
+						//System.err.println("Handler 4");
 						scrollView.scrollTo(0, (int) (//
 								pageSize.property.value() * rowHeight.property.value() - hh - fh//
 								));
+						//System.err.println("Handler 5");
+						lockScroll = false;
+						//System.err.println("Handler 6");
 						progressBar.setVisibility(View.INVISIBLE);
+						//System.err.println("Handler 7");
+						//scrollView.scroll(0);
+						scrollView.scrollTo(scrollView.getScrollX(), scrollView.getScrollY()+1);
+						//System.err.println("scrollView.scrollTo "+scrollView.getScrollY());
 					}
 				});
 			}
@@ -257,6 +269,7 @@ public class DataGrid extends SubLayoutless {
 						int nn = (int) (2 * pageSize.property.value() * rowHeight.property.value());
 						scrollView.scrollTo(0, nn);
 						progressBar.setVisibility(View.INVISIBLE);
+						lockScroll = false;
 					}
 				});
 			}
@@ -364,15 +377,12 @@ public class DataGrid extends SubLayoutless {
 			footer.height().is(footerHeight.property);
 			footer.top().is(height().property.minus(footerHeight.property));
 			this.child(footer);
-			
 			headerHeight = new NumericProperty<DataGrid>(this);
 			headerHeight.is(Auxiliary.tapSize);
 			header = new SubLayoutless(this.getContext());
 			header.width().is(width().property);
 			header.height().is(headerHeight.property);
 			this.child(header);
-			
-			
 			Decor footLine = new Decor(getContext()).background.is(Auxiliary.colorLine);
 			footLine.left().is(header.shiftX.property);
 			footLine.top().is(height().property.minus(footerHeight.property).minus(1));
@@ -380,15 +390,12 @@ public class DataGrid extends SubLayoutless {
 			footLine.height().is(1);
 			footLine.hidden().is(noFoot.property);
 			this.child(footLine);
-			
-			
 			rowHeight = new NumericProperty<DataGrid>(this);
 			rowHeight.is(Auxiliary.tapSize);
 			tableLayout = new TableLayout(this.getContext());
 			scrollView = new ScrollView(this.getContext()) {
 				float initialX = -1000;
 				float initialY = -1000;
-
 				@Override
 				public boolean onTouchEvent(MotionEvent event) {
 					if (columnsArray == null) {
@@ -468,11 +475,20 @@ public class DataGrid extends SubLayoutless {
 				}
 				@Override
 				protected void onScrollChanged(int left, int top, int oldLeft, int oldTop) {
-					if (progressBar.getVisibility() == View.VISIBLE) {
+					//System.err.println("onScrollChanged "+left+" / "+top+" / "+oldLeft+" / "+oldTop);
+					super.onScrollChanged(left, top, oldLeft, oldTop);
+					if (lockScroll) {
+						//if (progressBar.getVisibility() == View.VISIBLE) {
+						System.err.println("skip");
 						return;
 					}
-					super.onScrollChanged(left, top, oldLeft, oldTop);
+					
+					scroll(top);
+				}
+				protected void scroll(int top) {
+					//System.err.println("scroll "+top);
 					progressBar.setVisibility(View.VISIBLE);
+					lockScroll = true;
 					progressBar.postInvalidate();
 					double scrollViewHeight = height().property.value();
 					if (!noHead.property.value()) {
@@ -484,21 +500,23 @@ public class DataGrid extends SubLayoutless {
 					double contentHeight = rowHeight.property.value() * (currentPage + 1) * pageSize.property.value();
 					//double contentHeight = rowHeight.property.value() * currentPage * pageSize.property.value();
 					double limit = contentHeight - scrollViewHeight;
-					//System.out.println(top +" / "+ limit +" - "+currentPage);
+					//System.err.println(top + " / " + limit + " - " + currentPage);
 					if (top > 0 && limit > 0 && top >= limit) {
 						//System.out.println("currentPage "+currentPage);
 						if (currentPage < maxPageCount - 1) {
 							currentPage++;
 							append();
 							progressBar.setVisibility(View.INVISIBLE);
+							lockScroll = false;
 						}
 						else {
-							//System.out.println("next");
+							//System.err.println("next");
 							if (beforeFlip.property.value() != null) {
 								flipNext();
 							}
 							else {
 								progressBar.setVisibility(View.INVISIBLE);
+								lockScroll = false;
 							}
 						}
 					}
@@ -510,14 +528,17 @@ public class DataGrid extends SubLayoutless {
 								}
 								else {
 									progressBar.setVisibility(View.INVISIBLE);
+									lockScroll = false;
 								}
 							}
 							else {
 								progressBar.setVisibility(View.INVISIBLE);
+								lockScroll = false;
 							}
 						}
 						else {
 							progressBar.setVisibility(View.INVISIBLE);
+							lockScroll = false;
 						}
 					}
 				}
@@ -543,6 +564,7 @@ public class DataGrid extends SubLayoutless {
 					, (int) (0.5 * Auxiliary.tapSize));
 			progressBar.setLayoutParams(params);
 			progressBar.setVisibility(View.INVISIBLE);
+			lockScroll = false;
 			new Numeric().bind(header.shiftX.property).afterChange(new Task() {
 				@Override
 				public void doTask() {

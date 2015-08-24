@@ -31,7 +31,6 @@ import org.apache.http.util.EntityUtils;
 import android.database.*;
 import android.database.sqlite.*;
 import reactive.ui.*;
-
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -43,84 +42,87 @@ import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import tee.binding.*;
+
 import java.io.*;
 import java.text.*;
 import javax.microedition.khronos.opengles.GL10;
 
 public class Demo extends Activity {
 	Layoutless layoutless;
-	Decor d;
+	DataGrid dataGrid;
+	int gridPageSize = 30;
+	Bough gridData;
+	Numeric gridOffset = new Numeric();
+	ColumnDescription columnName = new ColumnDescription();
+	Expect requery = new Expect().status.is("...").task.is(new Task() {
+		@Override
+		public void doTask() {
+			requeryData();
+		}
+	})//
+	.afterDone.is(new Task() {
+		@Override
+		public void doTask() {
+			refreshGUI();
+		}
+	})//
+	;
+	public void refreshGUI() {
+		System.out.println("refreshGUI");
+		flipGrid();
+		dataGrid.refresh();
+	}
+	void requeryGridData() {
+		gridData = new Bough();
+		for (int i = 0; i < gridPageSize * 3; i++) {
+			Bough row = new Bough();
+			row.child("cell").value.property.value("cell " + (i + gridOffset.value()));
+			gridData.child(row);
+		}
+	}
+	void flipGrid() {
+		dataGrid.clearColumns();
+		if (gridData != null) {
+			for (int i = 0; i < gridData.children.size(); i++) {
+				Bough row = gridData.children.get(i);
+				columnName.cell(row.child("cell").value.property.value());
+			}
+		}
+	}
+	public void requeryData() {
+		System.out.println("requeryData");
+		requeryGridData();
+	}
 	void initAll() {
-		layoutless.child(new Knob(this).labelText.is("a " + new Date())//
-				.afterTap.is(new Task() {
-					@Override
-					public void doTask() {
-						//Demo.this.startActivity(new Intent(Demo.this, Demo.class));				
-						//Demo.this.overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
-						Intent intent = new Intent(Demo.this, Demo.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-						Bundle bundle = new Bundle();
-						bundle.putString("key", "value");
-						intent.putExtras(bundle);
-						Demo.this.startActivity(intent);
-					}
-				}).width().is(400).height().is(100));
-		layoutless.child(new Knob(this).labelText.is("d " + new Date())//
-				.afterTap.is(new Task() {
-					@Override
-					public void doTask() {
-						Bitmap b = Auxiliary.screenshot(layoutless);
-						
-						d.bitmap.is(Bitmap.createScaledBitmap(b,200,200,true));
-					}
-				}).left().is(400).top().is(0).width().is(400).height().is(100));
-		
-		 d=new Decor(this);
-		layoutless.child(d.labelText.is("d " + new Date())//
-//				.bitmap.is(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rocket),200,200,true))
-				.left().is(200).top().is(200).width().is(200).height().is(200));
-		
-		
-		layoutless.child(new Knob(this).labelText.is("1").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("2").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("3").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("4").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("5").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("6").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("7").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("8").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("9").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
-		layoutless.child(new Knob(this).labelText.is("10").left().is(Math.random() * 1000).top().is(Math.random() * 500 + 100).width().is(Math.random() * 100 + 50).height()
-				.is(Math.random() * 100 + 50));
+		dataGrid = new DataGrid(this).center.is(true)//
+		.pageSize.is(gridPageSize)//
+		.dataOffset.is(gridOffset)//
+		.beforeFlip.is(new Task() {
+			@Override
+			public void doTask() {
+				requeryGridData();
+				flipGrid();
+			}
+		});
+		layoutless.child(dataGrid.noHead.is(true).center.is(true)//
+				.columns(new Column[] { //
+						columnName.width.is(Auxiliary.tapSize * 7) //
+						})//
+				.left().is(0)//
+				.top().is(Auxiliary.tapSize)//
+				.width().is(layoutless.width().property)//
+				.height().is(layoutless.height().property.minus(Auxiliary.tapSize))//
+				);
+		requery.start(Demo.this);
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		System.out.println("onCreate");
 		System.out.println(Auxiliary.bundle2bough(this.getIntent().getExtras()).dumpXML());
-		//super.setTheme( android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-		super.setTheme(android.R.style.Theme_Holo_Light_NoActionBar);
-		//super.setTheme( android.R.style.Theme_Translucent_NoTitleBar);
-		//getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		super.onCreate(savedInstanceState);
 		layoutless = new Layoutless(this);
 		setContentView(layoutless);
-		Animation anim = new TranslateAnimation(Auxiliary.screenWidth(this), 0, 0, 0);
-		//Animation anim = new TranslateAnimation(0, 0, Auxiliary.screenHeight(this), 0);
-		//ScaleAnimation(0, 1, 0, 1, 200, 200);
-		anim.setDuration(300); // duration = 300
-		//getWindow().getDecorView().startAnimation(anim);
 		initAll();
-		layoutless.startAnimation(anim);
-		//getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 	}
 	@Override
 	protected void onPause() {

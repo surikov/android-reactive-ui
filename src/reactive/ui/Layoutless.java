@@ -69,7 +69,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 	//public static int themeBackgroundColor = 0xffffffff;
 	private static TextView colorTest;
 	private boolean initialized = false;
-	private Vector<Rake> children = new Vector<Rake>();
+	public Vector<Rake> children = new Vector<Rake>();
 	//private Vector<Decor> fogs = new Vector<Decor>();
 	//private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
 	private boolean measured = false;
