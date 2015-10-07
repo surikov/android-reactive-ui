@@ -61,7 +61,7 @@ public class Auxiliary {
 	private static final byte[] DIGITS = new byte['f' + 1];
 	static SimpleDateFormat sqliteTime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
 	static SimpleDateFormat sqliteDate = new SimpleDateFormat("yyyy-MM-DD");
-	public final static String version="1.34";
+	public final static String version = "1.34";
 	static {
 		for (int i = 0; i < 256; i++) {
 			FIRST_CHAR[i] = HEX_DIGITS[(i >> 4) & 0xF];
@@ -82,7 +82,8 @@ public class Auxiliary {
 		String v = "?";
 		try {
 			v = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			v = t.toString();
 		}
 		return v;
@@ -117,7 +118,8 @@ public class Auxiliary {
 		if ((textColorPrimary & 0x00ffffff) > 0x00666666) {//darkonlight
 			colorLine = transparent(textColorPrimary, 0.2);
 			colorSelection = transparent(textColorLink, 0.3);
-		} else {//lightondark
+		}
+		else {//lightondark
 			colorLine = transparent(textColorPrimary, 0.1);
 			colorSelection = transparent(textColorLink, 0.2);
 		}
@@ -135,7 +137,8 @@ public class Auxiliary {
 		try {
 			InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 			inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 	}
@@ -146,7 +149,8 @@ public class Auxiliary {
 			if (networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected()) {
 				return true;
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return false;
@@ -225,7 +229,8 @@ public class Auxiliary {
 				cArray[j++] = SECOND_CHAR[index];
 			}
 			return new String(cArray);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			return "";
 		}
 	}
@@ -246,15 +251,18 @@ public class Auxiliary {
 							java.util.Date d = null;
 							if (value.length() > 12) {
 								d = sqliteTime.parse(value);
-							} else {
+							}
+							else {
 								d = sqliteDate.parse(value);
 							}
 							value = "" + d.getTime();
-						} catch (Throwable t) {
+						}
+						catch (Throwable t) {
 							//nor date nor time
 						}
 					}
-				} catch (Throwable t) {
+				}
+				catch (Throwable t) {
 					//can't getString due blob
 					byte[] b = cursor.getBlob(i);
 					value = hex2String(b);
@@ -275,7 +283,8 @@ public class Auxiliary {
 			if (value == null) {
 				return "";
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -284,7 +293,8 @@ public class Auxiliary {
 		double value = 0;
 		try {
 			value = cursor.getDouble(cursor.getColumnIndex(name));
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -299,10 +309,12 @@ public class Auxiliary {
 			if (value.length() > 9) {
 				java.util.Date d = sqliteDate.parse(value);
 				value = "" + d.getTime();
-			} else {
+			}
+			else {
 				value = "0";
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -317,10 +329,12 @@ public class Auxiliary {
 			if (value.length() > 12) {
 				java.util.Date d = sqliteTime.parse(value);
 				value = "" + d.getTime();
-			} else {
+			}
+			else {
 				value = "0";
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -333,7 +347,8 @@ public class Auxiliary {
 				return "";
 			}
 			value = hex2String(b);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return value;
@@ -369,6 +384,25 @@ public class Auxiliary {
 			bough.child(row);
 		}
 		return bough;
+	}
+	public static String loadTextFromResource(Context context, int resourceID) {
+		String txt = "";
+		try {
+			InputStream inputStream = context.getResources().openRawResource(resourceID);
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			int i;
+			i = inputStream.read();
+			while (i != -1) {
+				byteArrayOutputStream.write(i);
+				i = inputStream.read();
+			}
+			inputStream.close();
+			txt = byteArrayOutputStream.toString();
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return txt;
 	}
 	public static byte[] loadFileFromURL(String pathurl) throws Exception {
 		InputStream input = null;
@@ -411,7 +445,8 @@ public class Auxiliary {
 			byte[] data = out.toByteArray();*/
 			byte[] data = loadFileFromURL(url);
 			bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return bitmap;
@@ -493,7 +528,8 @@ public class Auxiliary {
 					double nn = num.value();
 					try {
 						nn = Double.parseDouble(input.getText().toString());
-					} catch (Throwable t) {
+					}
+					catch (Throwable t) {
 						t.printStackTrace();
 					}
 					num.value(nn);
@@ -584,7 +620,8 @@ public class Auxiliary {
 						}
 						//System.out.println("insert "+which);
 						defaultSelection.insert(0, which);
-					} else {
+					}
+					else {
 						for (int i = 0; i < defaultSelection.size(); i++) {
 							int n = defaultSelection.at(i);
 							if (n == which) {
@@ -763,10 +800,12 @@ public class Auxiliary {
 					result.add(line);
 					//contents.append(System.getProperty("line.separator"));
 				}
-			} finally {
+			}
+			finally {
 				input.close();
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			System.out.println(t.getMessage());
 		}
 		return result;
@@ -777,7 +816,8 @@ public class Auxiliary {
 			output.write(aContents);
 			output.flush();
 			output.close();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			System.out.println(t.getMessage());
 		}
 		return false;
@@ -788,7 +828,8 @@ public class Auxiliary {
 			fos.write(aContents.getBytes(charset));
 			fos.flush();
 			fos.close();
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			System.out.println(t.getMessage());
 		}
 		return false;
@@ -828,7 +869,8 @@ public class Auxiliary {
 			DisplayMetrics dm = new DisplayMetrics();
 			activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 			w = dm.widthPixels;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return w;
@@ -843,7 +885,8 @@ public class Auxiliary {
 			DisplayMetrics dm = new DisplayMetrics();
 			activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 			h = dm.heightPixels;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return h;
@@ -852,7 +895,8 @@ public class Auxiliary {
 		Bitmap b = null;
 		try {
 			b = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), id), width, height, true);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return b;
@@ -861,7 +905,8 @@ public class Auxiliary {
 		Bitmap b = null;
 		try {
 			b = BitmapFactory.decodeResource(context.getResources(), id);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return b;
@@ -903,10 +948,12 @@ public class Auxiliary {
 				save.write(buffer);
 				save.flush();
 				save.close();
-			} catch (Throwable t) {
+			}
+			catch (Throwable t) {
 				t.printStackTrace();
 			}
-		} else {
+		}
+		else {
 			System.out.println("exportResource skip " + path);
 		}
 	}
@@ -940,7 +987,8 @@ public class Auxiliary {
 								task.start();
 							}
 						}
-					} catch (Throwable t) {
+					}
+					catch (Throwable t) {
 						t.printStackTrace();
 					}
 				}
@@ -951,7 +999,8 @@ public class Auxiliary {
 			};
 			sensorManager.registerListener(sensorEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 			return true;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		sensorEventListener = null;
@@ -965,16 +1014,23 @@ public class Auxiliary {
 			SensorManager sensorManager = (SensorManager) activity.getSystemService(android.content.Context.SENSOR_SERVICE);
 			sensorManager.unregisterListener(sensorEventListener);
 			return true;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			t.printStackTrace();
 		}
 		return false;
 	}
+	public static Bough activityExatras(Activity activity) {
+		Intent intent = activity.getIntent();
+		Bundle extras = intent.getExtras();
+		return bundle2bough(extras);
+	}
 	public static Bough bundle2bough(Bundle bundle) {
-		Bough bough=new Bough();
+		Bough bough = new Bough();
 		if (bundle == null) {
 			bough.name.is("null");
-		} else {
+		}
+		else {
 			bough.name.is("extra");
 			for (String key : bundle.keySet()) {
 				String value = bundle.getString(key);

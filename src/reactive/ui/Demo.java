@@ -31,6 +31,7 @@ import org.apache.http.util.EntityUtils;
 import android.database.*;
 import android.database.sqlite.*;
 import reactive.ui.*;
+
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -42,6 +43,8 @@ import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import tee.binding.*;
+import uniform.DataActivity;
+import uniform.DataEnvironment;
 
 import java.io.*;
 import java.text.*;
@@ -113,16 +116,43 @@ public class Demo extends Activity {
 				.width().is(layoutless.width().property)//
 				.height().is(layoutless.height().property.minus(Auxiliary.tapSize))//
 				);
+		layoutless.child(new Knob(this).afterTap.is(new Task(){
+
+			@Override
+			public void doTask() {
+				System.out.println("test");
+				DataEnvironment.variables=Bough.parseXML(Auxiliary.loadTextFromResource(Demo.this, R.raw.test));
+				
+				//DataEnvironment.variables.child("store").child("messageFillGUI").value.property.value("Подождите...");
+				//Bough formCfg=DataEnvironment.variables.child("forms").child("testForm");
+				//formCfg.child("title").value.property.value("Маршрут");
+				//System.out.println(DataEnvironment.variables.dumpXML());
+				
+				
+				
+				Intent intent = new Intent(Demo.this, uniform.DataActivity.class);
+				intent.putExtra("form", "testForm");
+				startActivity(intent);
+				
+				
+				
+				//System.out.println(Auxiliary.loadTextFromResource(Demo.this, R.raw.test));
+			}
+			
+		})
+		.width().is(100).height().is(100)
+		);
 		requery.start(Demo.this);
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		System.out.println("onCreate");
-		System.out.println(Auxiliary.bundle2bough(this.getIntent().getExtras()).dumpXML());
+		//System.out.println(Auxiliary.bundle2bough(this.getIntent().getExtras()).dumpXML());
 		super.onCreate(savedInstanceState);
 		layoutless = new Layoutless(this);
 		setContentView(layoutless);
 		initAll();
+		//DataActivity.replaceVariables("{0123}456{78}{{901}2}");
 	}
 	@Override
 	protected void onPause() {

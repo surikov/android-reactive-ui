@@ -12,3 +12,4 @@ int drawable goprev 0x7f02000a
 int drawable picture 0x7f02000b
 int drawable refresh 0x7f02000c
 int drawable rocket 0x7f02000d
+int raw test 0x7f030000

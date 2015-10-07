@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<environment>
+	<store>
+		<messageFillGUI>Подождите...</messageFillGUI>
+	</store>
+	<forms>
+		<testForm>
+			<title>Маршрут</title>
+			<db>/horeca/swlife_database</db>
+			<grid>
+				<sql>select
+						k.naimenovanie as klientName
+						,k.kod as klientKod
+						,m1.poryadok as d1
+						,m2.poryadok as d2
+						,m3.poryadok as d3
+						,m4.poryadok as d4
+						,m5.poryadok as d5
+						,m6.poryadok as d6
+					from Kontragenty k
+						join marshrutyAgentov ma on ma.kontragent=k._idrref
+							--and case {marshrutMode}=1 then ma.denNedeli={currentDayOfWeek} else 1=1 end
+						left join marshrutyAgentov m1 on m1.kontragent=k._idrref and m1.denNedeli=1
+						left join marshrutyAgentov m2 on m2.kontragent=k._idrref and m2.denNedeli=2
+						left join marshrutyAgentov m3 on m3.kontragent=k._idrref and m3.denNedeli=3
+						left join marshrutyAgentov m4 on m4.kontragent=k._idrref and m4.denNedeli=4
+						left join marshrutyAgentov m5 on m5.kontragent=k._idrref and m5.denNedeli=5
+						left join marshrutyAgentov m6 on m6.kontragent=k._idrref and m6.denNedeli=6
+					group by k._idrref
+					order by k.naimenovanie
+					limit {marshrutGridLimit} offset {marshrutGridOffset};
+				</sql>
+				<columns>
+					<kod>
+						<title>Код</title>
+						<field>klientKod</field>
+						<width>1.1</width>
+						<kind>text</kind>
+					</kod>
+					<name>
+						<title>Контрагент</title>
+						<field>klientName</field>
+						<width>7</width>
+						<kind>text</kind>
+					</name>
+					<pn>
+						<title>пн</title>
+						<field>d1</field>
+						<width>1</width>
+						<kind>text</kind>
+					</pn>
+					<vt>
+						<title>вт</title>
+						<field>d2</field>
+						<width>1</width>
+						<kind>text</kind>
+					</vt>
+					<sr>
+						<title>ср</title>
+						<field>d3</field>
+						<width>1</width>
+						<kind>text</kind>
+					</sr>
+					<ch>
+						<title>чт</title>
+						<field>d4</field>
+						<width>1</width>
+						<kind>text</kind>
+					</ch>
+					<pt>
+						<title>пт</title>
+						<field>d5</field>
+						<width>1</width>
+						<kind>text</kind>
+					</pt>
+					<sb>
+						<title>сб</title>
+						<field>d6</field>
+						<width>1</width>
+						<kind>text</kind>
+					</sb>
+				</columns>
+			</grid>
+		</testForm>
+	</forms>
+</environment>

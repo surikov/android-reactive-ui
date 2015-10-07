@@ -477,13 +477,15 @@ public class DataGrid extends SubLayoutless {
 				protected void onScrollChanged(int left, int top, int oldLeft, int oldTop) {
 					//System.err.println("onScrollChanged "+left+" / "+top+" / "+oldLeft+" / "+oldTop);
 					super.onScrollChanged(left, top, oldLeft, oldTop);
+					//System.err.println("lockScroll "+lockScroll+" for "+top);
 					if (lockScroll) {
 						//if (progressBar.getVisibility() == View.VISIBLE) {
-						System.err.println("skip");
+						//System.err.println("skip");
 						return;
 					}
-					
-					scroll(top);
+					else{
+						scroll(top);
+					}
 				}
 				protected void scroll(int top) {
 					//System.err.println("scroll "+top);
