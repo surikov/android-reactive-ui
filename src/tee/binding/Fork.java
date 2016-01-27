@@ -44,7 +44,7 @@ public class Fork<Kind> extends It<Kind> {
      * @param it
      * @return
      */
-    public Fork when(Toggle it) {
+    public Fork<Kind> when(Toggle it) {
         condition.bind(it);
         return this;
     }
@@ -53,7 +53,7 @@ public class Fork<Kind> extends It<Kind> {
      * @param it
      * @return
      */
-    public Fork then(It<Kind> it) {
+    public Fork <Kind>then(It<Kind> it) {
         then.bind(it);
         return this;
     }
@@ -62,7 +62,7 @@ public class Fork<Kind> extends It<Kind> {
      * @param it
      * @return
      */
-    public Fork then(Kind it) {
+    public Fork<Kind> then(Kind it) {
         then.value(it);
         return this;
     }
@@ -71,7 +71,7 @@ public class Fork<Kind> extends It<Kind> {
      * @param it
      * @return
      */
-    public Fork otherwise(It<Kind> it) {
+    public Fork <Kind>otherwise(It<Kind> it) {
         otherwise.bind(it);
         return this;
     }
@@ -80,7 +80,7 @@ public class Fork<Kind> extends It<Kind> {
      * @param it
      * @return
      */
-    public Fork otherwise(Kind it) {
+    public Fork<Kind> otherwise(Kind it) {
         otherwise.value(it);
         return this;
     }
