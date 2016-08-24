@@ -61,7 +61,7 @@ public class Auxiliary {
 	private static final byte[] DIGITS = new byte['f' + 1];
 	static SimpleDateFormat sqliteTime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
 	static SimpleDateFormat sqliteDate = new SimpleDateFormat("yyyy-MM-DD");
-	public final static String version = "1.34";
+	public final static String version = "1.35";
 	static {
 		for (int i = 0; i < 256; i++) {
 			FIRST_CHAR[i] = HEX_DIGITS[(i >> 4) & 0xF];
@@ -485,6 +485,28 @@ public class Auxiliary {
 		});
 		builder.create().show();
 	}
+	public static long pickDate(Context context//
+			, final Numeric date) {
+		Calendar c = Calendar.getInstance();
+		c.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+		c.setTimeInMillis(date.value().longValue());
+		if (date.value() == 0) {
+			c.setTimeInMillis(new Date().getTime());
+		}
+		new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+			@Override
+			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+				Calendar newCalendar = Calendar.getInstance();
+				newCalendar.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+				newCalendar.setTimeInMillis(date.value().longValue());
+				newCalendar.set(Calendar.YEAR, year);
+				newCalendar.set(Calendar.MONTH, monthOfYear);
+				newCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+				date.value((double) newCalendar.getTimeInMillis());
+			}
+		}, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+		return 0;
+	}
 	public static void pickString(Context context//
 			, String title//
 			, final Note text//
@@ -695,6 +717,27 @@ public class Auxiliary {
 			}
 		});
 		dialogBuilder.create().show();
+	}
+	public static void pickDate(Context context, final Calendar current) {
+		Calendar c = Calendar.getInstance();
+		c.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+		c.setTimeInMillis(current.getTimeInMillis());
+		if (Math.abs(current.getTimeInMillis()) < 10000) {
+			c.setTimeInMillis(new Date().getTime());
+		}
+		new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+			@Override
+			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+				Calendar newCalendar = Calendar.getInstance();
+				newCalendar.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+				newCalendar.setTimeInMillis(current.getTimeInMillis());
+				newCalendar.set(Calendar.YEAR, year);
+				newCalendar.set(Calendar.MONTH, monthOfYear);
+				newCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			}
+		}//
+				, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))//
+				.show();
 	}
 	public static void pick(Context context//
 			, String title//
@@ -921,7 +964,7 @@ public class Auxiliary {
 		}
 	}
 	public static void createAbsolutePathForFile(String path) {
-		String s = File.separator;
+		//String s = File.separator;
 		String[] names = path.split(File.separator);
 		String r = names[0];
 		for (int i = 1; i < names.length - 1; i++) {
