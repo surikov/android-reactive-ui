@@ -22,6 +22,9 @@ import tee.binding.properties.*;
 import tee.binding.task.*;
 import tee.binding.it.*;
 import tee.binding.*;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.*;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -37,7 +40,13 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 
 public class Auxiliary {
 	public static int colorBackground = 0x66ff0000;
@@ -54,6 +63,9 @@ public class Auxiliary {
 	public static double accelerometerX = 0;
 	public static double accelerometerY = 0;
 	public static double accelerometerZ = 0;
+	//public static double accelerometerAverageX = 0;
+	//public static double accelerometerAverageY = 0;
+	//public static double accelerometerAverageZ = 0;
 	public static double accelerometerNoise = 1.0;
 	private static final char[] FIRST_CHAR = new char[256];
 	private static final char[] SECOND_CHAR = new char[256];
@@ -61,7 +73,11 @@ public class Auxiliary {
 	private static final byte[] DIGITS = new byte['f' + 1];
 	static SimpleDateFormat sqliteTime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
 	static SimpleDateFormat sqliteDate = new SimpleDateFormat("yyyy-MM-DD");
-	public final static String version = "1.35";
+	public final static String version = "1.55";
+	private static LocationListener locationListener = null;
+	public static double latitude = 0;//https://www.google.ru/maps/@56.3706531,44.0456248,10.25z - latitude+":"+longitude
+	public static double longitude = 0;//east-west, долгота
+	public static long gpsTime = 0;//last time
 	static {
 		for (int i = 0; i < 256; i++) {
 			FIRST_CHAR[i] = HEX_DIGITS[(i >> 4) & 0xF];
@@ -100,6 +116,60 @@ public class Auxiliary {
 		int t = (int) (255.0 * transparency);
 		r = (color & 0x00ffffff) + (t << 24);
 		return r;
+	}
+	public static void showMap(Activity a, double currentLatitude, double currentLongitude, double toLatitude, double toLongitude) {
+		String uri = String.format(Locale.ENGLISH, "geo:%f,%f?z=18&q=%f,%f(A)", currentLatitude, currentLongitude, toLatitude, toLongitude);
+		if (toLatitude == 0 && toLongitude == 0) {
+			uri = String.format(Locale.ENGLISH, "geo:%f,%f?z=18", currentLatitude, currentLongitude);
+		}
+		System.out.println("showMap " + uri);
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+		a.startActivity(intent);
+	}
+	public static void stopGPS(Activity activity) {
+		if (locationListener != null) {
+		}
+	}
+	public static void startGPS(final Activity activity) {
+		try {
+			if (locationListener == null) {
+				System.out.println("startGPS");
+				LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+				locationListener = new LocationListener() {
+					@Override
+					public void onLocationChanged(Location location) {
+						latitude = location.getLatitude();
+						longitude = location.getLongitude();
+						gpsTime = location.getTime();
+						//System.out.println("onLocationChanged " + latitude + ":" + longitude + ", " + gpsTime);
+						//writeGPS(activity);
+					}
+					@Override
+					public void onStatusChanged(String provider, int status, Bundle extras) {
+						//System.out.println("onStatusChanged " + provider + ", " + status);
+					}
+					@Override
+					public void onProviderEnabled(String provider) {
+						//System.out.println("onProviderEnabled " + provider);
+					}
+					@Override
+					public void onProviderDisabled(String provider) {
+						//System.out.println("onProviderDisabled " + provider);
+					}
+				};
+				if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+					System.out.println("LocationManager.GPS_PROVIDER");
+					locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 10, locationListener);
+				}
+				else {
+					//System.out.println("LocationManager.NETWORK_PROVIDER");
+					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 10, locationListener);
+				}
+			}
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
 	}
 	public static void initThemeConstants(Context context) {
 		TypedArray array = context.getTheme().obtainStyledAttributes(new int[] { //
@@ -1019,6 +1089,9 @@ public class Auxiliary {
 				public void onSensorChanged(SensorEvent event) {
 					//System.out.println("Auxiliary.startSensorEventListener.onSensorChanged " + event);
 					try {
+						//accelerometerAverageX=0.5*(accelerometerAverageX+event.values[0]);
+						//accelerometerAverageY=0.5*(accelerometerAverageX+event.values[1]);
+						//accelerometerAverageZ=0.5*(accelerometerAverageX+event.values[2]);
 						if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 							if (Math.abs(accelerometerX - event.values[0]) > accelerometerNoise//
 									|| Math.abs(accelerometerY - event.values[1]) > accelerometerNoise//
@@ -1027,6 +1100,8 @@ public class Auxiliary {
 								accelerometerX = event.values[0];
 								accelerometerY = event.values[1];
 								accelerometerZ = event.values[2];
+								//System.out.println("average "+Auxiliary.accelerometerX+" x "+Auxiliary.accelerometerY+" x "+Auxiliary.accelerometerZ);
+								//System.out.println("now "+Auxiliary.accelerometerAverageX+" x "+Auxiliary.accelerometerAverageY+" x "+Auxiliary.accelerometerAverageZ);
 								task.start();
 							}
 						}
@@ -1082,5 +1157,92 @@ public class Auxiliary {
 			}
 		}
 		return bough;
+	}
+	public static Uri saveBitmap(Context inContext, Bitmap inImage) {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+		String path = Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+		return Uri.parse(path);
+	}
+	public static String getRealPathFromURI(Context inContext,Uri uri) {
+		Cursor cursor = inContext.getContentResolver().query(uri, null, null, null, null);
+		cursor.moveToFirst();
+		int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+		return cursor.getString(idx);
+	}
+	public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+		Cursor cursor = null;
+		final String column = "_data";
+		final String[] projection = { column };
+		try {
+			cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+			if (cursor != null && cursor.moveToFirst()) {
+				final int column_index = cursor.getColumnIndexOrThrow(column);
+				return cursor.getString(column_index);
+			}
+		}
+		finally {
+			if (cursor != null)
+				cursor.close();
+		}
+		return null;
+	}
+	public static boolean isExternalStorageDocument(Uri uri) {
+		return "com.android.externalstorage.documents".equals(uri.getAuthority());
+	}
+		public static boolean isDownloadsDocument(Uri uri) {
+		return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+	}
+
+	public static boolean isMediaDocument(Uri uri) {
+		return "com.android.providers.media.documents".equals(uri.getAuthority());
+	}
+	public static String getPath(final Context context, final Uri uri) {
+		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) && DocumentsContract.isDocumentUri(context, uri)) {
+			if (isExternalStorageDocument(uri)) {
+				final String docId = DocumentsContract.getDocumentId(uri);
+				final String[] split = docId.split(":");
+				final String type = split[0];
+				if ("primary".equalsIgnoreCase(type)) {
+					return Environment.getExternalStorageDirectory() + "/" + split[1];
+				}
+			}
+			else
+				if (isDownloadsDocument(uri)) {
+					final String id = DocumentsContract.getDocumentId(uri);
+					final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+					return getDataColumn(context, contentUri, null, null);
+				}
+				else
+					if (isMediaDocument(uri)) {
+						final String docId = DocumentsContract.getDocumentId(uri);
+						final String[] split = docId.split(":");
+						final String type = split[0];
+						Uri contentUri = null;
+						if ("image".equals(type)) {
+							contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+						}
+						else
+							if ("video".equals(type)) {
+								contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+							}
+							else
+								if ("audio".equals(type)) {
+									contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+								}
+						final String selection = "_id=?";
+						final String[] selectionArgs = new String[] { split[1] };
+						return getDataColumn(context, contentUri, selection, selectionArgs);
+					}
+		}
+		else
+			if ("content".equalsIgnoreCase(uri.getScheme())) {
+				return getDataColumn(context, uri, null, null);
+			}
+			else
+				if ("file".equalsIgnoreCase(uri.getScheme())) {
+					return uri.getPath();
+				}
+		return null;
 	}
 }

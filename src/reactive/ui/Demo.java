@@ -97,6 +97,13 @@ public class Demo extends Activity {
 		requeryGridData();
 	}
 	void initAll() {
+		Auxiliary.startSensorEventListener(this,new Task(){
+
+			@Override
+			public void doTask() {
+				//System.out.println(Auxiliary.accelerometerX+"x"+Auxiliary.accelerometerY+"x"+Auxiliary.accelerometerZ);
+				
+			}});
 		dataGrid = new DataGrid(this).center.is(true)//
 		.pageSize.is(gridPageSize)//
 		.dataOffset.is(gridOffset)//
@@ -159,6 +166,7 @@ public class Demo extends Activity {
 		System.out.println("onPause");
 		super.onPause();
 		//Preferences.save();
+		Auxiliary.stopSensorEventListener(this);
 	}
 	@Override
 	protected void onResume() {
