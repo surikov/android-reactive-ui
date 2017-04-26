@@ -73,7 +73,7 @@ public class Auxiliary {
 	private static final byte[] DIGITS = new byte['f' + 1];
 	static SimpleDateFormat sqliteTime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
 	static SimpleDateFormat sqliteDate = new SimpleDateFormat("yyyy-MM-DD");
-	public final static String version = "1.55";
+	public final static String version = "1.65";
 	private static LocationListener locationListener = null;
 	public static double latitude = 0;//https://www.google.ru/maps/@56.3706531,44.0456248,10.25z - latitude+":"+longitude
 	public static double longitude = 0;//east-west, долгота
@@ -1164,7 +1164,7 @@ public class Auxiliary {
 		String path = Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
 		return Uri.parse(path);
 	}
-	public static String getRealPathFromURI(Context inContext,Uri uri) {
+	public static String pathFromFileURI(Context inContext, Uri uri) {
 		Cursor cursor = inContext.getContentResolver().query(uri, null, null, null, null);
 		cursor.moveToFirst();
 		int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
@@ -1190,14 +1190,13 @@ public class Auxiliary {
 	public static boolean isExternalStorageDocument(Uri uri) {
 		return "com.android.externalstorage.documents".equals(uri.getAuthority());
 	}
-		public static boolean isDownloadsDocument(Uri uri) {
+	public static boolean isDownloadsDocument(Uri uri) {
 		return "com.android.providers.downloads.documents".equals(uri.getAuthority());
 	}
-
 	public static boolean isMediaDocument(Uri uri) {
 		return "com.android.providers.media.documents".equals(uri.getAuthority());
 	}
-	public static String getPath(final Context context, final Uri uri) {
+	public static String pathForMediaURI(final Context context, final Uri uri) {
 		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) && DocumentsContract.isDocumentUri(context, uri)) {
 			if (isExternalStorageDocument(uri)) {
 				final String docId = DocumentsContract.getDocumentId(uri);
@@ -1207,42 +1206,48 @@ public class Auxiliary {
 					return Environment.getExternalStorageDirectory() + "/" + split[1];
 				}
 			}
-			else
+			else {
 				if (isDownloadsDocument(uri)) {
-					final String id = DocumentsContract.getDocumentId(uri);
-					final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+					String id = DocumentsContract.getDocumentId(uri);
+					Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 					return getDataColumn(context, contentUri, null, null);
 				}
-				else
+				else {
 					if (isMediaDocument(uri)) {
-						final String docId = DocumentsContract.getDocumentId(uri);
-						final String[] split = docId.split(":");
-						final String type = split[0];
+						String docId = DocumentsContract.getDocumentId(uri);
+						String[] split = docId.split(":");
+						String type = split[0];
 						Uri contentUri = null;
 						if ("image".equals(type)) {
 							contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 						}
-						else
+						else {
 							if ("video".equals(type)) {
 								contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 							}
-							else
+							else {
 								if ("audio".equals(type)) {
 									contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 								}
-						final String selection = "_id=?";
-						final String[] selectionArgs = new String[] { split[1] };
+							}
+						}
+						String selection = "_id=?";
+						String[] selectionArgs = new String[] { split[1] };
 						return getDataColumn(context, contentUri, selection, selectionArgs);
 					}
+				}
+			}
 		}
-		else
+		else {
 			if ("content".equalsIgnoreCase(uri.getScheme())) {
 				return getDataColumn(context, uri, null, null);
 			}
-			else
+			else {
 				if ("file".equalsIgnoreCase(uri.getScheme())) {
 					return uri.getPath();
 				}
+			}
+		}
 		return null;
 	}
 }
