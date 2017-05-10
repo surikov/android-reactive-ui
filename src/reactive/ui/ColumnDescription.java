@@ -101,10 +101,14 @@ public class ColumnDescription extends Column {
 		//cell.labelStyleMediumNormal();
 		//cell.setTextAppearance(context, android.R.style.TextAppearance_Medium);
 		cell.labelStyleMediumNormal();
+		//cell.labelStyleLargeNormal();
+		//cell.background.is(0x99ff00ff);
+		//cell.left().is(111);
 		if (row > -1 && row < strings.size()) {
 			cell.html.is(Html.fromHtml("<p>" + strings.get(row) + "<br/><small>" + descriptions.get(row) + "</small></p>"));
 			//cell.labelText.is(strings.get(row));
 		}
+		
 		cells.add(cell);
 		return cell;
 	}

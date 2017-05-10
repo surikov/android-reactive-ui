@@ -88,7 +88,7 @@ public class Demo extends Activity {
 		if (gridData != null) {
 			for (int i = 0; i < gridData.children.size(); i++) {
 				Bough row = gridData.children.get(i);
-				columnName.cell(row.child("cell").value.property.value());
+				columnName.cell("/"+row.child("cell").value.property.value());
 			}
 		}
 	}
@@ -116,7 +116,7 @@ public class Demo extends Activity {
 		});
 		layoutless.child(dataGrid.noHead.is(true).center.is(true)//
 				.columns(new Column[] { //
-						columnName.width.is(Auxiliary.tapSize * 7) //
+						columnName.noHorizontalBorder.is(true).width.is(Auxiliary.tapSize * 37) //
 						})//
 				.left().is(0)//
 				.top().is(Auxiliary.tapSize)//

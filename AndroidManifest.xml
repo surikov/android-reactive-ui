@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="reactive.ui"
-    android:versionCode="65"
-    android:versionName="1.65" >
+    android:versionCode="66"
+    android:versionName="1.66" >
 
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="23"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -13,7 +13,7 @@
 
     <application
         android:icon="@drawable/rocket"
-        android:label="ReactiveUI">
+        android:label="ReactiveUI" android:requiredForAllUsers="false" android:persistent="false" android:enabled="true" android:allowTaskReparenting="true" android:theme="@android:style/Theme.Holo.Light">
         <activity
             android:name=".Demo"
             android:label="Reactive Demo">
