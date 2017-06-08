@@ -11,8 +11,8 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 import reactive.ui.*;
-
 import android.content.res.*;
+import android.view.View.MeasureSpec;
 import android.view.animation.*;
 import tee.binding.properties.*;
 import tee.binding.task.*;
@@ -26,11 +26,9 @@ import android.database.*;
 import android.database.sqlite.*;
 
 public class Layoutless extends RelativeLayout implements Rake {
-	//private final static int UNKNOWN_ID = -123456789;
 	public final static int NONE = 0;
 	public final static int DRAG = 1;
 	public final static int ZOOM = 2;
-	//private int dragMode = NONE;
 	private int mode = NONE;
 	private float lastEventX = 0;
 	private float lastEventY = 0;
@@ -38,7 +36,8 @@ public class Layoutless extends RelativeLayout implements Rake {
 	private float initialShiftY = 0;
 	private float initialSpacing;
 	private float currentSpacing;
-	//
+	//private int mw = 320;
+	//private int mh = 240;
 	private ToggleProperty<Rake> hidden = new ToggleProperty<Rake>(this);
 	private NumericProperty<Rake> left = new NumericProperty<Rake>(this);
 	private NumericProperty<Rake> top = new NumericProperty<Rake>(this);
@@ -57,81 +56,16 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public ToggleProperty<Layoutless> solid = new ToggleProperty<Layoutless>(this);
 	public ItProperty<Layoutless, Task> afterTap = new ItProperty<Layoutless, Task>(this);
 	public ItProperty<Layoutless, Task> afterShift = new ItProperty<Layoutless, Task>(this);
-	//public ItProperty<Layoutless, Task> afterScroll = new ItProperty<Layoutless, Task>(this);
 	public ItProperty<Layoutless, Task> afterZoom = new ItProperty<Layoutless, Task>(this);
-	//public ItProperty<Layoutless, Task> afterPress = new ItProperty<Layoutless, Task>(this);
-	//public NumericProperty<Layoutless> mode = new NumericProperty<Layoutless>(this);
-	//public static int themeForegroundColor = 0xffff0000;
-	//public static int themeBlurColor = 0xff330000;
-	//public static int themeBlurColor66 = 0xff666666;
-	//public static int themeBlurColor99 = 0xff666666;
-	//public static int themeFocusColor = 0xff669966;
-	//public static int themeBackgroundColor = 0xffffffff;
-	private static TextView colorTest;
+	//private static TextView colorTest;
 	private boolean initialized = false;
 	public Vector<Rake> children = new Vector<Rake>();
-	//private Vector<Decor> fogs = new Vector<Decor>();
-	//private Vector<SubLayoutless> dialogs = new Vector<SubLayoutless>();
-	private boolean measured = false;
-
-	/*
-		public static void fillBaseColors(Context context) {
-			if (colorTest == null) {
-				colorTest = new TextView(context);
-				colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large);
-				themeForegroundColor=colorTest.getCurrentTextColor();
-				//themeForegroundColor = colorTest.labelStyleLargeNormal().getCurrentTextColor();
-				//int c1=colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-				if ((themeForegroundColor & 0x00ffffff) > 0x00666666) {
-					themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x33000000;
-				}
-				else {
-					themeBlurColor = (themeForegroundColor & 0x00ffffff) + 0x11000000;
-				}
-				//themeBlurColor66 = (themeForegroundColor & 0x00ffffff)+0x66000000;
-				//themeBlurColor99 = (themeForegroundColor & 0x00ffffff)+0x99000000;
-				//colorTest.labelStyleLargeNormal().getCurrentHintTextColor();
-				//themeFocusColor = (themeForegroundColor & 0x00ffffff)+0x22000000;
-				//colorTest.settr
-				Drawable drawable = colorTest.getBackground();
-				//System.out.println(drawable);
-				if (drawable instanceof ColorDrawable) {
-					ColorDrawable colorDrawable = (ColorDrawable) drawable;
-					Rect mBounds = new Rect();
-					mBounds.set(colorDrawable.getBounds()); // Save the original bounds.
-					colorDrawable.setBounds(0, 0, 1, 1); // Change the bounds.
-					Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-					Canvas mCanvas = new Canvas(mBitmap);
-					colorDrawable.draw(mCanvas);
-					themeBackgroundColor = mBitmap.getPixel(0, 0);
-					System.out.println("/"+themeBackgroundColor);
-					
-				}
-				else {
-					colorTest.setTextAppearance(context, android.R.style.TextAppearance_Large_Inverse);
-					themeBackgroundColor=colorTest.getCurrentTextColor();
-					//themeBackgroundColor = colorTest.labelStyleLargeInverse().getCurrentTextColor();
-				}
-				//ColorStateList colorStateList=colorTest.getTextColors();
-				//colorStateList.
-				//TypedValue tv = new TypedValue();
-				//getContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, tv, true);
-				//getContext().getTheme().resolveAttribute(android.R.attr.textColorHighlight, tv, true);
-				//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimary, tv, true);
-				//getContext().getTheme().resolveAttribute(android.R.attr.textColorHint, tv, true);
-				//getContext().getTheme().resolveAttribute(android.R.attr.textColorPrimaryDisableOnly, tv, true);
-				//getContext().getTheme().resolveAttribute(android.R.attr.background, tv, true);
-				//themeBlurColor = getResources().getColor(tv.resourceId);
-				//System.out.println();
-				density = context.getResources().getDisplayMetrics().density;
-				tapSize = 60.0 * density;
-			}
-		}*/
+	//private boolean measured = false;
 	protected void init() {
+		//System.out.println("init " + initialized);
 		if (!initialized) {
 			initialized = true;
 			solid.is(true);
-			//fillBaseColors(getContext());
 			Auxiliary.initThemeConstants(this.getContext());
 			setFocusable(true);
 			setFocusableInTouchMode(true);
@@ -169,7 +103,7 @@ public class Layoutless extends RelativeLayout implements Rake {
 		children.add(v);
 		return this;
 	}
-	public Layoutless input(Context context, double row, double left,Note label, Rake content, Numeric contentWidth) {
+	public Layoutless input(Context context, double row, double left, Note label, Rake content, Numeric contentWidth) {
 		this.child(new Decor(context).labelText.is(label)//
 				.left().is(this.shiftX.property.plus(left))//
 				.top().is(this.shiftY.property.plus(1.5 * row * Auxiliary.tapSize))//
@@ -185,19 +119,19 @@ public class Layoutless extends RelativeLayout implements Rake {
 		return this;
 	}
 	public Layoutless input(Context context, double row, double left, Note label, Rake content) {
-		return input(context, row, left,label, content, new Numeric().value(5 * Auxiliary.tapSize));
+		return input(context, row, left, label, content, new Numeric().value(5 * Auxiliary.tapSize));
 	}
 	public Layoutless input(Context context, double row, double left, Note label, Rake content, int contentWidth) {
-		return input(context, row, left,label, content, new Numeric().value(contentWidth));
+		return input(context, row, left, label, content, new Numeric().value(contentWidth));
 	}
 	public Layoutless input(Context context, double row, double left, String label, Rake content) {
-		return input(context, row, left,new Note().value(label), content, new Numeric().value(5 * Auxiliary.tapSize));
+		return input(context, row, left, new Note().value(label), content, new Numeric().value(5 * Auxiliary.tapSize));
 	}
 	public Layoutless input(Context context, double row, double left, String label, Rake content, int contentWidth) {
-		return input(context, row, left,new Note().value(label), content, new Numeric().value(contentWidth));
+		return input(context, row, left, new Note().value(label), content, new Numeric().value(contentWidth));
 	}
 	public Layoutless input(Context context, double row, double left, String label, Rake content, Numeric contentWidth) {
-		return input(context, row, left,new Note().value(label), content, contentWidth);
+		return input(context, row, left, new Note().value(label), content, contentWidth);
 	}
 	public Layoutless field(Context context, double row, Note label, Rake content, Numeric contentWidth) {
 		this.child(new Decor(context).labelText.is(label)//
@@ -241,73 +175,88 @@ public class Layoutless extends RelativeLayout implements Rake {
 	public int count() {
 		return children.size();
 	}
-	/*
-	public void addDialog(SubLayoutless sub) {
-		Decor fog = new Decor(this.getContext()) {
-			@Override
-			public boolean onTouchEvent(MotionEvent event) {
-				Layoutless.this.removeDialog();
-				return true;
-			}
-		};
-		fog.background.is(0x99666666).width().is(width.property).height().is(height.property);
-		fogs.add(fog);
-		int xx = (int) (0.5 * (width.property.value() - sub.width().property.value()));
-		int yy = (int) (0.5 * (height.property.value() - sub.height().property.value()));
-		if (xx < 0) {
-			xx = 0;
-		}
-		sub.left().is(xx);
-		if (yy < 0) {
-			yy = 0;
-		}
-		sub.top().is(yy);
-		if (width.property.value() < sub.width().property.value()) {
-			sub.width().property.value(width.property.value());
-		}
-		if (height.property.value() < sub.height().property.value()) {
-			sub.height().property.value(height.property.value());
-		}
-		dialogs.add(sub);
-		this.child(fog);
-		this.child(sub);
-	}
-	public boolean removeDialog() {
-		if (fogs.size() > 0) {
-			this.removeView(dialogs.get(dialogs.size() - 1));
-			dialogs.remove(dialogs.get(dialogs.size() - 1));
-			this.removeView(fogs.get(fogs.size() - 1));
-			fogs.remove(fogs.get(fogs.size() - 1));
-			return true;
-		}
-		return false;
-	}*/
+	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged "+w+"/"+ h+" <- "+oldw+"/"+ oldh);
 		super.onSizeChanged(w, h, oldw, oldh);
-		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged done");
+		/*System.out.println("Layoutless.onSizeChanged: " + oldw + "x" + oldh + " => " + w + "x" + h + ", measured "//
+				+ this.getMeasuredWidth() + "x" + this.getMeasuredHeight()//
+				+ " at " + this.getLeft() + ":" + this.getTop()//
+		);*/
+		//if (w > mw && h > mh) {
+		if (w > width.property.value() && h>height.property.value()) {
+			width.is(w);
+		
+			height.is(h);
+		}
+		//}
+		/*try {
+			int n = 0;
+			n = 1 / n;
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}*/
 	}
+	/*String maskName(int mask){
+		if(mask==android.view.View.MeasureSpec.AT_MOST){
+			return "AT_MOST";
+		}
+		if(mask==android.view.View.MeasureSpec.EXACTLY){
+			return "EXACTLY";
+		}
+		if(mask==android.view.View.MeasureSpec.UNSPECIFIED){
+			return "UNSPECIFIED";
+		}
+		return "?"+mask;
+	}*/
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		/*int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+		System.out.println("onMeasure: " + widthSize + ":" + maskName(MeasureSpec.getMode(widthMeasureSpec)) //
+				+ " x " + heightSize + ":" + maskName(MeasureSpec.getMode(heightMeasureSpec))//
+				+ ", measured "+this.getMeasuredWidth() + "x" + this.getMeasuredHeight() //
+				);*/
+		//int exw=MeasureSpec.makeMeasureSpec(widthSize,android.view.View.MeasureSpec.EXACTLY);
+		//int exh=MeasureSpec.makeMeasureSpec(heightSize,android.view.View.MeasureSpec.EXACTLY);
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		onMeasureX();
-	}
-	protected void onMeasureX() {
-		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure: " + getMeasuredWidth() + " x " + getMeasuredHeight()+": "+measured);
-		if (!measured) {
-			measured = true;
-			width.is(getMeasuredWidth());
-			height.is(getMeasuredHeight());
+		/*if(widthSize>width.property.value()){
+			//width.property.value(widthSize);
 		}
+		if(heightSize>height.property.value()){
+			//height.property.value(heightSize);
+		}*/
+		//setMeasuredDimension(width.property.value().intValue(), height.property.value().intValue());
+		//onMeasureX();
 	}
+	/*protected void onMeasureX() {
+		System.out.println("onMeasureX: measured "//
+				+ this.getMeasuredWidth() + "x" + this.getMeasuredHeight() //
+				+ ", properties " //
+				+ this.width().property.value() + "x" + this.height().property.value()//
+				+" - "+this//
+		);
+		//if (!measured) {
+		//	measured = true;
+		//	width.is(getMeasuredWidth());
+		//	height.is(getMeasuredHeight());
+		//}
+		int w = getMeasuredWidth();
+		int h = getMeasuredHeight();
+		//if (w > mw && h > mh) {
+			width.is(w);
+			height.is(h);
+			System.out.println("now: properties " //
+					+ this.width().property.value() + "x" + this.height().property.value()//
+			);
+		//}
+	}*/
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		//System.out.println(shiftX.property.value());
 		if (!solid.property.value()) {
 			return false;
 		}
 		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-			//System.out.println("startDrag");
 			initialShiftX = shiftX.property.value().floatValue();
 			initialShiftY = shiftY.property.value().floatValue();
 			lastEventX = event.getX();
@@ -318,18 +267,15 @@ public class Layoutless extends RelativeLayout implements Rake {
 			if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
 				if (event.getPointerCount() > 1) {
 					if (mode == ZOOM) {
-						//System.out.println("proceedZoom");
 						currentSpacing = spacing(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
 					}
 					else {
-						//System.out.println("startZoom");
 						initialSpacing = spacing(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
 						currentSpacing = initialSpacing;
 						mode = ZOOM;
 					}
 				}
 				else {
-					//System.out.println("proceedDrag");
 					setShift(event.getX(), event.getY());
 					lastEventX = event.getX();
 					lastEventY = event.getY();
@@ -338,21 +284,19 @@ public class Layoutless extends RelativeLayout implements Rake {
 			else {
 				if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
 					if (mode == DRAG) {
-						//System.out.println("finishDrag");
 						finishDrag(event.getX(), event.getY());
 					}
 					else {
 						if (mode == ZOOM) {
-							//System.out.println("finishZoom");
 							finishZoom();
 						}
 						else {
-							//System.out.println("not ZOOM");
+							//
 						}
 					}
 				}
 				else {
-					//System.out.println("not ACTION_UP");
+					//
 				}
 			}
 		}
@@ -366,31 +310,8 @@ public class Layoutless extends RelativeLayout implements Rake {
 	void setShift(float x, float y) {
 		double newShiftX = shiftX.property.value() + x - lastEventX;
 		double newShiftY = shiftY.property.value() + y - lastEventY;
-		/*if (innerWidth.property.value() > width.property.value()) {
-			if (newShiftX < width.property.value() - innerWidth.property.value()) {
-				newShiftX = width.property.value() - innerWidth.property.value();
-			}
-		}
-		else {
-			newShiftX = 0;
-		}
-		if (innerHeight.property.value() > height.property.value()) {
-			if (newShiftY < height.property.value() - innerHeight.property.value()) {
-				newShiftY = height.property.value() - innerHeight.property.value();
-			}
-		}
-		else {
-			newShiftY = 0;
-		}
-		if (newShiftX > 0) {
-			newShiftX = 0;
-		}
-		if (newShiftY > 0) {
-			newShiftY = 0;
-		}*/
 		shiftX.property.value(newShiftX);
 		shiftY.property.value(newShiftY);
-		//System.out.println(newShiftX+"x"+newShiftY);
 	}
 	void finishDrag(float x, float y) {
 		setShift(x, y);
@@ -399,8 +320,6 @@ public class Layoutless extends RelativeLayout implements Rake {
 			finishTap(x, y);
 		}
 		else {
-			// lastShiftX.is( shiftX.property.value());
-			//lastShiftY.is(shiftY.property.value());
 			double newShiftX = shiftX.property.value();
 			double newShiftY = shiftY.property.value();
 			if (innerWidth.property.value() > width.property.value()) {
@@ -447,7 +366,6 @@ public class Layoutless extends RelativeLayout implements Rake {
 		}
 	}
 	void finishZoom() {
-		//System.out.println(this.getClass().getCanonicalName()+".finishZoom");
 		if (currentSpacing > initialSpacing) {
 			if (zoom.property.value() < maxZoom.property.value()) {
 				zoom.is(zoom.property.value() + 1);
@@ -505,9 +423,4 @@ public class Layoutless extends RelativeLayout implements Rake {
 		afterShift.property.unbind();
 		afterZoom.property.unbind();
 	}
-	/*
-	@Override
-	protected void onAttachedToWindow() {
-		System.out.println("lock");
-	}*/
 }

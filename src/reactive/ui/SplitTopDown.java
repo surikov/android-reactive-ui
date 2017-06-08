@@ -22,7 +22,7 @@ public class SplitTopDown extends SubLayoutless {
 	private Rake topSide;
 	private Rake downSide;
 	private boolean initialized = false;
-	private boolean firstOnSizeChanged = true;
+	//private boolean firstOnSizeChanged = true;
 
 	@Override
 	public void requestLayout() {
@@ -30,10 +30,10 @@ public class SplitTopDown extends SubLayoutless {
 	}
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		super.onSizeChanged(w, h, oldw, oldh);
-		if (firstOnSizeChanged) {
-			firstOnSizeChanged = false;
-		}
+		//super.onSizeChanged(w, h, oldw, oldh);
+		//if (firstOnSizeChanged) {
+		//	firstOnSizeChanged = false;
+		//}
 	}
 	public SplitTopDown(Context context) {
 		super(context);
@@ -44,10 +44,10 @@ public class SplitTopDown extends SubLayoutless {
 	public SplitTopDown(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
-	@Override
+	/*@Override
 	protected void onMeasureX() {
 		//
-	}
+	}*/
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);

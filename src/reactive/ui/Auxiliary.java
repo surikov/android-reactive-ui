@@ -73,7 +73,15 @@ public class Auxiliary {
 	private static final byte[] DIGITS = new byte['f' + 1];
 	static SimpleDateFormat sqliteTime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss.SSS");
 	static SimpleDateFormat sqliteDate = new SimpleDateFormat("yyyy-MM-DD");
-	public final static String version = "1.67";
+	//
+	//
+	//
+	//
+	//
+	public final static String reactiveVersion = "1.80";
+	//
+	//
+	//
 	private static LocationListener locationListener = null;
 	public static double latitude = 0;//https://www.google.ru/maps/@56.3706531,44.0456248,10.25z - latitude+":"+longitude
 	public static double longitude = 0;//east-west, долгота

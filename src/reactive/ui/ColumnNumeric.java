@@ -101,7 +101,10 @@ public class ColumnNumeric extends Column {
 			}
 		}
 		cell.setPadding(3, 0, 3, 0);
+		//cell.labelStyleMediumNormal();
 		cell.labelStyleMediumNormal();
+		//cell.labelAlignCenterCenter();
+		//this.setupCellStyleAlign(cell);
 		if (row > -1 && row < numbers.size()) {
 			//cell.labelText.is(formater.format(numbers.get(row)));
 			cell.labelText.is(getValue(numbers.get(row)));
@@ -113,6 +116,7 @@ public class ColumnNumeric extends Column {
 		numbers.add(s);
 		tasks.add(tap);
 		backgrounds.add(background);
+		//this.labelStyleMediumNormal();
 		return this;
 	}
 	public ColumnNumeric cell(double s) {
@@ -144,6 +148,7 @@ public class ColumnNumeric extends Column {
 				}
 			}
 		});
+		//this.labelStyleMediumNormal();
 	}
 	@Override
 	public Rake header(Context context) {

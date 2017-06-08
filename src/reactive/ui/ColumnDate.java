@@ -92,6 +92,8 @@ public class ColumnDate extends Column {
 		}
 		cell.setPadding(3, 0, 3, 0);
 		cell.labelStyleMediumNormal();
+		//cell.labelAlignCenterCenter();
+		//this.setupCell(cell);
 		if (row > -1 && row < mills.size()) {
 			//cell.labelText.is(formater.format(numbers.get(row)));
 			//Date d = new Date();
@@ -122,6 +124,7 @@ public class ColumnDate extends Column {
 		mills.add(s);
 		tasks.add(tap);
 		backgrounds.add(background);
+		//this.labelStyleMediumNormal();
 		return this;
 	}
 	public ColumnDate cell(long s) {

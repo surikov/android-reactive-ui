@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.widget.TextView.BufferType;
 
 import java.util.*;
 
@@ -87,6 +88,8 @@ public class ColumnText extends Column {
 		}
 		cell.setPadding(3, 0, 3, 0);
 		cell.labelStyleMediumNormal();
+		//cell.labelAlignLeftCenter();
+		//this.setupCell(cell);
 		if (row > -1 && row < strings.size()) {
 			cell.labelText.is(strings.get(row));
 		}
@@ -114,6 +117,7 @@ public class ColumnText extends Column {
 	}
 	public ColumnText() {
 		this.width.is(150);
+		//this.labelStyleMediumNormal();
 		//linePaint.setColor(0x33666666);
 		/*int c1 = 0xffff0000;
 		int transp=c1 & 0xff000000;

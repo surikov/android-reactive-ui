@@ -46,10 +46,10 @@ public class SubLayoutless extends Layoutless {
 	public SubLayoutless(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
-	@Override
+	/*@Override
 	protected void onMeasureX() {
 		//
-	}
+	}*/
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		//System.out.println(this.getClass().getCanonicalName() + ".onMeasure ");
@@ -59,8 +59,12 @@ public class SubLayoutless extends Layoutless {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged "+w+"/"+ h+"/"+oldw+"/"+ oldh);
-		super.onSizeChanged(w, h, oldw, oldh);
+		//super.onSizeChanged(w, h, oldw, oldh);
 		//System.out.println(this.getClass().getCanonicalName() + ".onSizeChanged done");
+		/*System.out.println("SubLayoutless.onSizeChanged: " + oldw + "x" + oldh + " => " + w + "x" + h + ", measured "//
+				+ this.getMeasuredWidth() + "x" + this.getMeasuredHeight()//
+				+ " at " + this.getLeft() + ":" + this.getTop()//
+		);*/
 	}
 	@Override
 	protected void init() {

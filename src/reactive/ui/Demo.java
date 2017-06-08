@@ -31,7 +31,6 @@ import org.apache.http.util.EntityUtils;
 import android.database.*;
 import android.database.sqlite.*;
 import reactive.ui.*;
-
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -45,7 +44,6 @@ import tee.binding.it.*;
 import tee.binding.*;
 import uniform.DataActivity;
 import uniform.DataEnvironment;
-
 import java.io.*;
 import java.text.*;
 import javax.microedition.khronos.opengles.GL10;
@@ -88,7 +86,7 @@ public class Demo extends Activity {
 		if (gridData != null) {
 			for (int i = 0; i < gridData.children.size(); i++) {
 				Bough row = gridData.children.get(i);
-				columnName.cell("/"+row.child("cell").value.property.value());
+				columnName.cell("/" + row.child("cell").value.property.value());
 			}
 		}
 	}
@@ -97,13 +95,12 @@ public class Demo extends Activity {
 		requeryGridData();
 	}
 	void initAll() {
-		Auxiliary.startSensorEventListener(this,new Task(){
-
+		Auxiliary.startSensorEventListener(this, new Task() {
 			@Override
 			public void doTask() {
 				//System.out.println(Auxiliary.accelerometerX+"x"+Auxiliary.accelerometerY+"x"+Auxiliary.accelerometerZ);
-				
-			}});
+			}
+		});
 		dataGrid = new DataGrid(this).center.is(true)//
 		.pageSize.is(gridPageSize)//
 		.dataOffset.is(gridOffset)//
@@ -123,42 +120,57 @@ public class Demo extends Activity {
 				.width().is(layoutless.width().property)//
 				.height().is(layoutless.height().property.minus(Auxiliary.tapSize))//
 				);
-		layoutless.child(new Knob(this).afterTap.is(new Task(){
-
+		layoutless.child(new Knob(this).afterTap.is(new Task() {
 			@Override
 			public void doTask() {
 				System.out.println("test");
-				DataEnvironment.variables=Bough.parseXML(Auxiliary.loadTextFromResource(Demo.this, R.raw.test));
-				
-				//DataEnvironment.variables.child("store").child("messageFillGUI").value.property.value("Подождите...");
-				//Bough formCfg=DataEnvironment.variables.child("forms").child("testForm");
-				//formCfg.child("title").value.property.value("Маршрут");
-				//System.out.println(DataEnvironment.variables.dumpXML());
-				
-				
-				
-				Intent intent = new Intent(Demo.this, uniform.DataActivity.class);
-				intent.putExtra("form", "testForm");
-				startActivity(intent);
-				
-				
-				
 				//System.out.println(Auxiliary.loadTextFromResource(Demo.this, R.raw.test));
+				final Note searchWord = new Note();
+				Auxiliary.pickString(Demo.this, "Поиск", searchWord, "Найти", new Task() {
+					@Override
+					public void doTask() {
+						Intent intent = new Intent(Demo.this, Demo.class);
+						intent.putExtra("searchWord", searchWord.value());
+						intent.putExtra("folderKey", "");
+						intent.putExtra("folderPath", "");
+						Demo.this.startActivity(intent);
+					}
+				});
 			}
-			
-		})
-		.width().is(100).height().is(100)
-		);
+		}).width().is(100).height().is(100));
+		layoutless.child(new Knob(this).afterTap.is(new Task() {
+			@Override
+			public void doTask() {
+				System.out.println(layoutless.getMeasuredHeight() + "/" + layoutless.height().property.value());
+				layoutless.requestLayout();
+				System.out.println(layoutless.getMeasuredHeight() + "/" + layoutless.height().property.value());
+				layoutless.getParent().requestLayout();
+				System.out.println(layoutless.getMeasuredHeight() + "/" + layoutless.height().property.value());
+				layoutless.height().property.value(layoutless.getMeasuredHeight());
+			}
+		}).left().is(200).top().is(100).width().is(100).height().is(100));
 		requery.start(Demo.this);
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		System.out.println("onCreate");
+		Bough parameters = new Bough();
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null) {
+			Set<String> ks = extras.keySet();
+			Iterator<String> iterator = ks.iterator();
+			while (iterator.hasNext()) {
+				String name = iterator.next();
+				parameters.child(name).value.property.value(intent.getStringExtra(name));
+			}
+		}
 		//System.out.println(Auxiliary.bundle2bough(this.getIntent().getExtras()).dumpXML());
 		super.onCreate(savedInstanceState);
 		layoutless = new Layoutless(this);
 		setContentView(layoutless);
 		initAll();
+		this.setTitle("searchWord "+parameters.child("searchWord").value.property.value());
 		//DataActivity.replaceVariables("{0123}456{78}{{901}2}");
 	}
 	@Override
