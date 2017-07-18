@@ -172,6 +172,12 @@ public class Demo extends Activity {
 		initAll();
 		this.setTitle("searchWord "+parameters.child("searchWord").value.property.value());
 		//DataActivity.replaceVariables("{0123}456{78}{{901}2}");
+		//String jsn="{  'lines': [  {  'apikey': '7649841b7E46112E3014EFd9889D62',  'start': '2017-07-17T06:37:29',  'lt': '53.20104215',  'ln': '44.99835479'  },  {  'apikey': '                              ',  'start': '2017-05-12T07:21:20',  'lt': '53.20104215',  'ln': '44.99835479'  },  {  'apikey': '                              ',  'start': '2017-05-11T07:14:11',  'lt': '53.20104215',  'ln': '44.99835479'  }  ],  'info': '104645'  }";
+		//String jsn="{  \"lines\": [  {  \"apikey\": [{a:\"b\"},\"7649841b7E46112E3014EFd9889D62\"],  \"start\": \"2017-07-17T06:37:29\",  \"lt\": \"53.20104215\",  \"ln\": \"44.99835479\"  },  {  \"apikey\": \"                              \",  \"start\": \"2017-05-12T07:21:20\",  \"lt\": \"53.20104215\",  \"ln\": \"44.99835479\"  },  {  \"apikey\": \"                              \",  \"start\": \"2017-05-11T07:14:11\",  \"lt\": \"53.20104215\",  \"ln\": \"44.99835479\"  }  ],  \"info\": \"104645\"  }";
+		String jsn="{  \"lines\": [  {  \"apikey\": \"7649841b7E46112E3014EFd9889D62\",  \"start\": \"2017-07-17T06:37:29\",  \"lt\": 53.20104215,  \"ln\": 44.99835479  },  [\"a\",\"b\",{\"c\":123}],  {  \"apikey\": \"                              \",  \"start\": \"2017-05-12T07:21:20\",  \"lt\": 53.20104215,  \"ln\": 44.99835479  },  {  \"apikey\": \"                              \",  \"start\": \"2017-05-11T07:14:11\",  \"lt\": 53.20104215,  \"ln\": 44.99835479  }  ],  \"info\": \"104645\"  }";
+		//System.out.println(jsn);
+		Bough.parseJSON(jsn);
+		System.out.println(Bough.parseJSON(jsn).dumpXML());
 	}
 	@Override
 	protected void onPause() {
